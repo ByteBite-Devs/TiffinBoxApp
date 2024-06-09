@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
+import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/splash_screen.dart';
 
 void main() {
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/HomeScreen': (BuildContext context) => const HomeScreen(),
+        '/Login': (BuildContext context) => const LoginScreen(),
 
       },
     );
