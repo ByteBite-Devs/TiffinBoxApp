@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         recognizer: TapGestureRecognizer()..onTap = () {
                           // Navigate to the register screen
-                        },
+                          Navigator.of(context).pushReplacementNamed("/Register");                    },
                       ),
                     ],
                   ),
