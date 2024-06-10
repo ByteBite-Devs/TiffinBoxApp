@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/main.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,7 +16,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('TiffinBox'),
       ),
       body: const Center(
-        child: Text('Home Screen'),
+        child: Text('Home Screen',
+        style: TextStyle(
+          color: MyApp.primaryColor
+        ) ,
+        ),
       ),  
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
