@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiffinbox/main.dart';
+import 'package:tiffinbox/utils/color.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: const Center(
         child: Text('Home Screen',
         style: TextStyle(
-          color: MyApp.primaryColor
+          color: primarycolor
         ) ,
         ),
       ),  

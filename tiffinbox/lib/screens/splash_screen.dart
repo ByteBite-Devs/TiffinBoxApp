@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:tiffinbox/main.dart';
+import 'package:tiffinbox/utils/color.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -99,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen>
                               style: const TextStyle(
                                 fontSize: 50,
                                 fontWeight: FontWeight.bold,
-                                color: MyApp.primaryColor,
+                                color: primarycolor,
                                 fontFamily: 'Poppins',
                                 letterSpacing: 1.0,
                                 height: 1.5,
