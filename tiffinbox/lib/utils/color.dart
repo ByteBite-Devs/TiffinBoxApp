@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
-
-const bgcolor = Color.fromARGB(255, 0, 0, 0);
-const primarycolor = Colors.white;
-const bordercolor = Color.fromARGB(255, 183, 183, 183);
-const buttontextcolor = Color.fromARGB(255, 0, 0, 0);
+import 'package:tiffinbox/main.dart';
+ 
+const bgcolor = Color.fromARGB(255, 255, 255, 255);
+const primarycolor = Color.fromARGB(255, 243, 39, 76);
+const bordercolor = Color.fromARGB(255, 243, 39, 76);
+const buttontextcolor = Color.fromARGB(255, 255, 255, 255);

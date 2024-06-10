@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/utils/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
-
+ 
 class DefaultTextField extends StatelessWidget {
   final TextEditingController controller;
   final String title;
   final Icon icon;
   final EdgeInsetsGeometry? padding;
-  const DefaultTextField(
-      {Key? key,
+  final TextStyle? titleStyle;
+  const DefaultTextField({
+      Key? key,
       required this.controller,
       required this.title,
-      required this.icon, this.padding})
-      : super(key: key);
-
+      required this.icon, this.padding,
+      this.titleStyle,
+  }) : super(key: key);
+ 
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -1,153 +1,160 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tiffinbox/utils/color.dart';
-import 'package:tiffinbox/widgets/default_button.dart';
-import 'package:tiffinbox/widgets/default_textfield.dart';
-import 'package:tiffinbox/widgets/social_box.dart';
-
-import '../utils/text_style.dart';
-
-class LoginScreen extends StatefulWidget{
+import 'package:intl_phone_field/intl_phone_field.dart';
+ 
+import '../widgets/default_button.dart';
+ 
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
-
+ 
   @override
-  State<LoginScreen> createState() => _LoginState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
-
-class _LoginState extends State<LoginScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  static const textFieldPadding = EdgeInsets.symmetric(horizontal: 25.0, vertical: 7.0);
-
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
+ 
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _phoneController = TextEditingController();
+  bool _rememberMe = false;
+ 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+ 
     return Scaffold(
-      backgroundColor: bgcolor,
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Surya', style: logoFontStyle),
-            const SizedBox(
-              height: 30,
-            ),
-            DefaultTextField(
-              padding: textFieldPadding,
-              controller: emailController,
-              title: "Email or username",
-              icon: const Icon(
-                Icons.mail,
-                size: 20,
-                color: Colors.grey,
-              ),
-            ),
-            DefaultTextField(
-              padding: textFieldPadding,
-              controller: passwordController,
-              title: "Password",
-              icon: const Icon(
-                Icons.lock,
-                size: 20,
-                color: Colors.grey,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
-              alignment: Alignment.center,
-              child: GestureDetector(
-                onTap: () => {Navigator.pushNamed(context, '/forgot-password')},
-                child: Text(
-                  'Forgot Password?',
-                  style: defaultFontStyle,
+        child: SingleChildScrollView(
+          child: Container(
+            height: screenHeight,
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 30),
+                const Text(
+                  'Login',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 243, 39, 76),
+                  ),
                 ),
-              ),
-            ),
-            DefaultButton(
-              title: 'Sign in',
-              onpress: () => {Navigator.pushNamed(context, "/")},
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              alignment: Alignment.center,
-              child: RichText(
-                text: TextSpan(
+                const SizedBox(height: 30),
+                IntlPhoneField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    prefixIcon: Container(
+                      padding: const EdgeInsets.all(12),
+                    ),
+                    labelText: 'Phone Number',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  initialCountryCode: 'CA',
+                  onChanged: (phone) {
+                    print(phone.completeNumber);
+                  },
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                    ),
+                    const Text('Remember me'),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                // ElevatedButton(
+                //   onPressed: () {},
+                //   style: ElevatedButton.styleFrom(
+                //     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 80),
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(8),
+                //     ),
+                //   ),
+                //   child: const Text(
+                //     'Sign in',
+                //     style: TextStyle(fontSize: 18),
+                //   ),
+                // ),
+                DefaultButton(
+                  title: 'Sign in',
+                  onpress: () => {Navigator.pushNamed(context, "/")},
+                ),
+                const SizedBox(height: 25),
+                const Row(
+                  children: [
+                    Expanded(child: Divider(thickness: 1)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text('Or sign in with'),
+                    ),
+                    Expanded(child: Divider(thickness: 1)),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/icons/google.svg',
+                        height: 40,
+                        width: 40,
+                      ),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/icons/facebook.svg',
+                        height: 40,
+                        width: 40,
+                      ),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/icons/apple.svg',
+                        height: 40,
+                        width: 40,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 25),
+                RichText(
+                  text: TextSpan(
                     text: "Don't have an account? ",
-                    style: defaultFontStyle,
+                    style: const TextStyle(color: Colors.black),
                     children: [
                       TextSpan(
-                        text: 'Sign Up',
-                        style: boldFontStyle,
-                        recognizer: TapGestureRecognizer()
-                          ..onTap =
-                              () => {Navigator.pushNamed(context, '/register')},
-                      )
-                    ]),
-              ),
-            ),
-            const SizedBox(
-              height: 25,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
-              alignment: Alignment.center,
-              child: Text(
-                'or',
-                style: defaultFontStyle,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SocialBox(
-                    onpress: () => {},
-                    icon: SvgPicture.asset(
-                      "assets/icons/facebook.svg",
-                      height: 40,
-                      width: 40,
-                    ),
+                        text: 'Register',
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          // Navigate to the register screen
+                        },
+                      ),
+                    ],
                   ),
-                  SocialBox(
-                    onpress: () => {},
-                    icon: SvgPicture.asset(
-                      "assets/icons/instagram.svg",
-                      height: 40,
-                      width: 40,
-                    ),
-                  ),
-                  SocialBox(
-                    onpress: () => {},
-                    icon: SvgPicture.asset(
-                      "assets/icons/apple.svg",
-                      height: 40,
-                      width: 40,
-                    ),
-                  ),
-                  SocialBox(
-                    onpress: () => {},
-                    icon: SvgPicture.asset(
-                      "assets/icons/twitter.svg",
-                      height: 40,
-                      width: 40,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
-  
 }

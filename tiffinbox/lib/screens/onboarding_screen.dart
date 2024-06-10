@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiffinbox/main.dart';
+import 'package:tiffinbox/utils/color.dart';
 import 'package:tiffinbox/utils/onboarding_contents.dart';
 import 'package:tiffinbox/utils/size_config.dart';
 
@@ -32,7 +32,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         borderRadius: BorderRadius.all(
           Radius.circular(50),
         ),
-        color: MyApp.primaryColor,
+        color: primarycolor,
       ),
       margin: const EdgeInsets.only(right: 5),
       height: 10,
@@ -116,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: MyApp.primaryColor,
+                              backgroundColor: primarycolor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50),
                               ),
@@ -160,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: MyApp.primaryColor,
+                                  backgroundColor: primarycolor,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(50),

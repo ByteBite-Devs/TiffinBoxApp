@@ -3,23 +3,23 @@ import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/splash_screen.dart';
+import 'package:tiffinbox/utils/color.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  static const Color primaryColor = Color(0xFFF3274C);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TiffinBOX',
       theme: ThemeData(
-        primaryColor: primaryColor,
+        primaryColor: primarycolor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: 'Poppins',
-        primarySwatch: _createMaterialColor(primaryColor), // Set your primary swatch
+        primarySwatch: _createMaterialColor(primarycolor), // Set your primary swatch
       ),
       home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
