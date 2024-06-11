@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:tiffinbox/utils/color.dart';
  
 import '../widgets/default_button.dart';
  
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Container(
             height: screenHeight,
-            padding: const EdgeInsets.symmetric(horizontal: 25),
+            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -37,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 243, 39, 76),
+                    color: primarycolor,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -88,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ),
                 DefaultButton(
                   title: 'Sign in',
-                  onpress: () => {Navigator.pushNamed(context, "/")},
+                  onpress: () => {Navigator.pushNamed(context, "/Home")},
                 ),
                 const SizedBox(height: 25),
                 const Row(
@@ -138,9 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: const TextStyle(color: Colors.black),
                     children: [
                       TextSpan(
-                        text: 'Register',
+                        text: 'Sign Up',
                         style: const TextStyle(
-                          color: Colors.red,
+                          color: primarycolor,
                           fontWeight: FontWeight.bold,
                         ),
                         recognizer: TapGestureRecognizer()..onTap = () {
