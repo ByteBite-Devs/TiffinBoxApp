@@ -113,7 +113,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ? Padding(
                           padding: const EdgeInsets.all(30),
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.of(context).pushReplacementNamed("/Login");
+                            },
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
                               backgroundColor: primarycolor,
@@ -128,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               textStyle:
                                   TextStyle(fontSize: (width <= 550) ? 13 : 17),
                             ),
-                            child: const Text("START"),
+                            child: const Text("Get Started"),
                           ),
                         )
                       : Padding(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
+import 'package:tiffinbox/screens/signup_screen.dart';
 import 'package:tiffinbox/screens/splash_screen.dart';
 import 'package:tiffinbox/utils/color.dart';
 
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/HomeScreen': (BuildContext context) => const HomeScreen(),
         '/Login': (BuildContext context) => const LoginScreen(),
+        '/Register': (BuildContext context) => const RegistrationScreen(),
         '/OnBoarding': (BuildContext context) => const OnboardingScreen()
       },
     );

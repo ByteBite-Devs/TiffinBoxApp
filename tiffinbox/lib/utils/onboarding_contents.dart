@@ -13,17 +13,17 @@ class OnboardingContents {
 List<OnboardingContents> contents = [
   OnboardingContents(
     title: "Browse Endless Options",
-    image: "assets/browse.png",
+    image: "assets/images/browse.png",
     desc: "",
   ),
   OnboardingContents(
     title: "Quick and Easy Payment",
-    image: "assets/payment.png",
+    image: "assets/images/payment.png",
     desc: "",
   ),
   OnboardingContents(
     title: "Seamless Order Tracking",
-    image: "assets/tracking.png",
+    image: "assets/images/tracking.png",
     desc: "",
   ),
 ];
