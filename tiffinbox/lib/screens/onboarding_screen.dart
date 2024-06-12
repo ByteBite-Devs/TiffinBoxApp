@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:tiffinbox/utils/color.dart';
 import 'package:tiffinbox/utils/onboarding_contents.dart';
 import 'package:tiffinbox/utils/size_config.dart';
@@ -32,12 +33,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         borderRadius: BorderRadius.all(
           Radius.circular(50),
         ),
-        color: primarycolor,
+        color: disabledColor,
       ),
       margin: const EdgeInsets.only(right: 5),
       height: 10,
       curve: Curves.easeIn,
-      width: _currentPage == index ? 20 : 10,
+      width: _currentPage == index ? 40 : 15,
     );
   }
 
@@ -70,13 +71,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         SizedBox(
                           height: (height >= 840) ? 60 : 30,
                         ),
-                        Text(
+                        GradientText(
                           contents[i].title,
                           textAlign: TextAlign.center,
+                          colors: const [primarycolor, orangeGradientShade],
                           style: TextStyle(
                             fontFamily: "Mulish",
                             fontWeight: FontWeight.w600,
-                            fontSize: (width <= 550) ? 30 : 35,
+                            fontSize: (width <= 350) ? 30 : 35,
                           ),
                         ),
                         const SizedBox(height: 15),
@@ -85,7 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: TextStyle(
                             fontFamily: "Mulish",
                             fontWeight: FontWeight.w300,
-                            fontSize: (width <= 550) ? 17 : 25,
+                            fontSize: (width <= 350) ? 18 : 25,
                           ),
                           textAlign: TextAlign.center,
                         )
@@ -122,13 +124,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50),
                               ),
-                              padding: (width <= 550)
+                              padding: (width <= 350)
                                   ? const EdgeInsets.symmetric(
                                       horizontal: 100, vertical: 20)
                                   : EdgeInsets.symmetric(
                                       horizontal: width * 0.2, vertical: 25),
                               textStyle:
-                                  TextStyle(fontSize: (width <= 550) ? 13 : 17),
+                                  TextStyle(fontSize: (width <= 350) ? 13 : 18),
                             ),
                             child: const Text("Get Started"),
                           ),
@@ -146,12 +148,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   elevation: 0,
                                   textStyle: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    fontSize: (width <= 550) ? 13 : 17,
+                                    fontSize: (width <= 350) ? 13 : 18,
                                   ),
                                 ),
                                 child: const Text(
                                   "SKIP",
-                                  style: TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: Colors.black),
                                 ),
                               ),
                               ElevatedButton(
@@ -168,13 +170,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     borderRadius: BorderRadius.circular(50),
                                   ),
                                   elevation: 0,
-                                  padding: (width <= 550)
+                                  padding: (width <= 350)
                                       ? const EdgeInsets.symmetric(
                                           horizontal: 30, vertical: 20)
                                       : const EdgeInsets.symmetric(
                                           horizontal: 30, vertical: 25),
                                   textStyle: TextStyle(
-                                      fontSize: (width <= 550) ? 13 : 17),
+                                      fontSize: (width <= 350) ? 13 : 18),
                                 ),
                                 child: const Text("NEXT"),
                               ),

@@ -2,9 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:tiffinbox/utils/color.dart';
- 
 import '../widgets/default_button.dart';
+import 'package:tiffinbox/utils/text_style.dart';
  
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
  
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
  
     return Scaffold(
@@ -33,19 +33,18 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 30),
-                const Text(
+                GradientText(
                   'Login',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: primarycolor,
-                  ),
+                  style: defaultHeaderFontStyle,
+                  colors: const [primarycolor, orangeGradientShade],
+
                 ),
                 const SizedBox(height: 30),
                 IntlPhoneField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
+                    counterText: "",
                     prefixIcon: Container(
                       padding: const EdgeInsets.all(12),
                     ),

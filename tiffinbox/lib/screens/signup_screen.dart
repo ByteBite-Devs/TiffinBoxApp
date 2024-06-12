@@ -29,7 +29,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
  
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -54,6 +53,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
+                  counterText: "",
                   labelText: 'Phone Number',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),

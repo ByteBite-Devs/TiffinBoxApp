@@ -9,6 +9,14 @@ final defaultFontStyle = GoogleFonts.poppins(
   ),
 );
 
+final defaultHeaderFontStyle = GoogleFonts.poppins(
+  textStyle: const TextStyle(
+    fontSize: 32,
+    color: primarycolor,
+    fontWeight: FontWeight.bold
+  ),
+);
+
 final buttonFontStyle = GoogleFonts.poppins(
   textStyle: const TextStyle(
     fontSize: 16,
