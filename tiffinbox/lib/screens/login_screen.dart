@@ -1,12 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:tiffinbox/services/login-service.dart';
 import 'package:tiffinbox/utils/color.dart';
 import '../widgets/default_button.dart';
 import 'package:tiffinbox/utils/text_style.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +24,44 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _rememberMe = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  User? user;
+
+  checkUserIsLoginOrNot() async {
+    bool isLogin = await _googleSignIn.isSignedIn();
+    if (isLogin) {
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context){
+        return HomeScreen();
+      }), (route) => false);
+    }}
+
+  Future<UserCredential?> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      return UserCredential;
+    } else {
+      print("Google Sign in cancelled");
+      return null;
+    }
+  }
+  
+    @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkUserIsLoginOrNot();
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +169,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 40,
                         width: 40,
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        UserCredential? user = await signInWithGoogle();
+                        if (user != null) {
+                          Navigator.pushNamed(context, '/Home');
+                        }
+                        
+                        debugPrint(user.toString());
+                      },
                     ),
                     IconButton(
                       icon: SvgPicture.asset(
