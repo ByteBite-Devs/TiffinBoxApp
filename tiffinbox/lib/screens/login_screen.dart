@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,22 @@ class _LoginScreenState extends State<LoginScreen> {
       print("Google Sign in cancelled");
       return null;
     }
+  }
+
+  createUser({User? user}) async {
+    await FirebaseFirestore.instance.collection('User').doc(user?.uid).set({
+      'userName': user?.displayName,
+      'userEmail': user?.email,
+      'userId': user?.uid,
+      'userImage': user?.photoURL,
+    }).then((_) async {
+      Navigator.pushAndRemoveUntil(
+        context, 
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+        (route) => false);
+    });
   }
   
     @override
@@ -172,7 +189,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         UserCredential? user = await signInWithGoogle();
                         if (user != null) {
-                          Navigator.pushNamed(context, '/Home');
+                          // Navigator.pushNamed(context, '/Home');
+                          createUser(user: user.user);
                         }
                         
                         debugPrint(user.toString());
