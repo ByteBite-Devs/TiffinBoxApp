@@ -3,32 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:tiffinbox/services/login-service.dart';
 import 'package:tiffinbox/utils/color.dart';
 import '../widgets/default_button.dart';
 import 'package:tiffinbox/utils/text_style.dart';
- 
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
- 
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
- 
+
 class _LoginScreenState extends State<LoginScreen> {
+  final ApiService apiService = ApiService();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   bool _rememberMe = false;
- 
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
- 
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
             height: screenHeight,
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -37,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Login',
                   style: defaultHeaderFontStyle,
                   colors: const [primarycolor, orangeGradientShade],
-
                 ),
                 const SizedBox(height: 30),
                 IntlPhoneField(
@@ -57,6 +61,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   onChanged: (phone) {
                     print(phone.completeNumber);
                   },
+                ),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(labelText: 'Email'),
+                ),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(labelText: 'Password'),
+                  obscureText: true,
                 ),
                 const SizedBox(height: 15),
                 Row(
@@ -88,18 +101,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ),
                 DefaultButton(
                   title: 'Sign in',
-                  onpress: () => {Navigator.pushNamed(context, "/Home")},
-                ),
-                const SizedBox(height: 25),
-                const Row(
-                  children: [
-                    Expanded(child: Divider(thickness: 1)),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text('Or sign in with'),
-                    ),
-                    Expanded(child: Divider(thickness: 1)),
-                  ],
+                  onpress: () async {
+                    String email = emailController.text;
+                    String password = passwordController.text;
+                    try {
+                      var response =
+                          await apiService.loginUser(email, password);
+                      if (response['status'] == 'success') {
+                        print('User logged in: $response');
+                        Navigator.pushNamed(context, '/Home');
+                      } else {
+                        print('Failed to login user: $response');
+                      }
+                    } catch (e) {
+                      print('Failed to login user: $e');
+                    }
+                  },
                 ),
                 const SizedBox(height: 15),
                 Row(
@@ -143,9 +160,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: primarycolor,
                           fontWeight: FontWeight.bold,
                         ),
-                        recognizer: TapGestureRecognizer()..onTap = () {
-                          // Navigate to the register screen
-                          Navigator.of(context).pushReplacementNamed("/Register");                    },
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            // Navigate to the register screen
+                            Navigator.of(context)
+                                .pushReplacementNamed("/Register");
+                          },
                       ),
                     ],
                   ),
