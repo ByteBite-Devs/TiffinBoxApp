@@ -2,23 +2,26 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:tiffinbox/services/signup-service.dart';
 import 'package:tiffinbox/utils/color.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
- 
- 
+
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
- 
+
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
- 
+
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _nameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final signupService = SignupService();
   bool _rememberMe = false;
- 
+
   @override
   void dispose() {
     _phoneController.dispose();
@@ -26,7 +29,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _nameController.dispose();
     super.dispose();
   }
- 
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -34,21 +37,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Container(
-            height: screenHeight,
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            child: Container(
+          height: screenHeight,
+          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
           child: Column(
             children: [
-               const SizedBox(height: 30),
-                const Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: primarycolor,
-                  ),
+              const SizedBox(height: 30),
+              const Text(
+                'Create Account',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: primarycolor,
                 ),
-                const SizedBox(height: 30),
+              ),
+              const SizedBox(height: 30),
               IntlPhoneField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
@@ -74,6 +77,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
+              ),
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              const SizedBox(height: 15),
+              TextField(
+                controller: confirmPasswordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
               ),
               const SizedBox(height: 15),
               TextField(
@@ -103,42 +117,58 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               const SizedBox(height: 15),
               DefaultButton(
                   title: 'Sign Up',
-                  onpress: () => {Navigator.pushNamed(context, "/Home")},
-                ),
-                const SizedBox(height: 25),
+                  onpress: () async {
+                    String phoneNumber = _phoneController.text;
+                    String email = _emailController.text;
+                    String name = _nameController.text;
+                    String password = passwordController.text;
+
+                    if (password != confirmPasswordController.text) {
+                      return;
+                    }
+
+                    var response = await signupService.signup(
+                        phoneNumber, name, email, password);
+                    if (response['status'] == 'success') {
+                      Navigator.of(context).pushReplacementNamed('/Login');
+                    } else {
+                      print(response['message']);
+                    }
+                  }),
+              const SizedBox(height: 25),
               const SizedBox(height: 20),
               const Text('Or sign up with'),
               const SizedBox(height: 10),
               Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/google.svg',
-                        height: 40,
-                        width: 40,
-                      ),
-                      onPressed: () {},
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/icons/google.svg',
+                      height: 40,
+                      width: 40,
                     ),
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/facebook.svg',
-                        height: 40,
-                        width: 40,
-                      ),
-                      onPressed: () {},
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/icons/facebook.svg',
+                      height: 40,
+                      width: 40,
                     ),
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/apple.svg',
-                        height: 40,
-                        width: 40,
-                      ),
-                      onPressed: () {},
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/icons/apple.svg',
+                      height: 40,
+                      width: 40,
                     ),
-                  ],
-                ),
-                  const SizedBox(height: 20),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
               RichText(
                 text: TextSpan(
                   text: "Already have an account? ",
@@ -161,8 +191,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
             ],
           ),
-          )
-        ),
+        )),
       ),
     );
   }
