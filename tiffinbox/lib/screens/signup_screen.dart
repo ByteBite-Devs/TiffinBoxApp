@@ -76,9 +76,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 decoration: textDecorationInput("Email")
               ),
               const SizedBox(height: 15),
-              PasswordField(label: "Password"),
+              PasswordField(label: "Password", passwordController: passwordController),
               const SizedBox(height: 15),
-              PasswordField(label: "Confirm Password"),
+              PasswordField(label: "Confirm Password", passwordController: confirmPasswordController,),
               const SizedBox(height: 15),
               TextField(
                 controller: _nameController,
