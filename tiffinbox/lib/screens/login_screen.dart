@@ -8,6 +8,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:tiffinbox/services/login-service.dart';
 import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/widgets/default_textfield.dart';
 import '../widgets/default_button.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'home_screen.dart';
@@ -120,15 +121,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     print(phone.completeNumber);
                   },
                 ),
+                const SizedBox(height: 15),                
+
+                const Row(children: [
+                  Expanded(child: Divider(color: Colors.black, height: 2.5)),
+                   Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      'or',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  Expanded(child: Divider(color: Colors.black, height: 2.5))
+                ],),
+
+                const SizedBox(height: 15),                
                 TextField(
                   controller: emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
+                  decoration: textDecorationInput("Email"),
                 ),
-                TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                ),
+                const SizedBox(height: 15),
+                PasswordField(label: "Password"),
                 const SizedBox(height: 15),
                 Row(
                   children: [
