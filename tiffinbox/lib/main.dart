@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
@@ -6,7 +7,20 @@ import 'package:tiffinbox/screens/signup_screen.dart';
 import 'package:tiffinbox/screens/splash_screen.dart';
 import 'package:tiffinbox/utils/color.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyDCFuhMxcUAFtR7wiazf8_yV8i4Qcrhzug",
+      authDomain: "tiffinbox-9114a.firebaseapp.com",
+      databaseURL: "https://tiffinbox-9114a-default-rtdb.firebaseio.com",
+      projectId: "tiffinbox-9114a",
+      storageBucket: "tiffinbox-9114a.appspot.com",
+      messagingSenderId: "72750034964",
+      appId: "1:72750034964:web:89f9453d754f3a2a6b3701",
+      measurementId: "G-M2NTS63YN9"
+    )
+  );
   runApp(MyApp());
 }
 

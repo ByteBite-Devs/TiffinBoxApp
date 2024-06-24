@@ -2,6 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:tiffinbox/utils/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
  
+class PasswordField extends StatefulWidget {
+  final String label;
+
+  PasswordField({required this.label});
+
+  @override
+  _PasswordFieldState createState() => _PasswordFieldState();
+}
+
+class _PasswordFieldState extends State<PasswordField> {
+  bool _isObscured = true;
+  final TextEditingController _passwordController = TextEditingController();
+
+  void _toggleVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _passwordController,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),        
+        labelText: widget.label,
+        suffixIcon: IconButton(
+          icon: Icon(
+            _isObscured ? Icons.visibility : Icons.visibility_off,
+          ),
+          onPressed: _toggleVisibility,
+        ),
+      ),
+      obscureText: _isObscured,
+    );
+  }
+}
+
 class DefaultTextField extends StatelessWidget {
   final TextEditingController controller;
   final String title;

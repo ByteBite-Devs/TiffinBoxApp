@@ -4,7 +4,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:tiffinbox/services/signup-service.dart';
 import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
+import 'package:tiffinbox/widgets/default_textfield.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -71,34 +73,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              TextField(
-                controller: passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
+                decoration: textDecorationInput("Email")
               ),
               const SizedBox(height: 15),
-              TextField(
-                controller: confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-              ),
+              PasswordField(label: "Password"),
+              const SizedBox(height: 15),
+              PasswordField(label: "Confirm Password"),
               const SizedBox(height: 15),
               TextField(
                 controller: _nameController,
                 keyboardType: TextInputType.name,
-                decoration: InputDecoration(
-                  labelText: 'Full Name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+                decoration: textDecorationInput("Full Name")
               ),
               const SizedBox(height: 15),
               Row(

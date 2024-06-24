@@ -42,3 +42,12 @@ final titleFontStyle = GoogleFonts.poppins(
 final logoFontStyle = GoogleFonts.sacramento(
   textStyle: const TextStyle(color: primarycolor, fontSize: 65),
 );
+
+textDecorationInput(String? label) {
+  return InputDecoration(
+    labelText: label ?? "",
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+  );
+}

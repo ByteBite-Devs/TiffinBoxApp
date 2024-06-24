@@ -1,12 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:tiffinbox/services/login-service.dart';
 import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/widgets/default_textfield.dart';
 import '../widgets/default_button.dart';
 import 'package:tiffinbox/utils/text_style.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,6 +26,60 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _rememberMe = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  User? user;
+
+  checkUserIsLoginOrNot() async {
+    bool isLogin = await _googleSignIn.isSignedIn();
+    if (isLogin) {
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context){
+        return HomeScreen();
+      }), (route) => false);
+    }}
+
+  Future<UserCredential?> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      return UserCredential;
+    } else {
+      print("Google Sign in cancelled");
+      return null;
+    }
+  }
+
+  createUser({User? user}) async {
+    await FirebaseFirestore.instance.collection('User').doc(user?.uid).set({
+      'userName': user?.displayName,
+      'userEmail': user?.email,
+      'userId': user?.uid,
+      'userImage': user?.photoURL,
+    }).then((_) async {
+      Navigator.pushAndRemoveUntil(
+        context, 
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+        (route) => false);
+    });
+  }
+  
+    @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkUserIsLoginOrNot();
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -62,15 +121,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     print(phone.completeNumber);
                   },
                 ),
+                const SizedBox(height: 15),                
+
+                const Row(children: [
+                  Expanded(child: Divider(color: Colors.black, height: 2.5)),
+                   Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      'or',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  Expanded(child: Divider(color: Colors.black, height: 2.5))
+                ],),
+
+                const SizedBox(height: 15),                
                 TextField(
                   controller: emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
+                  decoration: textDecorationInput("Email"),
                 ),
-                TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                ),
+                const SizedBox(height: 15),
+                PasswordField(label: "Password"),
                 const SizedBox(height: 15),
                 Row(
                   children: [
@@ -128,7 +199,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 40,
                         width: 40,
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        UserCredential? user = await signInWithGoogle();
+                        if (user != null) {
+                          // Navigator.pushNamed(context, '/Home');
+                          createUser(user: user.user);
+                        }
+                        
+                        debugPrint(user.toString());
+                      },
                     ),
                     IconButton(
                       icon: SvgPicture.asset(
