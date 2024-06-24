@@ -1,47 +1,57 @@
 {
-  "project_info": {
-    "project_number": "72750034964",
-    "firebase_url": "https://tiffinbox-9114a-default-rtdb.firebaseio.com",
-    "project_id": "tiffinbox-9114a",
-    "storage_bucket": "tiffinbox-9114a.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:72750034964:android:f06a3bdba16786676b3701",
-        "android_client_info": {
-          "package_name": "com.example.tiffinbox"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "72750034964-g80ne6ed5jtdj1dk6h08u8mmtu9u0ul4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAy7T-tY_HKTeWUFUUTps-2aMMHaX-Q2Zs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "72750034964-g80ne6ed5jtdj1dk6h08u8mmtu9u0ul4.apps.googleusercontent.com",
-              "client_type": 3
+    "project_info": {
+        "project_number": "72750034964",
+        "firebase_url": "https://tiffinbox-9114a-default-rtdb.firebaseio.com",
+        "project_id": "tiffinbox-9114a",
+        "storage_bucket": "tiffinbox-9114a.appspot.com"
+    },
+    "client": [{
+        "client_info": {
+            "mobilesdk_app_id": "1:72750034964:android:f06a3bdba16786676b3701",
+            "android_client_info": {
+                "package_name": "com.example.tiffinbox"
+            }
+        },
+        "oauth_client": [{
+                "client_id": "72750034964-lbntuq6n33pob1mf9s28nj6oipn4i942.apps.googleusercontent.com",
+                "client_type": 1,
+                "android_info": {
+                    "package_name": "com.example.tiffinbox",
+                    "certificate_hash": "093d7c5e5f62ae5b00d480c7fbc68be9ccd7c6af"
+                }
             },
             {
-              "client_id": "72750034964-6m2s3rn2ouv4ru8r11itc6u1inqb7cke.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.tiffinbox"
-              }
+                "client_id": "72750034964-vjgms07kjn5q58ohqmtverna4q6pj8o1.apps.googleusercontent.com",
+                "client_type": 1,
+                "android_info": {
+                    "package_name": "com.example.tiffinbox",
+                    "certificate_hash": "212f2b0cd0325012063ef22938248eeb6439dae8"
+                }
+            },
+            {
+                "client_id": "72750034964-g80ne6ed5jtdj1dk6h08u8mmtu9u0ul4.apps.googleusercontent.com",
+                "client_type": 3
             }
-          ]
+        ],
+        "api_key": [{
+            "current_key": "AIzaSyAy7T-tY_HKTeWUFUUTps-2aMMHaX-Q2Zs"
+        }],
+        "services": {
+            "appinvite_service": {
+                "other_platform_oauth_client": [{
+                        "client_id": "72750034964-g80ne6ed5jtdj1dk6h08u8mmtu9u0ul4.apps.googleusercontent.com",
+                        "client_type": 3
+                    },
+                    {
+                        "client_id": "72750034964-6m2s3rn2ouv4ru8r11itc6u1inqb7cke.apps.googleusercontent.com",
+                        "client_type": 2,
+                        "ios_info": {
+                            "bundle_id": "com.example.tiffinbox"
+                        }
+                    }
+                ]
+            }
         }
-      }
-    }
-  ],
-  "configuration_version": "1"
+    }],
+    "configuration_version": "1"
 }

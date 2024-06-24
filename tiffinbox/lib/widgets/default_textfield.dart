@@ -4,8 +4,10 @@ import 'package:tiffinbox/utils/text_style.dart';
  
 class PasswordField extends StatefulWidget {
   final String label;
+  final TextEditingController passwordController;
 
-  PasswordField({required this.label});
+  PasswordField({required this.label,
+  required this.passwordController });
 
   @override
   _PasswordFieldState createState() => _PasswordFieldState();
@@ -13,7 +15,6 @@ class PasswordField extends StatefulWidget {
 
 class _PasswordFieldState extends State<PasswordField> {
   bool _isObscured = true;
-  final TextEditingController _passwordController = TextEditingController();
 
   void _toggleVisibility() {
     setState(() {
@@ -24,7 +25,7 @@ class _PasswordFieldState extends State<PasswordField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: _passwordController,
+      controller: widget.passwordController,
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
