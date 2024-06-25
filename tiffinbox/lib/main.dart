@@ -6,6 +6,7 @@ import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/profile_screen.dart';
 import 'package:tiffinbox/screens/signup_screen.dart';
 import 'package:tiffinbox/screens/splash_screen.dart';
+import 'package:tiffinbox/screens/businesssignup_screen.dart';
 import 'package:tiffinbox/utils/color.dart';
 
 void main() async {
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/Register': (BuildContext context) => const RegistrationScreen(),
         '/OnBoarding': (BuildContext context) => const OnboardingScreen(),
         '/Profile': (BuildContext context) => const ProfileScreen(),
+        '/RegisterBusiness': (BuildContext context) => const RegisterBusinessScreen(),
       },
     );
   }
