@@ -5,7 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/services/profile-service.dart';
+import 'package:tiffinbox/utils/themes/constants/color.dart';
 
 import '../utils/custom_bottom_nav.dart';
 
@@ -39,9 +40,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
-        if (userDoc.exists) {
-          Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        var response = await ProfileService().getProfileDetails();
+          if(response['status'] == 'success') {
+          var userData = response['user'];
           setState(() {
             _phoneController.text = userData['phone'] ?? '';
             _emailController.text = userData['email'] ?? '';
@@ -49,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _dobController.text = userData['dob'] ?? '';
             _locationController.text = userData['location'] ?? '';
             _selectedGender = userData['gender'];
-            _profileImageUrl = userData['profileImageUrl'];
+            _profileImageUrl = userData['image'];
           });
         }
       }
