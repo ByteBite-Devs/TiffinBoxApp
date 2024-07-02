@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
- 
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tiffinbox/screens/profile_screen.dart';
+import 'package:tiffinbox/screens/signup_screen.dart';
+import 'package:tiffinbox/screens/login_screen.dart';
+import 'package:tiffinbox/utils/color.dart';
+import '../main.dart';
+import '../utils/custom_bottom_nav.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
- 
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
- 
+
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _searchController = TextEditingController();
   String? _location;
@@ -19,14 +27,16 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _filteredOffers = [];
   List<Map<String, dynamic>> _filteredCategories = [];
- 
+  int _currentIndex = 0; // Track the selected tab
+  late PageController _pageController;
+
   @override
   void initState() {
     super.initState();
     _loadUserDetails();
     _loadInitialData();
   }
- 
+
   Future<void> _loadUserDetails() async {
     try {
       User? user = _auth.currentUser;
@@ -43,7 +53,17 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Error loading user details: $e');
     }
   }
- 
+
+  Future<void> _logout() async {
+    await _auth.signOut();
+    await _googleSignIn.signOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
   void _loadInitialData() {
     // Simulate fetching data from Firestore or another source
     _offers = [
@@ -52,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
       {'imagePath': 'assets/images/special_offer1.png', 'offerText': '50% OFF on Burgers'},
       {'imagePath': 'assets/images/special_offer2.png', 'offerText': 'Buy 1 Get 1 Free on Pizzas'},
     ];
- 
+
     _categories = [
       {'icon': Icons.fastfood, 'label': 'Burger'},
       {'icon': Icons.local_pizza, 'label': 'Pizza'},
@@ -63,11 +83,11 @@ class _HomeScreenState extends State<HomeScreen> {
       {'icon': Icons.icecream, 'label': 'Ice Cream'},
       {'icon': Icons.more_horiz, 'label': 'More'},
     ];
- 
+
     _filteredOffers = _offers;
     _filteredCategories = _categories;
   }
- 
+
   void _filterResults(String query) {
     if (query.isEmpty) {
       setState(() {
@@ -85,12 +105,25 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('TiffinBox'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+            tooltip: 'Logout',
+          ),
+        ],
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     Navigator.of(context).pop();
+        //   },
+        // ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -125,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-               
+
                 // Carousel for special offers
                 Container(
                   height: 150,
@@ -137,26 +170,41 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
- 
-                // Search Bar
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    hintText: 'Search',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
+
+                // Search Bar with Filter Button
+                Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.search),
+                        hintText: 'Search',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        fillColor: Colors.grey[200],
+                        filled: true,
+                      ),
+                      onChanged: (value) {
+                        _filterResults(value);
+                      },
                     ),
-                    fillColor: Colors.grey[200],
-                    filled: true,
-                  ),
-                  onChanged: (value) {
-                    _filterResults(value);
-                  },
+                    Positioned(
+                      right: 0,
+                      child: IconButton(
+                        icon: const Icon(Icons.filter_list),
+                        onPressed: () {
+                          // Open filter dialog or menu
+                          _showFilterDialog();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
-               
+
                 // Category Icons
                 GridView.count(
                   crossAxisCount: 4,
@@ -167,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }).toList(),
                 ),
                 const SizedBox(height: 16),
- 
+
                 // Special Offers
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,20 +242,55 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        currentIndex: 0,
-        onTap: (index) {
-          // Handle bottom navigation
-        },
-      ),
+      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
     );
   }
- 
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Filter Options'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CheckboxListTile(
+                title: const Text('Option 1'),
+                value: false, // Add your filter option values here
+                onChanged: (bool? value) {
+                  // Handle filter option change
+                },
+              ),
+              CheckboxListTile(
+                title: const Text('Option 2'),
+                value: false, // Add your filter option values here
+                onChanged: (bool? value) {
+                  // Handle filter option change
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Apply filter changes
+                Navigator.of(context).pop();
+              },
+              child: const Text('Apply'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildOfferCard(String imagePath, String offerText) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -226,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
- 
+
   Widget _buildCategoryIcon(IconData iconData, String label) {
     return Column(
       children: [
@@ -242,16 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
- 
-  Widget _buildSpecialOffersList() {
-    return Column(
-      children: [
-        _buildSpecialOfferItem('assets/images/special_offer1.png', '50% OFF on Burgers'),
-        _buildSpecialOfferItem('assets/images/special_offer2.png', 'Buy 1 Get 1 Free on Pizzas'),
-      ],
-    );
-  }
- 
+
   Widget _buildSpecialOfferItem(String imagePath, String offerText) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -265,7 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
- 
+
 void main() {
   runApp(MaterialApp(
     theme: ThemeData(
@@ -275,49 +349,3 @@ void main() {
     home: const HomeScreen(),
   ));
 }
- 
- 
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:tiffinbox/utils/color.dart';
-// import 'login_screen.dart';
- 
-// class HomeScreen extends StatefulWidget {
-//   const HomeScreen({super.key});
- 
-//   @override
-//   _HomeScreenState createState() => _HomeScreenState();
-// }
- 
-// class _HomeScreenState extends State<HomeScreen> {
-//   final FirebaseAuth _auth = FirebaseAuth.instance;
-//   final GoogleSignIn _googleSignIn = GoogleSignIn();
- 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('TiffinBox'),
-//       ),
-//       body: Center(
-//         child: ElevatedButton(
-//             onPressed: () {
-//               _auth.signOut();
-//               _googleSignIn.signOut();
-//               Navigator.pushAndRemoveUntil(context,
-//                 MaterialPageRoute(builder: (context) {
-//                   return const LoginScreen();
-//                 }), (route) => false);
-//             },
-//             child: const Text("Logout"),
-//         ),
-//       ),  
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {},
-//         child: const Icon(Icons.add),
-//       ),
-//       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-//     );
-//   }
-// }
