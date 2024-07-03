@@ -6,8 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:tiffinbox/services/profile-service.dart';
-import 'package:tiffinbox/utils/themes/constants/color.dart';
 
+import '../utils/color.dart';
 import '../utils/custom_bottom_nav.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final ProfileService profileService = ProfileService();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -38,25 +39,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserProfile() async {
     try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        var response = await ProfileService().getProfileDetails();
-          if(response['status'] == 'success') {
-          var userData = response['user'];
-          setState(() {
-            _phoneController.text = userData['phone'] ?? '';
-            _emailController.text = userData['email'] ?? '';
-            _nameController.text = userData['name'] ?? '';
-            _dobController.text = userData['dob'] ?? '';
-            _locationController.text = userData['location'] ?? '';
-            _selectedGender = userData['gender'];
-            _profileImageUrl = userData['image'];
-          });
-        }
+      var response = await profileService.getProfileDetails();
+      if(response['status'] == 'success') {
+        var userData = response['user'];
+        setState(() {
+          _phoneController.text = userData['phone'] ?? '';
+          _emailController.text = userData['email'] ?? '';
+          _nameController.text = userData['name'] ?? '';
+          _dobController.text = userData['dob'] ?? '';
+          _locationController.text = userData['location'] ?? '';
+          _selectedGender = userData['gender'];
+          _profileImageUrl = userData['image'];
+        });
       }
-    } catch (e) {
-      print('Error loading user profile: $e');
     }
+    catch(
+    e) {
+      print(e);
+      }
   }
 
   Future<void> _updateUserProfile() async {

@@ -18,10 +18,19 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      print(response);
       return json.decode(response.body);
     } else {
       throw Exception('Failed to login user: ${response.body}');
+    }
+  }
+
+  Future<User?> signInWithCustomToken(String token) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCustomToken(token);
+      return userCredential.user;
+    } catch (e) {
+      print('Failed to sign in with custom token: $e');
+      return null;
     }
   }
 

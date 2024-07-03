@@ -7,7 +7,7 @@ import 'package:tiffinbox/screens/profile_screen.dart';
 import 'package:tiffinbox/screens/signup_screen.dart';
 import 'package:tiffinbox/screens/splash_screen.dart';
 import 'package:tiffinbox/screens/businesssignup_screen.dart';
-import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/utils/themes/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,12 +32,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TiffinBOX',
-      theme: ThemeData(
-        primaryColor: primarycolor,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        fontFamily: 'Poppins',
-        primarySwatch: _createMaterialColor(primarycolor), // Set your primary swatch
-      ),
+      themeMode: ThemeMode.system,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
