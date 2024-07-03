@@ -160,34 +160,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                                const SizedBox(height: 15),
-                // Sign in button
-                DefaultButton(
-                  title: 'Sign in',
-                  onpress: () async {
-                    if (_signInWithPhone) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => OtpScreen(phone: _phoneController.text)),
-                      );
-                    } else {
-                      // Sign in with email/password logic
-                      String email = _emailController.text;
-                      String password = _passwordController.text;
-                      try {
-                        var response = await apiService.loginUser(email, password);
-                        if (response['status'] == 'success') {
-                          print('User logged in: $response');
-                          Navigator.pushNamed(context, '/Home');
-                        } else {
-                          print('Failed to login user: $response');
+                                  const SizedBox(height: 15),
+                  // Sign in button
+                  DefaultButton(
+                    title: 'Sign in',
+                    onpress: () async {
+                      if (_signInWithPhone) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  OtpScreen(phone: _phoneController.text)),
+                        );
+                      } else {
+                        String email = _emailController.text;
+                        String password = _passwordController.text;
+                        try {
+                          var response =
+                              await apiService.loginUser(email, password);
+                          if (response['status'] == 'success') {
+                            var token = response['customToken'];
+                            User? user =
+                                await apiService.signInWithCustomToken(token);
+                            if (user != null) {
+                              Navigator.pushNamed(context, '/Home');
+                            } else {
+                              print("Failed to sign in with custom token");
+                            }
+                          } else {
+                            print('Failed to login user: $response');
+                          }
+                        } catch (e) {
+                          print('Failed to login user: $e');
                         }
-                      } catch (e) {
-                        print('Failed to login user: $e');
                       }
-                    }
-                  },
-                ),
+                    },
+                  ),
                 ],
 
                 const SizedBox(height: 15),

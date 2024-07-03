@@ -144,12 +144,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 onPressed: () {
                                   _controller.jumpToPage(2);
                                 },
-                                style: TextButton.styleFrom(
-                                  elevation: 0,
-                                  textStyle: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: (width <= 350) ? 13 : 18,
-                                  ),
+                                style: TextButton.styleFrom().copyWith(
+                                  backgroundColor: MaterialStateProperty.all(bgcolor),
                                 ),
                                 child: const Text(
                                   "SKIP",
