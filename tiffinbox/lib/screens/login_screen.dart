@@ -9,6 +9,7 @@ import 'package:tiffinbox/services/login-service.dart';
 import 'package:tiffinbox/utils/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
+import 'package:tiffinbox/widgets/default_textfield.dart';
 import 'home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -25,9 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _rememberMe = false;
+  var phone = "";
   bool _signInWithPhone = false; // Default sign-in method
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   User? user;
 
@@ -86,6 +86,28 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  Future<void> initiatePhoneNumberVerification(String phoneNumber) async {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  print(phoneNumber);
+  await auth.verifyPhoneNumber(
+    phoneNumber: phoneNumber,
+    verificationCompleted: (PhoneAuthCredential credential) {},
+    verificationFailed: (FirebaseAuthException e) {
+      print(e.message);
+    },
+    codeSent: (String verificationId, int? resendToken) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OtpScreen(verificationId: verificationId),
+        ),
+      );
+    },
+    codeAutoRetrievalTimeout: (String verificationId) {},
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -124,16 +146,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     initialCountryCode: 'CA',
+                    onChanged: (value) => {
+                      phone = value.completeNumber
+                    }
                   ),
                   const SizedBox(height: 15),
                   DefaultButton(
                     title: 'Get OTP',
                     onpress: () async {
-                      String phone = '+1${_phoneController.text}';
-                      var response = await apiService.initiatePhoneNumberVerification(phone);
-                        Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => OtpScreen(phone: _phoneController.text)),
-                        );
+                      await initiatePhoneNumberVerification(phone);
                     },
                   ),
                 ] else ...[
@@ -150,28 +171,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 15),
                   // Password input
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                                  const SizedBox(height: 15),
+                  PasswordField(label: "Password", passwordController: _passwordController),
+                  const SizedBox(height: 15),
                   // Sign in button
                   DefaultButton(
                     title: 'Sign in',
                     onpress: () async {
                       if (_signInWithPhone) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  OtpScreen(phone: _phoneController.text)),
-                        );
+
                       } else {
                         String email = _emailController.text;
                         String password = _passwordController.text;

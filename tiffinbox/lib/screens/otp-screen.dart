@@ -7,7 +7,8 @@ import 'home_screen.dart'; // Import Home screen for navigation after successful
 import 'package:firebase_auth/firebase_auth.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key, required String phone}) : super(key: key);
+  final String verificationId = "";
+  const OtpScreen({Key? key, required String verificationId}) : super(key: key);
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -17,14 +18,14 @@ class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final String _verificationId = '';
-
   Future<void> _signInWithOTP() async {
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId,
+        verificationId: widget.verificationId,
         smsCode: _otpController.text,
       );
+      print("Verification Id: $widget.verificationId");
+      print("SMS Text: " + _otpController.text);
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       print('Manual verification successful: ${userCredential.user}');

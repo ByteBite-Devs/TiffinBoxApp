@@ -20,7 +20,7 @@ void main() async {
       projectId: "tiffinbox-9114a",
       storageBucket: "tiffinbox-9114a.appspot.com",
       messagingSenderId: "72750034964",
-      appId: "1:72750034964:web:89f9453d754f3a2a6b3701",
+      appId: "1:72750034964:android:f06a3bdba16786676b3701",
       measurementId: "G-M2NTS63YN9"
     )
   );
@@ -40,6 +40,8 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+
+
       home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
