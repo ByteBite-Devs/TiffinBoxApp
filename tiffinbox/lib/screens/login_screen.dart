@@ -15,7 +15,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
+  static String verificationId = "";
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -91,15 +92,17 @@ class _LoginScreenState extends State<LoginScreen> {
   print(phoneNumber);
   await auth.verifyPhoneNumber(
     phoneNumber: phoneNumber,
-    verificationCompleted: (PhoneAuthCredential credential) {},
+    verificationCompleted: (PhoneAuthCredential credential) {
+    },
     verificationFailed: (FirebaseAuthException e) {
       print(e.message);
     },
     codeSent: (String verificationId, int? resendToken) {
+      LoginScreen.verificationId = verificationId;
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => OtpScreen(verificationId: verificationId),
+          builder: (context) => const OtpScreen()
         ),
       );
     },
