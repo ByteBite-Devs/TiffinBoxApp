@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/utils/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
@@ -7,8 +8,7 @@ import 'home_screen.dart'; // Import Home screen for navigation after successful
 import 'package:firebase_auth/firebase_auth.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key, required String phone}) : super(key: key);
-
+  const OtpScreen({Key? key}) : super(key: key);
   @override
   _OtpScreenState createState() => _OtpScreenState();
 }
@@ -17,14 +17,14 @@ class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final String _verificationId = '';
-
   Future<void> _signInWithOTP() async {
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId,
+        verificationId: LoginScreen.verificationId,
         smsCode: _otpController.text,
       );
+      print("Verification Id:${LoginScreen.verificationId}");
+      print("SMS Text: ${_otpController.text}");
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       print('Manual verification successful: ${userCredential.user}');

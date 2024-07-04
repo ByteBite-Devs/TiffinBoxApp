@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:tiffinbox/screens/profile_screen.dart';
-import 'package:tiffinbox/screens/signup_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
-import 'package:tiffinbox/utils/color.dart';
-import '../main.dart';
 import '../utils/custom_bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,14 +17,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _searchController = TextEditingController();
-  String? _location;
-  String? _userName;
+  String? _location = "";
+  String? _userName = "";
   List<Map<String, dynamic>> _offers = [];
   List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _filteredOffers = [];
   List<Map<String, dynamic>> _filteredCategories = [];
-  int _currentIndex = 0; // Track the selected tab
-  late PageController _pageController;
 
   @override
   void initState() {

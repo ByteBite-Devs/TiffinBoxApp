@@ -1,3 +1,4 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
@@ -19,9 +20,13 @@ void main() async {
       projectId: "tiffinbox-9114a",
       storageBucket: "tiffinbox-9114a.appspot.com",
       messagingSenderId: "72750034964",
-      appId: "1:72750034964:web:89f9453d754f3a2a6b3701",
+      appId: "1:72750034964:android:f06a3bdba16786676b3701",
       measurementId: "G-M2NTS63YN9"
     )
+  );
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.debug,
+    appleProvider: AppleProvider.debug,
   );
   runApp(MyApp());
 }
@@ -35,6 +40,8 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+
+
       home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
