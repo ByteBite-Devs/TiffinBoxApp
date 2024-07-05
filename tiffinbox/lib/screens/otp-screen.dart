@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/utils/color.dart';
@@ -62,13 +63,31 @@ class _OtpScreenState extends State<OtpScreen> {
                   colors: const [primarycolor, orangeGradientShade],
                 ),
                 // OTP input
-                TextField(
+                // 
+                Pinput(
                   controller: _otpController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'OTP',
-                    border: OutlineInputBorder(
+                  length: 6,
+                  showCursor: true,
+                  onChanged: (value) {
+                    if (value.length == 6) {
+                      _signInWithOTP();
+                    }
+                  },
+                  pinputAutovalidateMode: PinputAutovalidateMode.disabled,
+                  validator: (value) {
+                    return value == null ? 'Enter OTP' : null;
+                  },
+                  focusedPinTheme: PinTheme(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: primarycolor),
                       borderRadius: BorderRadius.circular(8),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.black,
                     ),
                   ),
                 ),
