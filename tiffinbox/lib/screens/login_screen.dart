@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,6 +16,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   static String verificationId = '';
+  static String phoneNumber = '';
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -60,19 +60,26 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   createUser({User? user}) async {
-    await FirebaseFirestore.instance.collection('User').doc(user?.uid).set({
-      'userName': user?.displayName,
-      'userEmail': user?.email,
-      'userId': user?.uid,
-      'userImage': user?.photoURL,
-    }).then((_) async {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const HomeScreen(),
-          ),
-              (route) => false);
-    });
+    await apiService.signInWithGoogle(user).then(
+      (response) {
+        print("RESPONSE: $response");
+        if (response['status'] == 'success') {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const HomeScreen(),
+            ),
+                (route) => false,
+          );
+        }
+        else {
+          print(response['message']);
+        }
+      },
+      onError: (error) {
+        print(error);
+      },
+    );
   }
 
   @override
@@ -89,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> initiatePhoneNumberVerification(String phoneNumber) async {
   FirebaseAuth auth = FirebaseAuth.instance;
-  print(phoneNumber);
+  LoginScreen.phoneNumber = phoneNumber;
   await auth.verifyPhoneNumber(
     phoneNumber: phoneNumber,
     verificationCompleted: (PhoneAuthCredential credential) {
@@ -102,7 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const OtpScreen()
+          builder: (context) => OtpScreen(
+            phone: LoginScreen.phoneNumber,
+          )
         ),
       );
     },
@@ -150,7 +159,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     initialCountryCode: 'CA',
                     onChanged: (value) => {
-                      phone = value.completeNumber
+                      phone = value.completeNumber,
+                      LoginScreen.phoneNumber = phone
                     }
                   ),
                   const SizedBox(height: 15),

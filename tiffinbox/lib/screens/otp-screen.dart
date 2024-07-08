@@ -7,9 +7,11 @@ import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
 import 'home_screen.dart'; // Import Home screen for navigation after successful login
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/login-service.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key}) : super(key: key);
+  const OtpScreen({Key? key, required String phone}) : super(key: key);
+  final String phone = '';
   @override
   _OtpScreenState createState() => _OtpScreenState();
 }
@@ -17,6 +19,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final ApiService apiService = ApiService();
 
   Future<void> _signInWithOTP() async {
     try {
@@ -24,12 +27,20 @@ class _OtpScreenState extends State<OtpScreen> {
         verificationId: LoginScreen.verificationId,
         smsCode: _otpController.text,
       );
-      print("Verification Id:${LoginScreen.verificationId}");
-      print("SMS Text: ${_otpController.text}");
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
-      print('Manual verification successful: ${userCredential.user}');
-      navigateToHome();
+
+      await apiService.loginWithPhone(LoginScreen.phoneNumber, 
+      userCredential.user).then(
+        (response) => {
+          if (response['status'] == 'success') {
+            navigateToHome()
+          } else {
+            print('Login failed')
+          }
+        },
+        onError: (error) => print('Login failed: $error'),
+      );
     } catch (e) {
       print('Failed to sign in with OTP: $e');
     }
