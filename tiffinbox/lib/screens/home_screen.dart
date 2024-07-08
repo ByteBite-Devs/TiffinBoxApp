@@ -445,12 +445,3 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-    ),
-    home: const HomeScreen(),
-  ));
-}
