@@ -7,10 +7,10 @@ import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/profile_screen.dart';
 import 'package:tiffinbox/screens/signup_screen.dart';
 import 'package:tiffinbox/screens/splash_screen.dart';
-import 'package:tiffinbox/screens/businesssignup_screen.dart';
+import 'package:tiffinbox/screens/business/businesssignup_screen.dart';
 import 'package:tiffinbox/screens/browse_screen.dart';
 import 'package:tiffinbox/utils/themes/theme.dart';
-
+ 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -31,9 +31,9 @@ void main() async {
   );
   runApp(MyApp());
 }
-
+ 
 class MyApp extends StatelessWidget {
-
+ 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,8 +41,8 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-
-
+ 
+ 
       home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
       },
     );
   }
-
+ 
   // Function to create a MaterialColor from a given Color
   MaterialColor _createMaterialColor(Color color) {
     return MaterialColor(color.value, {
@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
     });
   }
 }
-
+ 
 // Function to create a page route with a horizontal slide transition
 Route createSlideRoute(Widget page) {
   return PageRouteBuilder(
@@ -81,10 +81,10 @@ Route createSlideRoute(Widget page) {
       const begin = Offset(1.0, 0.0); // Slide from right to left
       const end = Offset.zero;
       const curve = Curves.ease;
-
+ 
       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
       var offsetAnimation = animation.drive(tween);
-
+ 
       return SlideTransition(
         position: offsetAnimation,
         child: child,

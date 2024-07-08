@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/utils/custom_bottom_nav.dart';
  
 class BrowseScreen extends StatelessWidget {
   const BrowseScreen({Key? key}) : super(key: key);
@@ -84,6 +85,7 @@ class BrowseScreen extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 1),
     );
   }
  
@@ -118,8 +120,3 @@ class BrowseScreen extends StatelessWidget {
   }
 }
  
-void main() {
-  runApp(const MaterialApp(
-    home: BrowseScreen(),
-  ));
-}
