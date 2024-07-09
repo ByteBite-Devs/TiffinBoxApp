@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:tiffinbox/services/profile-service.dart';
-
 import '../utils/color.dart';
 import '../utils/custom_bottom_nav.dart';
 
@@ -24,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  var phoneNumber = "";
   String? _selectedGender;
   String? _profileImageUrl;
   File? _profileImage;
@@ -43,7 +43,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if(response['status'] == 'success') {
         var userData = response['user'];
         setState(() {
-          _phoneController.text = userData['phone'] ?? '';
+          if(userData['phone'] != '') {
+            var phoneNumber = userData['phone'].substring(2);
+            _phoneController.text = phoneNumber;
+          }
           _emailController.text = userData['email'] ?? '';
           _nameController.text = userData['name'] ?? '';
           _dobController.text = userData['dob'] ?? '';
@@ -59,37 +62,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
   }
 
-  Future<void> _updateUserProfile() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        Map<String, dynamic> updatedData = {
-          'phone': _phoneController.text,
-          'email': _emailController.text,
-          'name': _nameController.text,
-          'dob': _dobController.text,
-          'location': _locationController.text,
-          'gender': _selectedGender,
-        };
-
-        // Update profile picture if a new one is selected
-        if (_profileImage != null) {
-          String imageUrl = await _uploadProfileImage(user.uid);
-          updatedData['profileImageUrl'] = imageUrl;
-        }
-
-        await _firestore.collection('users').doc(user.uid).update(updatedData);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully')),
-        );
-      }
-    } catch (e) {
-      print('Error updating profile: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error updating profile')),
-      );
-    }
-  }
 
   Future<String> _uploadProfileImage(String userId) async {
     try {
@@ -102,6 +74,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       print('Error uploading profile image: $e');
       throw e;
+    }
+  }
+
+  Future<void> _updateUserProfile() async {
+    try {
+      if (_profileImage != null) {
+        var profileImageUrl = await _uploadProfileImage(_auth.currentUser!.uid);
+        setState(() {
+          _profileImageUrl = profileImageUrl;
+        });
+      }
+      var response = await profileService.updateProfileDetails(
+        _emailController.text,
+        _nameController.text,
+        _profileImageUrl ?? '',
+        _phoneController.text
+      );
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update profile')),
+        );
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -143,11 +143,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: _profileImage != null
+                      backgroundImage: AssetImage('assets/icons/user.png'),
+                      foregroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
                           : (_profileImageUrl != null
-                          ? NetworkImage(_profileImageUrl!)
-                          : AssetImage('assets/icons/user.png')) as ImageProvider,
+                          ? NetworkImage(_profileImageUrl!) as ImageProvider
+                          : null),
                     ),
                     Positioned(
                       bottom: 0,
@@ -174,14 +175,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
+                    counterText: "",
+                      prefixIcon: Container(
+                        padding: const EdgeInsets.all(12),
+                      ),
                     labelText: 'Phone Number',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  initialCountryCode: 'GB',
+                  initialCountryCode: 'CA',
                   onChanged: (phone) {
-                    print(phone.completeNumber);
+                    phoneNumber = phone.completeNumber;
                   },
                 ),
                 const SizedBox(height: 15),
