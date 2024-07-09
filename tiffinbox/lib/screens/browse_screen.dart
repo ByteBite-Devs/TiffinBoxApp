@@ -61,7 +61,7 @@ class BrowseScreen extends StatelessWidget {
                   ),
                   _buildFoodCategory(
                     context,
-                    'Veggie Delight Box',
+                    'Vegan Delight Box',
                     'assets/images/vegandelightbox.jpg',
                   ),
                   _buildFoodCategory(
@@ -92,6 +92,7 @@ class BrowseScreen extends StatelessWidget {
   Widget _buildFoodCategory(BuildContext context, String label, String imagePath) {
     return GestureDetector(
       onTap: () {
+        Navigator.of(context).pushReplacementNamed("/TiffinDetail");
         // Navigate to category-specific screen
       },
       child: Column(
