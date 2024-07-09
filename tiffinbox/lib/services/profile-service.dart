@@ -16,4 +16,24 @@ class ProfileService {
       throw Exception('Failed to get profile details');
     }
   }
+  Future<Map<String, dynamic>> updateProfileDetails(String email, String name, String profileImage, String phone) async {
+    final response = await http.patch(
+      Uri.parse('${baseUrl}profile/${FirebaseAuth.instance.currentUser!.uid}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'name': name,
+        'profileImage': profileImage,
+        'phone': phone
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to update profile details');
+    }
+  }
 }
