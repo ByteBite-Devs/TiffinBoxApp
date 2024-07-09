@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/screens/otp-screen.dart';
 import 'package:tiffinbox/services/login-service.dart';
 import 'package:tiffinbox/utils/color.dart';
@@ -202,12 +203,30 @@ class _LoginScreenState extends State<LoginScreen> {
                             var token = response['customToken'];
                             User? user =
                                 await apiService.signInWithCustomToken(token);
+                            print("response: $response");
                             if (user != null) {
-                              Navigator.pushNamed(context, '/Home');
+                              if(response['user']['role'] == 'client') {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const HomeScreen(),
+                                  ),
+                                      (route) => false,
+                                );
+                              }
+                              else {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const BusinessHomeScreen(),
+                                  ),
+                                      (route) => false,
+                                );
+                              }
                             } else {
                               print("Failed to sign in with custom token");
-                            }
-                          } else {
+                          } 
+                          }else {
                             print('Failed to login user: $response');
                           }
                         } catch (e) {
@@ -282,6 +301,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 25),
+                RichText(
+                  text: TextSpan(
+                    text: "Own a Business",
+                    style: const TextStyle(color: Colors.black),
+                    children: [
+                      TextSpan(
+                        text: 'Register',
+                        style: const TextStyle(
+                          color: primarycolor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.of(context).pushReplacementNamed("/BusinessRegister");
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+                 
               ],
             ),
           ),

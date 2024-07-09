@@ -6,17 +6,17 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:tiffinbox/services/profile-service.dart';
-import '../utils/color.dart';
-import '../utils/custom_bottom_nav.dart';
+import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/utils/custom_bottom_nav.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class BusinessProfileScreen extends StatefulWidget {
+  const BusinessProfileScreen({Key? key}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  _BusinessProfileScreenState createState() => _BusinessProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   final ProfileService profileService = ProfileService();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -165,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             shape: BoxShape.circle,
                             color: Colors.white,
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.edit,
                             color: primarycolor,
                           ),
@@ -296,7 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 2),
+      bottomNavigationBar: const CustomBusinessBottomNavigationBar(currentIndex: 2),
     );
   }
 }
