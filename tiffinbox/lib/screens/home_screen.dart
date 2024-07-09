@@ -36,7 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
           setState(() {
             _location = userDoc['location'];
@@ -55,12 +56,11 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
-          (route) => false,
+      (route) => false,
     );
   }
 
   void _loadInitialData() {
-    // Simulate fetching data from Firestore or another source
     _offers = [
       {'imagePath': 'assets/images/dal_rice_combo.jpg', 'offerText': ''},
       {'imagePath': 'assets/images/vegthali.jpg', 'offerText': ''},
@@ -68,20 +68,44 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     _categories = [
-      {'icon': Icons.eco, 'label': 'Veg'},
-      {'icon': Icons.set_meal, 'label': 'Non Veg'},
+      {'icon': Icons.eco, 'label': 'Vegetarian'},
+      {'icon': Icons.set_meal, 'label': 'Non Vegetarian'},
       {'icon': Icons.spa, 'label': 'Vegan'},
       {'icon': Icons.set_meal, 'label': 'Fish'},
       {'icon': Icons.egg, 'label': 'Egg'},
     ];
 
     _tiffinServices = [
-      {'imagePath': 'assets/images/img1.png', 'name': 'Tiffin Service 1', 'rating': 4.5},
-      {'imagePath': 'assets/images/img1.png', 'name': 'Tiffin Service 2', 'rating': 4.0},
-      {'imagePath': 'assets/images/img1.png', 'name': 'Tiffin Service 3', 'rating': 4.8},
-      {'imagePath': 'assets/images/img1.png', 'name': 'Tiffin Service 4', 'rating': 4.2},
-      {'imagePath': 'assets/images/img1.png', 'name': 'Tiffin Service 5', 'rating': 4.6},
-      {'imagePath': 'assets/images/img1.png', 'name': 'Tiffin Service 6', 'rating': 4.3},
+      {
+        'imagePath': 'assets/images/img1.png',
+        'name': 'Tiffin Service 1',
+        'rating': 4.5
+      },
+      {
+        'imagePath': 'assets/images/img1.png',
+        'name': 'Tiffin Service 2',
+        'rating': 4.0
+      },
+      {
+        'imagePath': 'assets/images/img1.png',
+        'name': 'Tiffin Service 3',
+        'rating': 4.8
+      },
+      {
+        'imagePath': 'assets/images/img1.png',
+        'name': 'Tiffin Service 4',
+        'rating': 4.2
+      },
+      {
+        'imagePath': 'assets/images/img1.png',
+        'name': 'Tiffin Service 5',
+        'rating': 4.6
+      },
+      {
+        'imagePath': 'assets/images/img1.png',
+        'name': 'Tiffin Service 6',
+        'rating': 4.3
+      },
     ];
 
     _filteredOffers = _offers;
@@ -97,10 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       setState(() {
         _filteredOffers = _offers
-            .where((offer) => offer['offerText'].toLowerCase().contains(query.toLowerCase()))
+            .where((offer) =>
+                offer['offerText'].toLowerCase().contains(query.toLowerCase()))
             .toList();
         _filteredCategories = _categories
-            .where((category) => category['label'].toLowerCase().contains(query.toLowerCase()))
+            .where((category) =>
+                category['label'].toLowerCase().contains(query.toLowerCase()))
             .toList();
       });
     }
@@ -138,7 +164,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Text(
                         _location ?? 'Select Your Location',
-                        style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -190,20 +219,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Categories',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12),
-
-              // Category Icons
-              GridView.count(
-                crossAxisCount: 5,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                children: _filteredCategories.map((category) {
-                  return _buildCategoryIcon(category['icon'], category['label']);
-                }).toList(),
-              ),
               const SizedBox(height: 16),
+
+              // Horizontal Category List
+              Container(
+                height:
+                    100, // Adjust the height to fit the category icons and labels
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: _filteredCategories.map((category) {
+                    return _buildCategoryIcon(
+                        category['icon'], category['label']);
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 5),
 
               // Popular Tiffins Heading
               Row(
@@ -213,11 +243,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Popular Tiffins',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  TextButton(
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward),
                     onPressed: () {
-                      // Navigate to all offers screen
+                      // Navigate to the view all page or perform desired action
+                      Navigator.pushNamed(
+                          context, '/Browse'); // Example navigation
                     },
-                    child: const Text('View All'),
                   ),
                 ],
               ),
@@ -262,7 +294,8 @@ class _HomeScreenState extends State<HomeScreen> {
               // Tiffin Services List
               Column(
                 children: _tiffinServices.map((service) {
-                  return _buildTiffinServiceCard(service['imagePath'], service['name'], service['rating']);
+                  return _buildTiffinServiceCard(
+                      service['imagePath'], service['name'], service['rating']);
                 }).toList(),
               ),
             ],
@@ -331,72 +364,91 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Center(
         child: Text(
           offerText,
-          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
     );
   }
 
   Widget _buildCategoryIcon(IconData iconData, String label) {
-    return Column(
-      children: [
-        CircleAvatar(
-          backgroundColor: Colors.grey[200],
-          child: Icon(iconData, color: Colors.black),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTiffinCard(String imagePath, String name, double rating, double price) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+    return Container(
+      width: 80, // Adjust width to fit content and spacing
+      margin:
+          const EdgeInsets.symmetric(horizontal: 8), // Space between categories
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(
-            imagePath,
-            width: 150,
-            height: 120,
-            fit: BoxFit.cover,
+          CircleAvatar(
+            backgroundColor: Colors.grey[200],
+            child: Icon(iconData, color: Colors.black),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.star, color: Colors.amber, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      rating.toString(),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '₹$price',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            textAlign: TextAlign.center, // Center align the text
+            style: const TextStyle(fontSize: 12),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildTiffinCard(String imagePath, String name, double rating, double price) {
+  return Card(
+    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Image.asset(
+          imagePath,
+          width: 150,
+          height: 120,
+          fit: BoxFit.cover,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Align items to the ends
+                children: [
+                  Text(
+                    '₹$price',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(width: 55),
+                      Icon(Icons.star, color: Colors.amber, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        rating.toString(),
+                        style: const TextStyle(fontSize: 12,),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+  
 
   Widget _buildTiffinServiceCard(String imagePath, String name, double rating) {
     return Container(
@@ -409,8 +461,9 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(12),
             child: Image.asset(
               imagePath,
-              width: double.infinity,  // Makes the image take the full width available
-              height: 180,  // Increased height for a larger image
+              width: double
+                  .infinity, // Makes the image take the full width available
+              height: 180, // Increased height for a larger image
               fit: BoxFit.cover,
             ),
           ),
@@ -423,7 +476,8 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -432,7 +486,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 4),
                     Text(
                       rating.toString(),
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -444,4 +499,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
