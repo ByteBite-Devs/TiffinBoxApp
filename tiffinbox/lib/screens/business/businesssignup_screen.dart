@@ -115,7 +115,7 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
                       var response = await signupService.signupBusiness(
                           phoneNumber, email, businessName, password);
                       if (response['status'] == 'success') {
-                        Navigator.of(context).pushReplacementNamed('/Login');
+                        Navigator.of(context).pushReplacementNamed('/Profile');
                       } else {
                         print(response['message']);
                       }

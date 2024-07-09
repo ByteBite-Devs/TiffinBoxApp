@@ -1,6 +1,9 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/screens/business/businesshome_screen.dart';
+import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
@@ -50,8 +53,10 @@ class MyApp extends StatelessWidget {
         '/Register': (BuildContext context) => const RegistrationScreen(),
         '/OnBoarding': (BuildContext context) => const OnboardingScreen(),
         '/Profile': (BuildContext context) => const ProfileScreen(),
-        '/RegisterBusiness': (BuildContext context) => const RegisterBusinessScreen(),
         '/Browse': (BuildContext context) => const BrowseScreen(),
+        '/BusinessRegister': (BuildContext context) => const RegisterBusinessScreen(),
+        '/BusinessHome': (BuildContext context) => const BusinessHomeScreen(),
+        '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen()
       },
     );
   }
