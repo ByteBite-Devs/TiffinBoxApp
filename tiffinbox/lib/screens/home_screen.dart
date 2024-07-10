@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
-import '../utils/custom_bottom_nav.dart';
+import 'package:tiffinbox/services/profile-service.dart';
+import 'package:tiffinbox/widgets/drawer.dart'; // Adjust the import path as per your project structure
+import '../utils/custom_bottom_nav.dart'; // Adjust the import path as per your project structure
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,10 +13,9 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _searchController = TextEditingController();
   String? _location = "";
   String? _userName = "";
@@ -34,30 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadUserDetails() async {
     try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-        if (userDoc.exists) {
-          setState(() {
-            _location = userDoc['location'];
-            _userName = userDoc['name'];
-          });
-        }
-      }
+      var response = await ProfileService().getProfileDetails();
+      if (response['status'] == 'success') {
+        var userData = response['user'];
+        setState(() {
+          _location = userData['location'];
+          _userName = userData['name'];
+        });
+      }    
     } catch (e) {
       print('Error loading user details: $e');
     }
-  }
-
-  Future<void> _logout() async {
-    await _auth.signOut();
-    await _googleSignIn.signOut();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-      (route) => false,
-    );
   }
 
   void _loadInitialData() {
@@ -136,22 +123,28 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TiffinBox'),
+        title: Text("Hi, ${_userName ?? 'Guest'}"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-            tooltip: 'Logout',
+          Builder(
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+                tooltip: 'Menu',
+              );
+            },
           ),
         ],
       ),
+      endDrawer: const MyDrawer(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Location and Time
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -180,8 +173,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Carousel for special offers
               Container(
                 height: 150,
                 margin: const EdgeInsets.symmetric(vertical: 8.0),

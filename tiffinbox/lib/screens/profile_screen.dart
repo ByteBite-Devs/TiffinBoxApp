@@ -56,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _dobController.text = userData['dob'] ?? '';
           _locationController.text = userData['location'] ?? '';
           _selectedGender = userData['gender'];
-          _profileImageUrl = userData['image'];
+          _profileImageUrl = userData['profileImage'];
         });
       }
     }
