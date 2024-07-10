@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
+import 'package:tiffinbox/screens/cart_screen.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
         '/BusinessHome': (BuildContext context) => const BusinessHomeScreen(),
         '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen(),
         '/TiffinDetail': (BuildContext context) => const TiffinDetailScreen(),
+        '/Cart': (BuildContext context) => const CartScreen(),
       },
     );
   }
