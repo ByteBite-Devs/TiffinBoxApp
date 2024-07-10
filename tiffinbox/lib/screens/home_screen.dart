@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/services/profile-service.dart';
-import 'package:tiffinbox/widgets/drawer.dart'; // Adjust the import path as per your project structure
-import '../utils/custom_bottom_nav.dart'; // Adjust the import path as per your project structure
+import 'package:tiffinbox/widgets/drawer.dart';
+import '../utils/custom_bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,8 +11,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final TextEditingController _searchController = TextEditingController();
   String? _location = "";
   String? _userName = "";

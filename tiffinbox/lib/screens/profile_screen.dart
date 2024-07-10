@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -29,7 +28,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   File? _profileImage;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -45,10 +43,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           if(userData['phone'] != '') {
             var phoneNumber = '';
-            if(userData['phone'].toString().contains('+'))
+            if(userData['phone'].toString().contains('+')) {
               phoneNumber = userData['phone'].substring(2);
-            else
+            } else {
               phoneNumber = userData['phone'];
+            }
             _phoneController.text = phoneNumber;
           }
           _emailController.text = userData['email'] ?? '';
