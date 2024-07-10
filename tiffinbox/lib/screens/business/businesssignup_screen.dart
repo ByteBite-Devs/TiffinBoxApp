@@ -117,10 +117,9 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
                       if (response['status'] == 'success') {
                         Navigator.of(context).pushReplacementNamed('/Profile');
                       } else {
-                        print(response['message']);
                       }
                     } catch (e) {
-                      print(e.toString());
+                      print(e);
                     }
                   },
                 ),
