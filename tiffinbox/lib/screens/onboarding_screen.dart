@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/onboarding_contents.dart';
 import 'package:tiffinbox/utils/size_config.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

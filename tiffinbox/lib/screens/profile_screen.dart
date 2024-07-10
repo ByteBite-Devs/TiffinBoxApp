@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:tiffinbox/services/profile-service.dart';
-import '../utils/color.dart';
+import '../utils/constants/color.dart';
 import '../utils/custom_bottom_nav.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -45,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           if(userData['phone'] != '') {
             var phoneNumber = '';
-            if(userData['phome'].toString().contains('+'))
+            if(userData['phone'].toString().contains('+'))
               phoneNumber = userData['phone'].substring(2);
             else
               phoneNumber = userData['phone'];
@@ -65,7 +65,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(e);
       }
   }
-
 
   Future<String> _uploadProfileImage(String userId) async {
     try {
@@ -112,8 +111,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _pickProfileImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    // final PickedFile? pickedFile = await picker.getImage(source: ImageSource.gallery);
-
     if (pickedFile != null) {
       setState(() {
         _profileImage = File(pickedFile.path);

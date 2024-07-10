@@ -6,10 +6,11 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/screens/otp-screen.dart';
 import 'package:tiffinbox/services/login-service.dart';
-import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
-import 'package:tiffinbox/widgets/default_textfield.dart';
+import 'package:tiffinbox/widgets/password_filed.dart';
+import 'package:tiffinbox/widgets/social_box.dart';
 import 'home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -120,6 +121,20 @@ class _LoginScreenState extends State<LoginScreen> {
   );
 }
 
+_googleSignOn()  async {
+  UserCredential? user = await signInWithGoogle();
+  if (user != null) {
+    createUser(user: user.user);
+  }
+}
+
+_facebookSignOn() async {}
+
+_togglePhoneSignIn() {
+  setState(() {
+    _signInWithPhone = !_signInWithPhone;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -242,42 +257,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/google.svg',
-                        height: 40,
-                        width: 40,
-                      ),
-                      onPressed: () async {
-                        UserCredential? user = await signInWithGoogle();
-                        if (user != null) {
-                          createUser(user: user.user);
-                        }
-                      },
-                    ),
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/facebook.svg',
-                        height: 40,
-                        width: 40,
-                      ),
-                      onPressed: () {
-                        // Implement sign in with Facebook logic
-                      },
-                    ),
-                    // Add sign in with email button
-                    IconButton(
-                      icon: SvgPicture.asset(
-                        !_signInWithPhone? 'assets/icons/phone.svg' : 'assets/icons/email.svg',
-                        height: 40,
-                        width: 40,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _signInWithPhone = !_signInWithPhone;
-                        });
-                      },
-                    ),
+                    SocialBox(icon: 'assets/icons/google.svg', onpress: _googleSignOn),
+                    SocialBox(icon: 'assets/icons/facebook.svg', onpress: _facebookSignOn),
+                    SocialBox(
+                      icon: !_signInWithPhone? 'assets/icons/phone.svg' : 'assets/icons/email.svg', 
+                      onpress: _togglePhoneSignIn)
                   ],
                 ),
 

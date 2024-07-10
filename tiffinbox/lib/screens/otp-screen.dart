@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
-import 'package:tiffinbox/utils/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
+import '../utils/constants/color.dart';
 import 'home_screen.dart'; // Import Home screen for navigation after successful login
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/login-service.dart';
@@ -34,7 +35,12 @@ class _OtpScreenState extends State<OtpScreen> {
       userCredential.user).then(
         (response) => {
           if (response['status'] == 'success') {
-            navigateToHome()
+            if(response['user']['role'] == 'client') {
+              navigateToHome()
+            }
+            else if(response['user']['role'] == 'business') {
+              navigateToBusinessHome()
+            }
           } else {
             print('Login failed')
           }
@@ -50,6 +56,14 @@ class _OtpScreenState extends State<OtpScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const HomeScreen()),
+      (route) => false,
+    );
+  }
+
+  void navigateToBusinessHome() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const BusinessHomeScreen()),
       (route) => false,
     );
   }

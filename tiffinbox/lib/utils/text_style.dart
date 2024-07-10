@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tiffinbox/utils/color.dart';
-
-final defaultFontStyle = GoogleFonts.poppins(
-  textStyle: const TextStyle(
-    fontSize: 15,
-    color: primarycolor,
-  ),
-);
+import 'constants/color.dart';
 
 final defaultHeaderFontStyle = GoogleFonts.poppins(
   textStyle: const TextStyle(
@@ -31,16 +24,6 @@ final boldFontStyle = GoogleFonts.poppins(
     color: primarycolor,
     fontWeight: FontWeight.w700,
   ),
-);
-final titleFontStyle = GoogleFonts.poppins(
-  textStyle: const TextStyle(
-    fontSize: 25,
-    color: primarycolor,
-    fontWeight: FontWeight.w700,
-  ),
-);
-final logoFontStyle = GoogleFonts.sacramento(
-  textStyle: const TextStyle(color: primarycolor, fontSize: 65),
 );
 
 textDecorationInput(String? label) {

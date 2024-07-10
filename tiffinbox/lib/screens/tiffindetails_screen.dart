@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 
 class TiffinDetailScreen extends StatefulWidget {
   const TiffinDetailScreen({Key? key}) : super(key: key);
@@ -66,9 +66,9 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Text(
                       '\$10.00',
                       style: TextStyle(

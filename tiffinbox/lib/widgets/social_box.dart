@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:tiffinbox/utils/color.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 
 
 class SocialBox extends StatelessWidget {
-  final Widget icon;
+  final String icon;
   final VoidCallback onpress;
   const SocialBox({Key? key, required this.icon, required this.onpress})
       : super(key: key);
@@ -12,16 +13,19 @@ class SocialBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      padding: const EdgeInsets.symmetric(horizontal: 0.0),
       child: TextButton(
         onPressed: onpress,
         style: TextButton.styleFrom(
-            backgroundColor: primarycolor,
+            backgroundColor: whiteText,
             textStyle: buttonFontStyle,
-            padding: const EdgeInsets.all(10),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(17.0))),
-        child: icon,
+        child:  SvgPicture.asset(
+          icon,
+                        height: 40,
+                        width: 40,
+                      ),
       ),
     );
   }

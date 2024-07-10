@@ -6,3 +6,5 @@ const disabledColor = Color.fromARGB(255, 249, 132, 153);
 const buttontextcolor = Color.fromARGB(255, 255, 255, 255);
 const orangeGradientShade = Color.fromARGB(255, 255, 130, 108);
 const gradient = RadialGradient(colors: [primarycolor, orangeGradientShade], center: Alignment.topLeft, radius: 0.8);
+const whiteText = Colors.white;
+const defaultBlackText = Colors.black;
