@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/profile_screen.dart';
+import 'package:tiffinbox/screens/saved-addresses.dart';
 import 'package:tiffinbox/services/profile-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 
@@ -111,8 +112,10 @@ class _MyDrawerState extends State<MyDrawer> {
           ListTile(
             title: Text('Addresses'),
             onTap: () {
-              // Handle tap for Addresses
-            },
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const AddressScreen()),
+              );            },
           ),
           ListTile(
             title: Text('Payment Methods'),
