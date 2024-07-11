@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,7 +11,7 @@ class AddressProvider with ChangeNotifier {
 
   Future<void> fetchAddresses() async {
     final response = await http.get(
-      Uri.parse('$url/all'),
+      Uri.parse('$url/all/${FirebaseAuth.instance.currentUser!.uid}'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -18,16 +19,23 @@ class AddressProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       final List<dynamic> loadedAddresses = [];
-      final extractedData = json.decode(response.body) as List<dynamic>;
-
-      for (var addressData in extractedData) {
-        loadedAddresses.add((
-          name: addressData['name'],
-          phoneNumber: addressData['phone_number'],
-          address: addressData['address'],
-          isDefault: addressData['is_default'],
-        ));
-      }
+      var extractedData = json.decode(response.body);
+      var addressesList = extractedData['addresses'] as Map<String, dynamic>;
+      print(addressesList);
+      addressesList.forEach((key, value) {
+        loadedAddresses.add({
+          'id': key,
+          'name': value['name'],
+          'phone_number': value['phone_number'],
+          'addressLine1': value['addressLine1'],
+          'addressLine2': value['addressLine2'],
+          'city': value['city'],
+          'state': value['state'],
+          'is_default': value['is_default'],
+        });
+      });
+      
+      print("LoadAddress: $loadedAddresses");
       _addresses = loadedAddresses;
       notifyListeners();
     } else {
@@ -35,21 +43,26 @@ class AddressProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addAddress(dynamic address) async {
+  Future<void> addAddress(String name, String phone, String addressLine1, String? addressLine2, String city, String state, String pinCode) async {
     final response = await http.post(
       Uri.parse('$url/add'),
       headers: {
         'Content-Type': 'application/json',
       },
       body: json.encode({
-        'name': address.name,
-        'phone_number': address.phoneNumber,
-        'address': address.address,
-        'is_default': address.isDefault,
+        'user_id': FirebaseAuth.instance.currentUser!.uid,
+        'name': name,
+        'phone_number': phone,
+        'addressLine1': addressLine1,
+        'addressLine2': addressLine2,
+        'city': city,
+        'state': state,
+        'is_default': false,
       }),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
+      print("ADD RESPONSE: $response");
       fetchAddresses();
     } else {
       throw Exception('Failed to add address');
@@ -57,9 +70,9 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<void> setDefaultAddress(int index) async {
-    final u = '$url/${_addresses[index].id}/';
+    final u = '$url/setDefault/${_addresses[index]['id']}';
     final response = await http.patch(
-      Uri.parse(url),
+      Uri.parse(u),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -69,9 +82,7 @@ class AddressProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      for (int i = 0; i < _addresses.length; i++) {
-        _addresses[i].isDefault = i == index;
-      }
+      fetchAddresses();
       notifyListeners();
     } else {
       throw Exception('Failed to update address');
