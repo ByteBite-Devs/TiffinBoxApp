@@ -16,6 +16,7 @@ import 'package:tiffinbox/screens/business/businesssignup_screen.dart';
 import 'package:tiffinbox/screens/browse_screen.dart';
 import 'package:tiffinbox/screens/tiffindetails_screen.dart';
 import 'package:tiffinbox/services/address-service.dart';
+import 'package:tiffinbox/services/cart-service.dart';
 import 'package:tiffinbox/utils/themes/theme.dart';
  
 void main() async {
@@ -38,10 +39,13 @@ void main() async {
     webProvider: ReCaptchaV3Provider('6LdMrgcqAAAAAIvzXgkiPKc2O6arh-0S0PfAnLQr'),
   );
   runApp(
-     ChangeNotifierProvider(
-      create: (context) => AddressProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AddressProvider()),
+        ChangeNotifierProvider(create: (context) => CartProvider()),
+      ],
       child: MyApp(),
-    ),
+    )
   );
 }
  

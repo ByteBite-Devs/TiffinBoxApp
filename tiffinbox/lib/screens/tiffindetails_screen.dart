@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/screens/cart_screen.dart';
+import 'package:provider/provider.dart'; // Import Provider
+import 'package:tiffinbox/services/cart-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 
 class TiffinDetailScreen extends StatefulWidget {
@@ -13,14 +16,30 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
   int initialVisibleReviews = 3;
   int visibleReviews = 3;
   bool showMoreEnabled = true;
+  bool isAddedToCart = false; // Track if item is added to cart
+
+  // Define your item details here
+  final String itemName = 'Vegan Delight Box';
+  final double itemPrice = 6.00;
+  final String photoUrl = 'assets/images/vegandelightbox.jpg';
+
+  void _addToCart() {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    cartProvider.addItem(itemName, itemPrice, photoUrl, quantity: quantity);
+    setState(() {
+      isAddedToCart = true; // Update state to indicate item is added
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$quantity $itemName added to cart')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Handle back button press
         Navigator.pop(context);
-        return true; // Return true to allow back navigation
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -170,7 +189,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                 ),
                 if (_allReviews.length > initialVisibleReviews)
                   Container(
-                    constraints: BoxConstraints(maxWidth: 150), // Adjust maxWidth as needed
+                    constraints: BoxConstraints(maxWidth: 150),
                     child: TextButton(
                       onPressed: () {
                         setState(() {
@@ -190,7 +209,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         textStyle: TextStyle(fontSize: 12),
-                        foregroundColor: Colors.white, // Set text color to white
+                        foregroundColor: Colors.white,
                       ),
                       child: Text(showMoreEnabled ? 'Show More' : 'Show Less'),
                     ),
@@ -202,20 +221,27 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: primarycolor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: SizedBox(
+            width: double.infinity, // Forces the button to take full available width
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: isAddedToCart ? Colors.grey : primarycolor,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              icon: const Icon(Icons.add_shopping_cart),
+              label: Text(
+                isAddedToCart ? 'View Cart' : 'Add to Basket',
+                style: const TextStyle(fontSize: 18),
+              ),
+              onPressed: isAddedToCart
+                  ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CartScreen()),
+                      );
+                    }
+                  : _addToCart,
             ),
-            icon: const Icon(Icons.add_shopping_cart),
-            label: const Text(
-              'Add to Basket',
-              style: TextStyle(fontSize: 18),
-            ),
-            onPressed: () {
-              // Handle add to basket
-            },
           ),
         ),
       ),

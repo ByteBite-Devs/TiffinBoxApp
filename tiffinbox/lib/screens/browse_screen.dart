@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/screens/tiffindetails_screen.dart';
 import 'package:tiffinbox/utils/custom_bottom_nav.dart';
  
 class BrowseScreen extends StatelessWidget {
@@ -92,8 +93,8 @@ class BrowseScreen extends StatelessWidget {
   Widget _buildFoodCategory(BuildContext context, String label, String imagePath) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushReplacementNamed("/TiffinDetail");
-        // Navigate to category-specific screen
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const TiffinDetailScreen()));
       },
       child: Column(
         children: [

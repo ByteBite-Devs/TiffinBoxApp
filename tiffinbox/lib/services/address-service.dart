@@ -7,7 +7,7 @@ class AddressProvider with ChangeNotifier {
   List<dynamic> _addresses = [];
 
   List<dynamic> get addresses => _addresses;
-    final url = 'http://192.168.56.1:8000/api/address';
+    final url = 'http://192.168.193.39:8000/api/address';
 
   Future<void> fetchAddresses() async {
     final response = await http.get(
