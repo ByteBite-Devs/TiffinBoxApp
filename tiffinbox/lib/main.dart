@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
  
  
-      home: const PaymentMethodScreen(),
+      home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
         '/Login': (BuildContext context) => const LoginScreen(),

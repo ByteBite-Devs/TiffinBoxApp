@@ -162,7 +162,7 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
         _addressLine2Controller.text = a;
       }
       _cityController.text = capitalize(addressParts[1]);
-      _stateController.text = addressParts[2].toUpperCase()
+      _stateController.text = addressParts[2].toUpperCase();
     }
     else if(addressParts.length > 2) {
       _cityController.text = capitalize(addressParts[0]);
