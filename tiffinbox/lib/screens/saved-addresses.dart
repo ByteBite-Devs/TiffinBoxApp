@@ -3,8 +3,50 @@ import 'package:tiffinbox/services/address-service.dart';
 import 'package:provider/provider.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 
-class AddressScreen extends StatelessWidget {
+class AddressScreen extends StatefulWidget {
   const AddressScreen({Key? key}) : super(key: key);
+
+  @override
+  _AddressScreenState createState() => _AddressScreenState();
+}
+
+class _AddressScreenState extends State<AddressScreen> {
+  late AddressProvider _addressProvider; // Provider instance
+  int? _selectedAddressIndex; // Track the selected address index
+
+  @override
+  void initState() {
+    super.initState();
+    _addressProvider = Provider.of<AddressProvider>(context, listen: false);
+    _addressProvider.fetchAddresses(); // Fetch addresses on screen initialization
+  }
+
+  // Method to set selected address index and toggle edit/delete visibility
+  void _setSelectedAddress(int index) {
+    setState(() {
+      if (_selectedAddressIndex == index) {
+        _selectedAddressIndex = null; // Deselect if already selected
+      } else {
+        _selectedAddressIndex = index; // Select new address index
+      }
+    });
+  }
+
+  // Method to edit an address
+  void _editAddress(dynamic address) {
+    // Example: Navigate to an edit screen with address details
+    print('Edit address: ${address['id']}');
+    // Navigate to edit screen and pass the address details if required
+  }
+
+  // Method to delete an address
+  void _deleteAddress(dynamic address) {
+    // Example: Call provider method to delete address
+    _addressProvider.setDefaultAddress(address['id']);
+    setState(() {
+      _selectedAddressIndex = null; // Reset selected index after deletion
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,16 +82,58 @@ class AddressScreen extends StatelessWidget {
                   itemCount: provider.addresses.length,
                   itemBuilder: (context, index) {
                     var address = provider.addresses[index];
-                    return ListTile(
-                      title: Text(address.name),
-                      subtitle: Text(address.address),
-                      trailing: address.isDefault
-                          ? Icon(Icons.check, color: Colors.green)
-                          : IconButton(
-                        icon: Icon(Icons.check),
-                        onPressed: () {
-                          provider.setDefaultAddress(index);
-                        },
+                    return GestureDetector(
+                      onTap: () {
+                        _setSelectedAddress(index);
+                      },
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title: Text(address['name']),
+                            subtitle: Text(
+                                '${address['addressLine1']} ${address['addressLine2']}'),
+                            trailing: address['is_default']
+                                ? Icon(Icons.check, color: Colors.green)
+                                : null
+                          ),
+                          Visibility(
+                            visible: _selectedAddressIndex == index,
+                            child: AnimatedContainer(
+                              height: _selectedAddressIndex == index ? 100 : 0,
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeOut,
+                              child: Column(
+                                children: [
+                                  ListView(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {
+                                          _editAddress(address);
+                                        },
+                                        child: Text('Edit'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          _deleteAddress(address);
+                                        },
+                                        child: Text('Delete'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          provider.setDefaultAddress(index);
+                                        },
+                                        child: Text('Set Default'),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          Divider(),
+                        ],
                       ),
                     );
                   },
@@ -61,6 +145,7 @@ class AddressScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          // Open bottom sheet to add new address
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -79,7 +164,8 @@ class PlacesAutocompleteScreen extends StatefulWidget {
   PlacesAutocompleteScreen({required this.apiKey});
 
   @override
-  _PlacesAutocompleteScreenState createState() => _PlacesAutocompleteScreenState();
+  _PlacesAutocompleteScreenState createState() =>
+      _PlacesAutocompleteScreenState();
 }
 
 class _PlacesAutocompleteScreenState extends State<PlacesAutocompleteScreen> {
@@ -102,7 +188,8 @@ class _PlacesAutocompleteScreenState extends State<PlacesAutocompleteScreen> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddAddressBottomSheet(place: prediction.description!),
+                    builder: (context) =>
+                        AddAddressBottomSheet(place: prediction.description!),
                   ),
                 );
               },
@@ -110,7 +197,8 @@ class _PlacesAutocompleteScreenState extends State<PlacesAutocompleteScreen> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddAddressBottomSheet(place: prediction.description!),
+                    builder: (context) =>
+                        AddAddressBottomSheet(place: prediction.description!),
                   ),
                 );
               },
@@ -134,8 +222,10 @@ class AddAddressBottomSheet extends StatefulWidget {
 class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressLine1Controller = TextEditingController();
-  final TextEditingController _addressLine2Controller = TextEditingController();
+  final TextEditingController _addressLine1Controller =
+  TextEditingController();
+  final TextEditingController _addressLine2Controller =
+  TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _pincodeController = TextEditingController();
@@ -151,7 +241,8 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
 
     print(addressParts);
 
-    String capitalize(String s) => s.isNotEmpty ? s[0].toUpperCase() + s.substring(1).toLowerCase() : s;
+    String capitalize(String s) =>
+        s.isNotEmpty ? s[0].toUpperCase() + s.substring(1).toLowerCase() : s;
     if (addressParts.length > 3) {
       String a = addressParts[0];
       // if a contains number, put that number part in addressLine1 and rest in addressLine 2. if not put a in addressLine2
@@ -163,27 +254,22 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
       }
       _cityController.text = capitalize(addressParts[1]);
       _stateController.text = addressParts[2].toUpperCase();
-    }
-    else if(addressParts.length > 2) {
+    } else if (addressParts.length > 2) {
       _cityController.text = capitalize(addressParts[0]);
       _stateController.text = addressParts[1].toUpperCase();
     }
-    else if(addressParts.length > 1) {
-      _stateController.text = capitalize(addressParts[0]);
-    }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 16,
-        right: 16,
-        top: 16,
-      ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -218,17 +304,16 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                var newAddress = (
-                  name: _nameController.text,
-                  phoneNumber: _phoneController.text,
-                  addressLine1: _addressLine1Controller.text,
-                  addressLine2: _addressLine2Controller.text,
-                  city: _cityController.text,
-                  state: _stateController.text,
-                  pincode: _pincodeController.text,
-                );
                 Provider.of<AddressProvider>(context, listen: false)
-                    .addAddress(newAddress);
+                    .addAddress(
+                  _nameController.text,
+                  _phoneController.text,
+                  _addressLine1Controller.text,
+                  _addressLine2Controller.text,
+                  _cityController.text,
+                  _stateController.text,
+                  _pincodeController.text,
+                );
                 Navigator.pop(context);
               },
               child: Text('Save Address'),
@@ -237,5 +322,5 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
         ),
       ),
     );
- }
+  }
 }
