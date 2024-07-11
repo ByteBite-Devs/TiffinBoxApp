@@ -8,6 +8,7 @@ import 'package:tiffinbox/screens/cart_screen.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
+import 'package:tiffinbox/screens/payment_screen.dart';
 import 'package:tiffinbox/screens/profile_screen.dart';
 import 'package:tiffinbox/screens/signup_screen.dart';
 import 'package:tiffinbox/screens/splash_screen.dart';
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
  
  
-      home: const SplashScreen(),
+      home: const PaymentMethodScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
         '/Login': (BuildContext context) => const LoginScreen(),
@@ -62,6 +63,8 @@ class MyApp extends StatelessWidget {
         '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen(),
         '/TiffinDetail': (BuildContext context) => const TiffinDetailScreen(),
         '/Cart': (BuildContext context) => const CartScreen(),
+        '/Payment': (BuildContext context) => const PaymentMethodScreen(),
+       
       },
     );
   }
@@ -84,12 +87,18 @@ class MyApp extends StatelessWidget {
 }
  
 // Function to create a page route with a horizontal slide transition
-Route createSlideRoute(Widget page) {
+Route createSlideRoute(Widget page, {bool isReverse = true}) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => page,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      const begin = Offset(1.0, 0.0); // Slide from right to left
-      const end = Offset.zero;
+      Offset begin, end;
+      if (isReverse) {
+        begin = const Offset(1.0, 0.0); // Slide from right to left
+        end = Offset.zero;
+      } else {
+        begin = const Offset(-1.0, 0.0); // Slide from left to right
+        end = Offset.zero;
+      }
       const curve = Curves.ease;
  
       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));

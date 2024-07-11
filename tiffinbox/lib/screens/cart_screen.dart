@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/screens/browse_screen.dart';
 import 'package:tiffinbox/utils/custom_bottom_nav.dart';
-import 'package:tiffinbox/utils/color.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
