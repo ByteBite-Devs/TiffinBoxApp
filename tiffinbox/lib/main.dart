@@ -1,7 +1,7 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
 import 'package:tiffinbox/screens/cart_screen.dart';
@@ -14,6 +14,7 @@ import 'package:tiffinbox/screens/splash_screen.dart';
 import 'package:tiffinbox/screens/business/businesssignup_screen.dart';
 import 'package:tiffinbox/screens/browse_screen.dart';
 import 'package:tiffinbox/screens/tiffindetails_screen.dart';
+import 'package:tiffinbox/services/address-service.dart';
 import 'package:tiffinbox/utils/themes/theme.dart';
  
 void main() async {
@@ -35,7 +36,12 @@ void main() async {
     appleProvider: AppleProvider.debug,
     webProvider: ReCaptchaV3Provider('6LdMrgcqAAAAAIvzXgkiPKc2O6arh-0S0PfAnLQr'),
   );
-  runApp(MyApp());
+  runApp(
+     ChangeNotifierProvider(
+      create: (context) => AddressProvider(),
+      child: MyApp(),
+    ),
+  );
 }
  
 class MyApp extends StatelessWidget {

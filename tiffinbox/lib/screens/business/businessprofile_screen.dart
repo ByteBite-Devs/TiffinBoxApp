@@ -29,7 +29,6 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   File? _profileImage;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
