@@ -34,7 +34,6 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
  
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(

@@ -1,11 +1,16 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tiffinbox/screens/cart_screen.dart';
-import 'package:provider/provider.dart'; // Import Provider
 import 'package:tiffinbox/services/cart-service.dart';
+import 'package:tiffinbox/services/tiffin-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 
 class TiffinDetailScreen extends StatefulWidget {
-  const TiffinDetailScreen({Key? key}) : super(key: key);
+  final String tiffinId;
+
+  const TiffinDetailScreen({Key? key, required this.tiffinId}) : super(key: key);
 
   @override
   _TiffinDetailScreenState createState() => _TiffinDetailScreenState();
@@ -17,15 +22,36 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
   int visibleReviews = 3;
   bool showMoreEnabled = true;
   bool isAddedToCart = false; // Track if item is added to cart
+  TiffinService tiffinService = TiffinService();
+  
+  String? itemPrice;
+  String? itemName;
+  String? description;
+  String? photoUrl;
 
-  // Define your item details here
-  final String itemName = 'Vegan Delight Box';
-  final double itemPrice = 6.00;
-  final String photoUrl = 'assets/images/vegandelightbox.jpg';
+  @override
+  void initState() {
+    super.initState();
+    _fetchTiffinDetails();
+  }
+
+  Future<void> _fetchTiffinDetails() async {
+    var response = await tiffinService.getTiffinDetails(widget.tiffinId);
+    if (response['status'] == 'success') {
+      setState(() {
+        itemName = response['tiffin']['name'];
+        itemPrice = response['tiffin']['price'].toString();
+        photoUrl = response['tiffin']['image'];
+        description = response['tiffin']['description'];
+      });
+    } else {
+      throw Exception('Failed to load tiffin details');
+    }
+  }
 
   void _addToCart() {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    cartProvider.addItem(itemName, itemPrice, photoUrl, quantity: quantity);
+    cartProvider.addItem(itemName!, itemPrice!, photoUrl!, quantity: quantity);
     setState(() {
       isAddedToCart = true; // Update state to indicate item is added
     });
@@ -61,19 +87,24 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                   height: 200,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.0),
-                    image: const DecorationImage(
-                      image: AssetImage('assets/images/vegandelightbox.jpg'),
-                      fit: BoxFit.cover,
-                    ),
+                    image: photoUrl != null
+                        ? DecorationImage(
+                            image: AssetImage(photoUrl!),
+                            fit: BoxFit.cover,
+                          )
+                        : const DecorationImage(
+                            image: AssetImage('assets/images/vegandelightbox.jpg'),
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Vegan Delight Box',
-                      style: TextStyle(
+                    Text(
+                      itemName!,
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -85,11 +116,11 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '\$10.00',
+                    const Text(
+                      '\$10.99',
                       style: TextStyle(
                         fontSize: 18,
                         decoration: TextDecoration.lineThrough,
@@ -97,28 +128,28 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                       ),
                     ),
                     Text(
-                      '\$6.00',
-                      style: TextStyle(
+                      '\$$itemPrice',
+                      style: const TextStyle(
                         fontSize: 18,
                         color: Colors.red,
                       ),
                     ),
                     Spacer(),
-                    Text(
-                      '4.9',
+                    const Text(
+                      '5.0',
                       style: TextStyle(fontSize: 18),
                     ),
-                    Icon(
+                    const Icon(
                       Icons.star,
                       color: Colors.yellow,
                     ),
-                    Text('(1205)'),
+                    const Text('(1205)'),
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'A delicious Vegan Delight Box featuring a variety of fresh vegetables, grains, and a delightful vegan patty. Served with a side of vegan-friendly sauces, this box is perfect for those who crave a healthy and tasty meal.',
-                  style: TextStyle(fontSize: 16),
+                Text(
+                  description!,
+                  style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -145,9 +176,9 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Vegan Delight Box',
-                      style: TextStyle(fontSize: 16),
+                    Text(
+                      'Quantity: $quantity',
+                      style: const TextStyle(fontSize: 16),
                     ),
                     Row(
                       children: [
@@ -308,3 +339,4 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
     );
   }
 }
+

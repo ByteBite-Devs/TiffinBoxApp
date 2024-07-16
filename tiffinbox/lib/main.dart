@@ -72,7 +72,6 @@ class MyApp extends StatelessWidget {
         '/BusinessRegister': (BuildContext context) => const RegisterBusinessScreen(),
         '/BusinessHome': (BuildContext context) => const BusinessHomeScreen(),
         '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen(),
-        '/TiffinDetail': (BuildContext context) => const TiffinDetailScreen(),
         '/Cart': (BuildContext context) => const CartScreen(),
         '/Payment': (BuildContext context) => const PaymentMethodScreen(),
         '/OrderStatus': (BuildContext context) => const OrderStatusScreen(),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/screens/business-details-screen.dart';
+import 'package:tiffinbox/services/home-service.dart';
 import 'package:tiffinbox/services/profile-service.dart';
 import 'package:tiffinbox/widgets/drawer.dart';
 import '../utils/custom_bottom_nav.dart';
@@ -18,7 +20,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _filteredOffers = [];
   List<Map<String, dynamic>> _filteredCategories = [];
-  List<Map<String, dynamic>> _tiffinServices = [];
+  List<dynamic> _tiffinServices = [];
+  HomeServie homeServie = HomeServie();
 
   @override
   void initState() {
@@ -36,13 +39,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           _location = userData['location'];
           _userName = userData['name'];
         });
-      }    
+      }
     } catch (e) {
       print('Error loading user details: $e');
     }
   }
 
-  void _loadInitialData() {
+  Future<void> _loadInitialData() async {
     _offers = [
       {'imagePath': 'assets/images/dal_rice_combo.jpg', 'offerText': ''},
       {'imagePath': 'assets/images/vegthali.jpg', 'offerText': ''},
@@ -57,38 +60,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       {'icon': Icons.egg, 'label': 'Egg'},
     ];
 
-    _tiffinServices = [
-      {
-        'imagePath': 'assets/images/img1.png',
-        'name': 'Tiffin Service 1',
-        'rating': 4.5
-      },
-      {
-        'imagePath': 'assets/images/img1.png',
-        'name': 'Tiffin Service 2',
-        'rating': 4.0
-      },
-      {
-        'imagePath': 'assets/images/img1.png',
-        'name': 'Tiffin Service 3',
-        'rating': 4.8
-      },
-      {
-        'imagePath': 'assets/images/img1.png',
-        'name': 'Tiffin Service 4',
-        'rating': 4.2
-      },
-      {
-        'imagePath': 'assets/images/img1.png',
-        'name': 'Tiffin Service 5',
-        'rating': 4.6
-      },
-      {
-        'imagePath': 'assets/images/img1.png',
-        'name': 'Tiffin Service 6',
-        'rating': 4.3
-      },
-    ];
+    var response = await homeServie.getData();
+    if (response['status'] == 'success') {
+      setState(() {
+        _tiffinServices = response['businesses'];
+        print(_tiffinServices);
+      });
+    }
 
     _filteredOffers = _offers;
     _filteredCategories = _categories;
@@ -104,11 +82,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       setState(() {
         _filteredOffers = _offers
             .where((offer) =>
-                offer['offerText'].toLowerCase().contains(query.toLowerCase()))
+            offer['offerText'].toLowerCase().contains(query.toLowerCase()))
             .toList();
         _filteredCategories = _categories
             .where((category) =>
-                category['label'].toLowerCase().contains(query.toLowerCase()))
+            category['label'].toLowerCase().contains(query.toLowerCase()))
             .toList();
       });
     }
@@ -210,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // Horizontal Category List
               Container(
                 height:
-                    100, // Adjust the height to fit the category icons and labels
+                100, // Adjust the height to fit the category icons and labels
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: _filteredCategories.map((category) {
@@ -279,10 +257,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
               // Tiffin Services List
               Column(
-                children: _tiffinServices.map((service) {
-                  return _buildTiffinServiceCard(
-                      service['imagePath'], service['name'], service['rating']);
-                }).toList(),
+                children: [
+                  //   iterate through _tiffinService and create each child
+                  for (var service in _tiffinServices)
+                    _buildTiffinServiceCard(
+                      service['image'],
+                      service['business_name'],
+                      service['rating'],
+                      service['id'],
+                    ),
+                ],
               ),
             ],
           ),
@@ -361,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Container(
       width: 80, // Adjust width to fit content and spacing
       margin:
-          const EdgeInsets.symmetric(horizontal: 8), // Space between categories
+      const EdgeInsets.symmetric(horizontal: 8), // Space between categories
       child: Column(
         children: [
           CircleAvatar(
@@ -379,101 +363,53 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTiffinCard(String imagePath, String name, double rating, double price) {
-  return Card(
-    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Image.asset(
-          imagePath,
-          width: 150,
-          height: 120,
-          fit: BoxFit.cover,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Align items to the ends
-                children: [
-                  Text(
-                    '₹$price',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(width: 55),
-                      Icon(Icons.star, color: Colors.amber, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        rating.toString(),
-                        style: const TextStyle(fontSize: 12,),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-  
-
-  Widget _buildTiffinServiceCard(String imagePath, String name, double rating) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+  Widget _buildTiffinCard(String imagePath, String name, double rating,
+      double price) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              imagePath,
-              width: double
-                  .infinity, // Makes the image take the full width available
-              height: 180, // Increased height for a larger image
-              fit: BoxFit.cover,
-            ),
+          Image.asset(
+            imagePath,
+            width: 150,
+            height: 120,
+            fit: BoxFit.cover,
           ),
-          const SizedBox(height: 8),
-          // Name and Rating
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   name,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Align items to the ends
                   children: [
-                    Icon(Icons.star, color: Colors.amber, size: 20),
-                    const SizedBox(width: 4),
                     Text(
-                      rating.toString(),
+                      '₹$price',
                       style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w500),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(width: 55),
+                        Icon(Icons.star, color: Colors.amber, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          rating.toString(),
+                          style: const TextStyle(fontSize: 12,),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -482,6 +418,75 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
+    );
+  }
+
+
+  Widget _buildTiffinServiceCard(String imagePath, String name, double? rating,
+      String id) {
+    return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  BusinessDetailsScreen(
+                      businessId: id
+                  ),
+            ),
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imagePath != ''
+                      ? imagePath
+                      : 'assets/images/business_login.jpg',
+                  width: double
+                      .infinity,
+                  // Makes the image take the full width available
+                  height: 180,
+                  // Increased height for a larger image
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Name and Rating
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    rating != null ? Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.amber, size: 20),
+                        const SizedBox(width: 4),
+                        Text(
+                          rating.toString(),
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ) :
+                    const SizedBox.shrink(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
     );
   }
 }
