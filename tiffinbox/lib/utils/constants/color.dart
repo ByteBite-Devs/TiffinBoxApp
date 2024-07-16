@@ -8,3 +8,4 @@ const orangeGradientShade = Color.fromARGB(255, 255, 130, 108);
 const gradient = RadialGradient(colors: [primarycolor, orangeGradientShade], center: Alignment.topLeft, radius: 0.8);
 const whiteText = Colors.white;
 const defaultBlackText = Colors.black;
+const buttonnavbg = Color.fromRGBO(255, 243, 244, 1);

@@ -8,6 +8,7 @@ import 'package:tiffinbox/screens/cart_screen.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
+import 'package:tiffinbox/screens/order_status.dart';
 import 'package:tiffinbox/screens/payment_screen.dart';
 import 'package:tiffinbox/screens/profile_screen.dart';
 import 'package:tiffinbox/screens/signup_screen.dart';
@@ -60,7 +61,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
  
  
-      home: const SplashScreen(),
+      home: const BusinessHomeScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
         '/Login': (BuildContext context) => const LoginScreen(),
@@ -74,6 +75,7 @@ class MyApp extends StatelessWidget {
         '/TiffinDetail': (BuildContext context) => const TiffinDetailScreen(),
         '/Cart': (BuildContext context) => const CartScreen(),
         '/Payment': (BuildContext context) => const PaymentMethodScreen(),
+        '/OrderStatus': (BuildContext context) => const OrderStatusScreen(),
        
       },
     );

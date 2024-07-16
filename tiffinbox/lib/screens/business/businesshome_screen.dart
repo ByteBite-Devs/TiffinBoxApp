@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/custom_bottom_nav.dart';
 
 // Define a class for TiffinItem
@@ -7,12 +8,20 @@ class TiffinItem {
   final List<String> mealTypes;
   final String description;
   final String contents;
+  final String assetPath;
+  final double price;
+  final int rating;
+  final int reviews;
 
   TiffinItem({
     required this.name,
     required this.mealTypes,
     required this.description,
     required this.contents,
+    required this.assetPath,
+    required this.price,
+    required this.rating,
+    required this.reviews,
   });
 }
 
@@ -33,6 +42,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
       description:
       'A delicious Vegan Delight Box featuring a variety of fresh vegetables, grains, and a delightful vegan patty.',
       contents: 'Avocado, Rice with some black seeds, Sprouts, Green vegetables, Vegan sauces',
+      assetPath: 'assets/images/vegthali.jpg',
+      price: 9.99,
+      rating: 75,
+      reviews: 4,
     ),
     TiffinItem(
       name: 'Healthy Protein Box',
@@ -40,6 +53,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
       description:
       'A protein-packed box with lean meats, quinoa, and a selection of vegetables.',
       contents: 'Grilled chicken, Quinoa, Spinach, Bell peppers, Protein shake',
+      assetPath: 'assets/images/paneerbiryani.jpg',
+      price: 10.49,
+      rating: 100,
+      reviews: 4,
     ),
   ];
 
@@ -51,78 +68,83 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Business Home'),
+        title: const Text('TiffinBox'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              // Implement search functionality
+            },
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      body: tiffinItems.isEmpty
+          ? Center(
+        child: ElevatedButton(
+          onPressed: () => _addTiffinItem(),
+          child: const Text('Start Adding Tiffins'),
+        ),
+      )
+          : Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Tiffins',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  'ABC Tiffins',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                ElevatedButton(
+                FloatingActionButton(
                   onPressed: () => _addTiffinItem(),
-                  child: const Text('Add Tiffin'),
+                  child: const Icon(Icons.add),
+                  backgroundColor: Theme.of(context).primaryColor, // Primary color for the background
+                  foregroundColor: Colors.white, // White color for the icon
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Table(
-              border: TableBorder.all(),
-              columnWidths: const {
-                0: FlexColumnWidth(2),
-                1: FlexColumnWidth(1),
-                2: FlexColumnWidth(1),
-              },
-              children: [
-                TableRow(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                  ),
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Name', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8.0),
+              itemCount: tiffinItems.length,
+              itemBuilder: (context, index) {
+                final item = tiffinItems[index];
+                return Card(
+                  color: buttonnavbg, // Set background color to orangeGradientShade
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    leading: Image.asset(
+                      item.assetPath,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Meal Type', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Actions', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-                for (final item in tiffinItems)
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item.name),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(item.mealTypes.join(', ')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => _editTiffinItem(item),
+                    title: Text(item.name),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '\$${item.price.toStringAsFixed(2)} • ${item.rating}% (${item.reviews} reviews)',
                         ),
-                      ),
-                    ],
+                        Text(item.mealTypes.join(', ')),
+                      ],
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => _editTiffinItem(item),
+                    ),
                   ),
-              ],
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: const CustomBusinessBottomNavigationBar(currentIndex: 0),
     );
@@ -134,6 +156,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
     List<String> mealTypes = [];
     String description = '';
     String contents = '';
+    String assetPath = '';
+    double price = 0.0;
+    int rating = 0;
+    int reviews = 0;
 
     showDialog(
       context: context,
@@ -179,6 +205,25 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
                       decoration: const InputDecoration(labelText: 'Tiffin Contents'),
                       onChanged: (value) => contents = value,
                     ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Image Asset Path'),
+                      onChanged: (value) => assetPath = value,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Price'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) => price = double.tryParse(value) ?? 0.0,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Rating'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) => rating = int.tryParse(value) ?? 0,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Reviews'),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) => reviews = int.tryParse(value) ?? 0,
+                    ),
                   ],
                 ),
               ),
@@ -191,7 +236,7 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    if (name.isNotEmpty && description.isNotEmpty && contents.isNotEmpty) {
+                    if (name.isNotEmpty && description.isNotEmpty && contents.isNotEmpty && assetPath.isNotEmpty) {
                       setState(() {
                         if (isLunchSelected) mealTypes.add('Lunch');
                         if (isDinnerSelected) mealTypes.add('Dinner');
@@ -200,6 +245,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
                           mealTypes: mealTypes,
                           description: description,
                           contents: contents,
+                          assetPath: assetPath,
+                          price: price,
+                          rating: rating,
+                          reviews: reviews,
                         ));
                       });
                       Navigator.of(context).pop();
@@ -221,6 +270,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
     List<String> mealTypes = List.from(item.mealTypes);
     String description = item.description;
     String contents = item.contents;
+    String assetPath = item.assetPath;
+    double price = item.price;
+    int rating = item.rating;
+    int reviews = item.reviews;
 
     isLunchSelected = mealTypes.contains('Lunch');
     isDinnerSelected = mealTypes.contains('Dinner');
@@ -272,6 +325,29 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
                       controller: TextEditingController(text: contents),
                       onChanged: (value) => contents = value,
                     ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Image Asset Path'),
+                      controller: TextEditingController(text: assetPath),
+                      onChanged: (value) => assetPath = value,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Price'),
+                      keyboardType: TextInputType.number,
+                      controller: TextEditingController(text: price.toString()),
+                      onChanged: (value) => price = double.tryParse(value) ?? 0.0,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Rating'),
+                      keyboardType: TextInputType.number,
+                      controller: TextEditingController(text: rating.toString()),
+                      onChanged: (value) => rating = int.tryParse(value) ?? 0,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Reviews'),
+                      keyboardType: TextInputType.number,
+                      controller: TextEditingController(text: reviews.toString()),
+                      onChanged: (value) => reviews = int.tryParse(value) ?? 0,
+                    ),
                   ],
                 ),
               ),
@@ -293,6 +369,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
                         mealTypes: mealTypes,
                         description: description,
                         contents: contents,
+                        assetPath: assetPath,
+                        price: price,
+                        rating: rating,
+                        reviews: reviews,
                       );
                       final index = tiffinItems.indexOf(item);
                       tiffinItems[index] = updatedItem;
