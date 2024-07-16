@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiffinbox/screens/cart_screen.dart';
@@ -41,7 +39,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
       setState(() {
         itemName = response['tiffin']['name'];
         itemPrice = response['tiffin']['price'].toString();
-        photoUrl = response['tiffin']['image'];
+        photoUrl = response['tiffin']['image'] != null && response['tiffin']['image'] != '' ? response['tiffin']['image'] : '';
         description = response['tiffin']['description'];
       });
     } else {
@@ -51,6 +49,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
 
   void _addToCart() {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
+  if (itemName != null && itemPrice != null && photoUrl != null) {
     cartProvider.addItem(itemName!, itemPrice!, photoUrl!, quantity: quantity);
     setState(() {
       isAddedToCart = true; // Update state to indicate item is added
@@ -59,6 +58,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
       SnackBar(content: Text('$quantity $itemName added to cart')),
     );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +87,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                   height: 200,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.0),
-                    image: photoUrl != null
+                    image: photoUrl != ''
                         ? DecorationImage(
                             image: AssetImage(photoUrl!),
                             fit: BoxFit.cover,
@@ -103,7 +103,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      itemName!,
+                      itemName ?? '',
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -148,7 +148,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  description!,
+                  description ?? '',
                   style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
@@ -339,4 +339,3 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
     );
   }
 }
-
