@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class HomeServie {
-  String baseUrl = 'http://192.168.84.39:8000/api/';
+  String baseUrl = 'http://192.168.56.1:8000/api/';
 
   Future<Map<String, dynamic>> getData() async {
     final response = await http.get(

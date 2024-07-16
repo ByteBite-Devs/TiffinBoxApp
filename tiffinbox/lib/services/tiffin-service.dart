@@ -3,7 +3,7 @@ import 'dart:convert';
 
 
 class TiffinService {
-  final String baseUrl = 'http://192.168.84.39:8000/api/';
+  final String baseUrl = 'http://192.168.56.1:8000/api/';
 
   Future<Map<String, dynamic>> getBusinessDetails(String id) async {
     final response = await http.get(

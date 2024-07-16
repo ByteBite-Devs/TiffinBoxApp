@@ -33,7 +33,7 @@ class Profile {
 }
 
 class ProfileProvider with ChangeNotifier {
-  final String baseUrl = 'http://192.168.84.39:8000/api/';
+  final String baseUrl = 'http://192.168.56.1:8000/api/';
 
   Profile? _profile;
   Profile? get profile => _profile;
@@ -77,7 +77,7 @@ class ProfileProvider with ChangeNotifier {
 }
 
 class ProfileService {
-  final String baseUrl = 'http://192.168.84.39:8000/api/';
+  final String baseUrl = 'http://192.168.56.1:8000/api/';
 
   Future<Map<String, dynamic>> getProfileDetails() async {
     final response = await http.get(
