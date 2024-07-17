@@ -83,7 +83,7 @@ class _OtpScreenState extends State<OtpScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientText(
-                    'Enter OPT',
+                    'Enter OTP',
                   style: defaultHeaderFontStyle,
                   colors: const [primarycolor, orangeGradientShade],
                 ),
