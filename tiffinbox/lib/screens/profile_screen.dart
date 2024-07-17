@@ -7,14 +7,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:tiffinbox/services/profile-service.dart';
 import '../utils/constants/color.dart';
 import '../utils/custom_bottom_nav.dart';
-
+ 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
-
+ 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
-
+ 
 class _ProfileScreenState extends State<ProfileScreen> {
   final ProfileService profileService = ProfileService();
   final TextEditingController _phoneController = TextEditingController();
@@ -26,24 +26,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _selectedGender;
   String? _profileImageUrl;
   File? _profileImage;
-
+ 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+ 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
   }
-
+ 
   Future<void> _loadUserProfile() async {
     try {
       var response = await profileService.getProfileDetails();
-      if(response['status'] == 'success') {
+      if (response['status'] == 'success') {
         var userData = response['user'];
         setState(() {
-          if(userData['phone'] != '') {
+          if (userData['phone'] != '') {
             var phoneNumber = '';
-            if(userData['phone'].toString().contains('+')) {
+            if (userData['phone'].toString().contains('+')) {
               phoneNumber = userData['phone'].substring(2);
             } else {
               phoneNumber = userData['phone'];
@@ -58,13 +58,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _profileImageUrl = userData['profileImage'];
         });
       }
-    }
-    catch(
-    e) {
+    } catch (e) {
       print(e);
-      }
+    }
   }
-
+ 
   Future<String> _uploadProfileImage(String userId) async {
     try {
       FirebaseStorage storage = FirebaseStorage.instance;
@@ -78,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       throw e;
     }
   }
-
+ 
   Future<void> _updateUserProfile() async {
     try {
       if (_profileImage != null) {
@@ -88,11 +86,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
       var response = await profileService.updateProfileDetails(
-        _emailController.text,
-        _nameController.text,
-        _profileImageUrl ?? '',
-        _phoneController.text
-      );
+          _emailController.text,
+          _nameController.text,
+          _profileImageUrl ?? '',
+          _phoneController.text);
       if (response['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Profile updated successfully')),
@@ -106,28 +103,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(e);
     }
   }
-
+ 
   Future<void> _pickProfileImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _profileImage = File(pickedFile.path);
       });
     }
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
+ 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Profile'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-             Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
         ),
       ),
@@ -135,7 +133,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: SingleChildScrollView(
           child: Container(
             height: screenHeight,
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
             child: Column(
               children: [
                 const SizedBox(height: 30),
@@ -147,8 +146,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       foregroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
                           : (_profileImageUrl != null
-                          ? NetworkImage(_profileImageUrl!) as ImageProvider
-                          : null),
+                              ? NetworkImage(_profileImageUrl!) as ImageProvider
+                              : null),
                     ),
                     Positioned(
                       bottom: 0,
@@ -176,9 +175,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     counterText: "",
-                      prefixIcon: Container(
-                        padding: const EdgeInsets.all(12),
-                      ),
+                    prefixIcon: Container(
+                      padding: const EdgeInsets.all(12),
+                    ),
                     labelText: 'Phone Number',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -228,7 +227,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                     if (pickedDate != null) {
                       setState(() {
-                        _dobController.text = "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+                        _dobController.text =
+                            "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
                       });
                     }
                   },
@@ -239,9 +239,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   hint: const Text('Gender'),
                   items: ['Male', 'Female', 'Other']
                       .map((gender) => DropdownMenuItem(
-                    value: gender,
-                    child: Text(gender),
-                  ))
+                            value: gender,
+                            child: Text(gender),
+                          ))
                       .toList(),
                   onChanged: (value) {
                     setState(() {
@@ -267,24 +267,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: TextButton(
                     onPressed: _updateUserProfile,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primarycolor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      child: Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                    // ),
                   ),
                 ),
               ],
