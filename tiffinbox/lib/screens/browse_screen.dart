@@ -94,7 +94,9 @@ class BrowseScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const TiffinDetailScreen()));
+            MaterialPageRoute(builder: (context) => const TiffinDetailScreen(
+              tiffinId: '',
+            )));
       },
       child: Column(
         children: [

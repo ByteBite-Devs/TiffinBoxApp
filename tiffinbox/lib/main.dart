@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
  
  
-      home: const BusinessHomeScreen(),
+      home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
         '/Login': (BuildContext context) => const LoginScreen(),
@@ -72,11 +72,9 @@ class MyApp extends StatelessWidget {
         '/BusinessRegister': (BuildContext context) => const RegisterBusinessScreen(),
         '/BusinessHome': (BuildContext context) => const BusinessHomeScreen(),
         '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen(),
-        '/TiffinDetail': (BuildContext context) => const TiffinDetailScreen(),
         '/Cart': (BuildContext context) => const CartScreen(),
         '/Payment': (BuildContext context) => const PaymentMethodScreen(),
         '/OrderStatus': (BuildContext context) => const OrderStatusScreen(),
-       
       },
     );
   }
