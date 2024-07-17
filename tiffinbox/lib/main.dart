@@ -7,6 +7,7 @@ import 'package:tiffinbox/screens/business/businessorderstatus_screen.dart';
 import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
 import 'package:tiffinbox/screens/cart_screen.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
+import 'package:tiffinbox/screens/map_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/order_status.dart';
@@ -20,6 +21,7 @@ import 'package:tiffinbox/screens/tiffindetails_screen.dart';
 import 'package:tiffinbox/services/address-service.dart';
 import 'package:tiffinbox/services/cart-service.dart';
 import 'package:tiffinbox/utils/themes/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
  
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,11 +37,17 @@ void main() async {
       measurementId: "G-M2NTS63YN9"
     )
   );
+
+  // Initialize Firebase App Check
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.debug,
     appleProvider: AppleProvider.debug,
     webProvider: ReCaptchaV3Provider('6LdMrgcqAAAAAIvzXgkiPKc2O6arh-0S0PfAnLQr'),
   );
+
+  // Initialize SharedPreferences
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
   runApp(
     MultiProvider(
       providers: [
@@ -60,9 +68,10 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+      debugShowCheckedModeBanner: false,
  
  
-      home: const SplashScreen(),
+      home: const MapScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
         '/Login': (BuildContext context) => const LoginScreen(),
@@ -76,7 +85,7 @@ class MyApp extends StatelessWidget {
         '/Cart': (BuildContext context) => const CartScreen(),
         '/Payment': (BuildContext context) => const PaymentMethodScreen(),
         '/OrderStatus': (BuildContext context) => const OrderStatusScreen(),
-        
+        '/Maps':(BuildContext context) => const MapScreen(),
         'BusinessOrderStatus':(BuildContext context) => const BusinessOrderStatusScreen(),
       },
     );
