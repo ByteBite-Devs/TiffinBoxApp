@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
         '/Profile': (BuildContext context) => const ProfileScreen(),
         '/Browse': (BuildContext context) => const BrowseScreen(),
         '/BusinessRegister': (BuildContext context) => const RegisterBusinessScreen(),
-        '/BusinessHome': (BuildContext context) => const BusinessHomeScreen(),
+        '/BusinessHome': (BuildContext context) => BusinessHomeScreen(),
         '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen(),
         '/Cart': (BuildContext context) => const CartScreen(),
         '/Payment': (BuildContext context) => const PaymentMethodScreen(),

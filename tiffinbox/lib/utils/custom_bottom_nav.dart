@@ -89,7 +89,7 @@ class CustomBusinessBottomNavigationBar extends StatelessWidget {
           case 0:
             if (currentIndex != 0) {
               Navigator.of(context).pushReplacement(
-                  createSlideRoute(const BusinessHomeScreen()));
+                  createSlideRoute(BusinessHomeScreen()));
             }
             break;
           case 1:
