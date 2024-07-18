@@ -269,29 +269,21 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                 const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: TextButton(
                     onPressed: _updateUserProfile,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primarycolor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      child: Text(
+                      child: const Text(
                         'Save',
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          color: Colors.white
                         ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
+          
         ),
       ),
       bottomNavigationBar: const CustomBusinessBottomNavigationBar(currentIndex: 2),
