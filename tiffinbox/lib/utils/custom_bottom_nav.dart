@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
+import 'package:tiffinbox/screens/business/businessorderstatus_screen.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/profile_screen.dart';
 import 'package:tiffinbox/screens/cart_screen.dart'; 
 import 'package:tiffinbox/main.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/screens/browse_screen.dart'; 
- 
+
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   const CustomBottomNavigationBar({
@@ -28,7 +29,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
               label: 'Cart'), // Added Cart icon
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
-     
         onTap: (index) {
           switch (index) {
             case 0:
@@ -63,15 +63,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
         });
   }
 }
- 
+
 class CustomBusinessBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
- 
+
   const CustomBusinessBottomNavigationBar({
     super.key,
     required this.currentIndex,
   });
- 
+
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
@@ -80,7 +80,8 @@ class CustomBusinessBottomNavigationBar extends StatelessWidget {
       unselectedItemColor: Colors.grey, // Set the unselected item color
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'BusinessHome'),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Browse'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.assignment), label: 'Order Status'), // Updated icon and label
         BottomNavigationBarItem(
             icon: Icon(Icons.person), label: 'BusinessProfile'),
       ],
@@ -95,7 +96,7 @@ class CustomBusinessBottomNavigationBar extends StatelessWidget {
           case 1:
             if (currentIndex != 1) {
               Navigator.of(context)
-                  .pushReplacement(createSlideRoute(const BrowseScreen()));
+                  .pushReplacement(createSlideRoute(const BusinessOrderStatusScreen())); // Navigate to BusinessOrderStatusScreen
             }
             break;
           case 2:

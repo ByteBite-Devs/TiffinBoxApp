@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
+import 'package:tiffinbox/screens/business/businessorderstatus_screen.dart';
 import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
 import 'package:tiffinbox/screens/cart_screen.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
@@ -75,6 +76,8 @@ class MyApp extends StatelessWidget {
         '/Cart': (BuildContext context) => const CartScreen(),
         '/Payment': (BuildContext context) => const PaymentMethodScreen(),
         '/OrderStatus': (BuildContext context) => const OrderStatusScreen(),
+        
+        'BusinessOrderStatus':(BuildContext context) => const BusinessOrderStatusScreen(),
       },
     );
   }
