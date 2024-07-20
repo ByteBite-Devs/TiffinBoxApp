@@ -13,7 +13,7 @@ final defaultHeaderFontStyle = GoogleFonts.poppins(
 final buttonFontStyle = GoogleFonts.poppins(
   textStyle: const TextStyle(
     fontSize: 16,
-    color: buttontextcolor,
+    color: primarycolor,
     fontWeight: FontWeight.w500,
   ),
 );
@@ -34,3 +34,9 @@ textDecorationInput(String? label) {
     ),
   );
 }
+
+final whiteButtonStyle = TextButton.styleFrom(
+  backgroundColor: Colors.white,
+  textStyle: buttonFontStyle,
+  padding: const EdgeInsets.symmetric(vertical: 16),
+);

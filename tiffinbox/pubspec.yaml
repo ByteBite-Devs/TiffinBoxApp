@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.3.4 <4.0.0'
+  sdk: '>=3.4.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -55,6 +55,11 @@ dependencies:
   geocoding: ^3.0.0
   google_places_flutter: ^2.0.8
   provider: ^6.1.2
+  geolocator: ^12.0.0
+  fbroadcast: ^2.0.0
+  socket_io_client: ^2.0.3+1
+  shared_preferences: ^2.2.3
+  location: ^7.0.0
 
 dev_dependencies:
   flutter_test:

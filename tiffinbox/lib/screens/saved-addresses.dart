@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/services/address-service.dart';
 import 'package:provider/provider.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
+import 'package:tiffinbox/utils/text_style.dart';
 
 class AddressScreen extends StatefulWidget {
   const AddressScreen({Key? key}) : super(key: key);
@@ -48,6 +53,14 @@ class _AddressScreenState extends State<AddressScreen> {
     });
   }
 
+   void _onAddressClick(dynamic address) {
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => HomeScreen(location: address),
+  ),
+);  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,7 +97,11 @@ class _AddressScreenState extends State<AddressScreen> {
                     var address = provider.addresses[index];
                     return GestureDetector(
                       onTap: () {
-                        _setSelectedAddress(index);
+                        _onAddressClick(address);
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      onLongPress:() => {
+                        _setSelectedAddress(index)
                       },
                       child: Column(
                         children: [
@@ -93,44 +110,50 @@ class _AddressScreenState extends State<AddressScreen> {
                             subtitle: Text(
                                 '${address['addressLine1']} ${address['addressLine2']}'),
                             trailing: address['is_default']
-                                ? Icon(Icons.check, color: Colors.green)
-                                : null
+                                ? Icon(Icons.circle_outlined, color:primarycolor)
+                                : null,
                           ),
-                          Visibility(
-                            visible: _selectedAddressIndex == index,
-                            child: AnimatedContainer(
-                              height: _selectedAddressIndex == index ? 100 : 0,
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeOut,
-                              child: Column(
-                                children: [
-                                  ListView(
-                                    shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          _editAddress(address);
-                                        },
-                                        child: Text('Edit'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          _deleteAddress(address);
-                                        },
-                                        child: Text('Delete'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          provider.setDefaultAddress(index);
-                                        },
-                                        child: Text('Set Default'),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
+                          AnimatedCrossFade(
+                            firstChild: Container(), // Placeholder when hidden
+                            secondChild: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    _editAddress(address);
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Colors.black,
+                                  ),
+                                  style: whiteButtonStyle,
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    _deleteAddress(address);
+                                  },
+                                  style: whiteButtonStyle,
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    provider.setDefaultAddress(index);
+                                  },
+                                  style: whiteButtonStyle,
+                                  child: Icon(
+                                    Icons.check,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ],
                             ),
+                            crossFadeState: _selectedAddressIndex == index
+                                ? CrossFadeState.showSecond
+                                : CrossFadeState.showFirst,
+                            duration: Duration(milliseconds: 300),
                           ),
                           Divider(),
                         ],
@@ -212,8 +235,9 @@ class _PlacesAutocompleteScreenState extends State<PlacesAutocompleteScreen> {
 
 class AddAddressBottomSheet extends StatefulWidget {
   final String place;
+  final LatLng? location;
 
-  AddAddressBottomSheet({Key? key, required this.place}) : super(key: key);
+  AddAddressBottomSheet({Key? key, required this.place, this.location}) : super(key: key);
 
   @override
   _AddAddressBottomSheetState createState() => _AddAddressBottomSheetState();
@@ -222,18 +246,36 @@ class AddAddressBottomSheet extends StatefulWidget {
 class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressLine1Controller =
-  TextEditingController();
-  final TextEditingController _addressLine2Controller =
-  TextEditingController();
+  final TextEditingController _addressLine1Controller = TextEditingController();
+  final TextEditingController _addressLine2Controller = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _pincodeController = TextEditingController();
+
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+  Map<String, Marker> usersCarArr = {};
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(42.304361491665624, -83.06623724143606),
+    zoom: 13,
+  );
 
   @override
   void initState() {
     super.initState();
     _parsePlaceDetails(widget.place);
+  }
+
+  void _setMarker(LatLng latLng) {
+    setState(() {
+      usersCarArr = {
+        'marker_1': Marker(
+          markerId: const MarkerId('marker_1'),
+          position: latLng,
+        ),
+      };
+    });
   }
 
   void _parsePlaceDetails(String place) {
@@ -263,62 +305,71 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Contact Name'),
-            ),
-            TextField(
-              controller: _phoneController,
-              decoration: InputDecoration(labelText: 'Phone Number'),
-            ),
-            TextField(
-              controller: _addressLine1Controller,
-              decoration: InputDecoration(labelText: 'Address Line 1'),
-            ),
-            TextField(
-              controller: _addressLine2Controller,
-              decoration: InputDecoration(labelText: 'Address Line 2'),
-            ),
-            TextField(
-              controller: _cityController,
-              decoration: InputDecoration(labelText: 'City'),
-            ),
-            TextField(
-              controller: _stateController,
-              decoration: InputDecoration(labelText: 'State'),
-            ),
-            TextField(
-              controller: _pincodeController,
-              decoration: InputDecoration(labelText: 'Pincode'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Provider.of<AddressProvider>(context, listen: false)
-                    .addAddress(
-                  _nameController.text,
-                  _phoneController.text,
-                  _addressLine1Controller.text,
-                  _addressLine2Controller.text,
-                  _cityController.text,
-                  _stateController.text,
-                  _pincodeController.text,
-                );
-                Navigator.pop(context);
-              },
-              child: Text('Save Address'),
-            ),
-          ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 200,
+                child: GoogleMap(
+                  initialCameraPosition: _kGooglePlex,
+                  markers: Set<Marker>.of(usersCarArr.values),
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
+                  },
+                  onTap: (latLng) {
+                    _setMarker(latLng);
+                  },
+                ),
+              ),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: 'Phone'),
+              ),
+              TextField(
+                controller: _addressLine1Controller,
+                decoration: InputDecoration(labelText: 'Address Line 1'),
+              ),
+              TextField(
+                controller: _addressLine2Controller,
+                decoration: InputDecoration(labelText: 'Address Line 2'),
+              ),
+              TextField(
+                controller: _cityController,
+                decoration: InputDecoration(labelText: 'City'),
+              ),
+              TextField(
+                controller: _stateController,
+                decoration: InputDecoration(labelText: 'State'),
+              ),
+              TextField(
+                controller: _pincodeController,
+                decoration: InputDecoration(labelText: 'Pincode'),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle save action
+                  Navigator.pop(context);
+                },
+                child: Text('Save Address'),
+              ),
+            ],
+          ),
         ),
       ),
     );
