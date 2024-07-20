@@ -3,6 +3,7 @@ import 'dart:math' as Math;
 
 import 'package:fbroadcast/fbroadcast.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -22,7 +23,6 @@ class LocationManager {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       debugPrint(" Location service are disabled.");
-      return;
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
@@ -74,8 +74,50 @@ class LocationManager {
   static double toRadians(double degrees) {
     return degrees * (Math.pi / 180.0);
   }
-
-  static double toDegrees(double radians) {
+    static double toDegrees(double radians) {
     return radians * (180.0 / Math.pi);
+  }
+
+Future<String> convertLatLongToAddress(double latitude, double longitude) async {
+  try {
+    // Get the list of placemarks from the latitude and longitude
+    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+
+    if (placemarks.isNotEmpty) {
+      Placemark placemark = placemarks.first;
+
+      // Format the address
+      String address = '${placemark.street}, ${placemark.locality}';
+
+      return address;
+    } else {
+      return 'No address found';
+    }
+  } catch (e) {
+    // Handle errors
+    print('Error: $e');
+    return 'Error occurred';
+  }
+}
+
+  void setCurrenPos(LatLng currenLatLng) {
+    currentPos = 
+      Position(
+        latitude: currenLatLng.latitude,
+        longitude: currenLatLng.longitude,
+        timestamp: DateTime.now(),
+        speedAccuracy: 0,
+        isMocked: false,
+        accuracy: 0,
+        altitudeAccuracy: 0,
+        heading: 0,
+        headingAccuracy:  0,
+        altitude: 0,
+        speed: 0
+      );
+  }
+
+  getLastKnownPosition() {
+    return currentPos;
   }
 }

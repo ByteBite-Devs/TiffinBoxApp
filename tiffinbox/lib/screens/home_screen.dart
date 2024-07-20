@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/common/location_manager.dart';
 import 'package:tiffinbox/screens/business-details-screen.dart';
+import 'package:tiffinbox/screens/saved-addresses.dart';
 import 'package:tiffinbox/services/home-service.dart';
 import 'package:tiffinbox/services/profile-service.dart';
 import 'package:tiffinbox/widgets/drawer.dart';
 import '../utils/custom_bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final location;
+  const HomeScreen({super.key, this.location});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -28,6 +31,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
     _loadUserDetails();
     _loadInitialData();
+    _loadCurrentLocation();
+  }
+  _loadCurrentLocation() async {
+    LocationManager.shared.initLocation();
+
+    var currentPosition = LocationManager.shared.currentPos;
+
+    // conver currentPos to accurate string addreess
+    if (currentPosition != null) {
+      await LocationManager.shared
+          .convertLatLongToAddress(currentPosition.latitude, currentPosition.longitude)
+          .then((address) {
+        setState(() {
+          _location = address;
+          if (widget.location != null) {
+            _location =  widget.location['addressLine1'] + ' ' + widget.location['addressLine2'];
+          }
+        });
+      });
+    }
+    else {
+      // get last location
+      var lastPosition = await LocationManager.shared.getLastKnownPosition();
+      if (lastPosition != null) {
+        await LocationManager.shared
+            .convertLatLongToAddress(lastPosition.latitude, lastPosition.longitude)
+            .then((address) {
+          setState(() {
+            _location = address;
+          });
+        });
+      }
+    }
   }
 
   Future<void> _loadUserDetails() async {
@@ -140,7 +176,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   IconButton(
                     icon: const Icon(Icons.location_on),
                     onPressed: () {
-                      // Navigate to location selection screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AddressScreen()),
+                      );
                     },
                   ),
                 ],

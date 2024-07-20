@@ -2,6 +2,7 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tiffinbox/common/location_manager.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/screens/business/businessorderstatus_screen.dart';
 import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
  
   @override
   Widget build(BuildContext context) {
+    LocationManager.shared.initLocation();
     return MaterialApp(
       title: 'TiffinBOX',
       themeMode: ThemeMode.system,
@@ -71,7 +73,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
  
  
-      home: const MapScreen(),
+      home: const SplashScreen(),
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
         '/Login': (BuildContext context) => const LoginScreen(),

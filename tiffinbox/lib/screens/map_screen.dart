@@ -31,6 +31,7 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    LocationManager.shared.initLocation();
 
     currentPosition = LatLng(LocationManager.shared.currentPos?.latitude ?? 21.708285689346674,
         LocationManager.shared.currentPos?.longitude ?? 72.9926376370475);
