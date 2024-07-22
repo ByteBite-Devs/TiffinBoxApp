@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tiffinbox/screens/payment_screen.dart';
 import 'package:tiffinbox/services/address-service.dart';
 import 'package:tiffinbox/services/cart-service.dart';
 
@@ -14,14 +15,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   dynamic _selectedAddress; // State variable to store selected address
   List<dynamic> _savedAddresses = []; // List to store saved addresses
   dynamic _defaultAddress; // State variable to store default address
+  dynamic _selectedPaymentMethod; // State variable to store selected payment method
   @override
   void initState() {
     super.initState();
     // Fetch default address and saved addresses from AddressProvider or any other source
     _fetchAddresses();
+    _fetchPaymentDetails();
+
+    // Set default address to the first address in the list
+    if (_savedAddresses.isNotEmpty) {
+      _defaultAddress = _savedAddresses.firstWhere(
+        (address) => address['is_default'] == true,
+        orElse: () => _savedAddresses[0], // Default to the first address if no default found
+      );
+      _selectedAddress = '${_defaultAddress['addressLine1']} ${_defaultAddress['addressLine2']}';
+    } else {
+      _selectedAddress = 'No saved addresses'; // Handle case where no addresses are available
+    }
+
+    _selectedPaymentMethod = 'Cash on Delievery';
+
+    setState(() {}); // Trigger rebuild after setting the default address
   }
 
-  void _fetchAddresses() async{
+  void _fetchPaymentDetails() async {
+    // Fetch payment details from PaymentProvider or any other source
+
+    setState(() {}); // Trigger rebuild after setting the payment details
+  }
+
+  void _fetchAddresses() async {
     // Fetch default address and saved addresses from AddressProvider or any other source
     final addressProvider = Provider.of<AddressProvider>(context, listen: false);
     await addressProvider.fetchAddresses();
@@ -29,8 +53,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (_savedAddresses.isNotEmpty) {
       _defaultAddress = _savedAddresses.firstWhere(
         (address) => address['is_default'] == true,
-      orElse: () => _savedAddresses[0], // Default to the first address if no default found
-     );
+        orElse: () => _savedAddresses[0], // Default to the first address if no default found
+      );
       _selectedAddress = '${_defaultAddress['addressLine1']} ${_defaultAddress['addressLine2']}';
     } else {
       _selectedAddress = 'No saved addresses'; // Handle case where no addresses are available
@@ -106,7 +130,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             value: _selectedAddress,
             items: _savedAddresses.map(
               (address) {
-                print(address);
                 return DropdownMenuItem<String>(
                   value: address['addressLine1'] + ' ' + address['addressLine2'],
                   child: Text(address['addressLine1'] + ' ' + address['addressLine2']),
@@ -125,69 +148,69 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
- Widget _buildOrderSummary() {
-  final cartProvider = Provider.of<CartProvider>(context);
-  
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text(
-        'Order Summary',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      const SizedBox(height: 12),
-      if (cartProvider.cartItems.isNotEmpty)
-        Column(
-          children: cartProvider.cartItems.map((item) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      item.name,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      'x${item.quantity}',
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      '\$${(item.price * item.quantity).toStringAsFixed(2)}',
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
-      if (cartProvider.cartItems.isEmpty)
+  Widget _buildOrderSummary() {
+    final cartProvider = Provider.of<CartProvider>(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
         Text(
-          'Your cart is empty.',
-          style: TextStyle(fontSize: 16),
+          'Order Summary',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-      const SizedBox(height: 6),
-      const Divider(),
-      const SizedBox(height: 6),
-      Text(
-        'Total: \$${cartProvider.totalAmount.toStringAsFixed(2)}',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      const SizedBox(height: 12),
-    ],
-  );
-}
+        const SizedBox(height: 12),
+        if (cartProvider.cartItems.isNotEmpty)
+          Column(
+            children: cartProvider.cartItems.map((item) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        item.name,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        'x${item.quantity}',
+                        style: TextStyle(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        '\$${(item.price * item.quantity).toStringAsFixed(2)}',
+                        style: TextStyle(fontSize: 16),
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        if (cartProvider.cartItems.isEmpty)
+          Text(
+            'Your cart is empty.',
+            style: TextStyle(fontSize: 16),
+          ),
+        const SizedBox(height: 6),
+        const Divider(),
+        const SizedBox(height: 6),
+        Text(
+          'Total: \$${cartProvider.totalAmount.toStringAsFixed(2)}',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+      ],
+    );
+  }
 
 
   Widget _buildPaymentOptions() {
@@ -198,7 +221,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           'Payment Options',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        // Placeholder for payment options (e.g., credit card, PayPal)
+                // Placeholder for payment options (e.g., credit card, PayPal)
+        const SizedBox(height: 8),
+        Text(
+          _selectedPaymentMethod,
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          onPressed: () async {
+            final selectedPaymentMethod = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PaymentMethodScreen(_selectedPaymentMethod),
+              ),
+            );
+            if (selectedPaymentMethod != null) {
+              setState(() {
+                _selectedPaymentMethod = selectedPaymentMethod;
+              });
+            }
+          },
+          child: const Text('Select Payment Method'),
+        ),
       ],
     );
   }

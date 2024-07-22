@@ -105,7 +105,7 @@ class _BusinessDetailsScreenState extends State<BusinessDetailsScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Available Services',
+                    'Menu',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -114,23 +114,29 @@ class _BusinessDetailsScreenState extends State<BusinessDetailsScreen> {
                     children: (business['tiffins'] as List<dynamic>)
                         .map((tiffin) => GestureDetector(
                               onTap: () {
-                                print(tiffin);
                                 _navigateToTiffinDetails(tiffin['id']);
                               },
                               child: Card(
                                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-                                child: Padding(
+                                child: Container(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Image.asset(
-                                        tiffin['image'] != null && tiffin['image'] != ''
-                                            ? tiffin['image']
-                                            : 'assets/images/lunch.jpeg',
+                                      Image.network(
+                                        tiffin['images'] != null
+                                            ? tiffin['images'][0]
+                                            : 'https://via.placeholder.com/150',
                                         width: 120,
                                         height: 100,
                                         fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Image.network(
+                                            'https://via.placeholder.com/150',
+                                            fit: BoxFit.cover,
+                                          );
+                                        },
                                       ),
                                       const SizedBox(width: 16),
                                       Expanded(

@@ -107,8 +107,8 @@ class CartScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
-        leading: Image.asset(
-          item.imagePath,
+        leading: Image.network(
+          item.imagePath ?? 'https://via.placeholder.com/150',
           width: 80,
           height: 80,
           fit: BoxFit.cover,

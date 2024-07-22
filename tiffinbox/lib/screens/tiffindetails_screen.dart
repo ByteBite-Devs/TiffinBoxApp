@@ -21,11 +21,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
   bool showMoreEnabled = true;
   bool isAddedToCart = false; // Track if item is added to cart
   TiffinService tiffinService = TiffinService();
-  
-  String? itemPrice;
-  String? itemName;
-  String? description;
-  String? photoUrl;
+  dynamic tiffin;
 
   @override
   void initState() {
@@ -37,10 +33,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
     var response = await tiffinService.getTiffinDetails(widget.tiffinId);
     if (response['status'] == 'success') {
       setState(() {
-        itemName = response['tiffin']['name'];
-        itemPrice = response['tiffin']['price'].toString();
-        photoUrl = response['tiffin']['image'] != null && response['tiffin']['image'] != '' ? response['tiffin']['image'] : '';
-        description = response['tiffin']['description'];
+        tiffin = response['tiffin'];
       });
     } else {
       throw Exception('Failed to load tiffin details');
@@ -49,13 +42,13 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
 
   void _addToCart() {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-  if (itemName != null && itemPrice != null && photoUrl != null) {
-    cartProvider.addItem(itemName!, itemPrice!, photoUrl!, quantity: quantity);
+  if (tiffin['name'] != null && tiffin['price'] != null) {
+    cartProvider.addItem(tiffin['name'], tiffin['price'], tiffin['images'], quantity: quantity);
     setState(() {
       isAddedToCart = true; // Update state to indicate item is added
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$quantity $itemName added to cart')),
+      SnackBar(content: Text('$quantity ${tiffin['name']} added to cart')),
     );
   }
 }
@@ -81,21 +74,22 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   height: 200,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
-                    image: photoUrl != ''
-                        ? DecorationImage(
-                            image: AssetImage(photoUrl!),
-                            fit: BoxFit.cover,
-                          )
-                        : const DecorationImage(
-                            image: AssetImage('assets/images/vegandelightbox.jpg'),
-                            fit: BoxFit.cover,
+                  child: ListView.builder(
+                    itemCount: tiffin['images'] != null ? tiffin['images'].length : 0,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.network(
+                          tiffin['images']![index],
+                          fit: BoxFit.fitWidth,
                           ),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -103,7 +97,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      itemName ?? '',
+                      tiffin['name'] ?? '',
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -128,7 +122,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                       ),
                     ),
                     Text(
-                      '\$$itemPrice',
+                      '\$${tiffin['price']}',
                       style: const TextStyle(
                         fontSize: 18,
                         color: Colors.red,
@@ -148,22 +142,15 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  description ?? '',
+                  tiffin['description'] ?? '',
                   style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Tiffin Contents:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+
+                // list all the contents of the tiffin dynamically
+                _buildTiffinContents(tiffin),
                 const SizedBox(height: 8),
-                const Text(
-                  '• Avocado\n• Rice with some black seeds\n• Sprouts\n• Green vegetables\n• Vegan sauces',
-                  style: TextStyle(fontSize: 16),
-                ),
+                
                 const SizedBox(height: 16),
                 const Text(
                   'Quantity:',
@@ -277,6 +264,26 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
         ),
       ),
     );
+  }
+
+  _buildTiffinContents(tiffin) {
+    // list all the contents name and quatity if they are exiting
+    if (tiffin['contents'] != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Contents',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              )),
+          for (var content in tiffin['contents'])
+            Text('${content['name']}: ${content['quantity']}'),
+        ],
+      );
+    }
+
+    return Container();
   }
 
   List<String> _allReviews = [
