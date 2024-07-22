@@ -4,7 +4,7 @@ class CartItem {
   final String name;
   final double price;
   int quantity;
-  final String imagePath;
+  final String? imagePath;
 
   CartItem({
     required this.name,
@@ -27,7 +27,7 @@ class CartProvider extends ChangeNotifier {
     return total;
   }
 
-  void addItem(String name, String price, String photoUrl, {int quantity = 1}) {
+  void addItem(String name, double price, List<dynamic>? photoUrls, {int quantity = 1}) {
     // Check if the item already exists in cart
     bool found = false;
     for (int i = 0; i < _cartItems.length; i++) {
@@ -43,9 +43,9 @@ class CartProvider extends ChangeNotifier {
       // Item not found, add new item
       _cartItems.add(CartItem(
         name: name,
-        price: price != '' ? double.parse(price) : 0.0, // If price is null, set it to 0.0
+        price: price, // If price is null, set it to 0.0
         quantity: quantity,
-        imagePath: photoUrl,
+        imagePath: photoUrls?.firstOrNull,
       ));
     }
 

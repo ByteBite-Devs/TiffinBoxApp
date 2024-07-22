@@ -3,18 +3,45 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
-  const PaymentMethodScreen({Key? key}) : super(key: key);
+  String? selectedPaymentMethod;
+  PaymentMethodScreen(this.selectedPaymentMethod, {super.key});
 
   @override
   _PaymentMethodScreenState createState() => _PaymentMethodScreenState();
 }
 
-class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
-  int? _selectedPaymentMethod;
+class _PaymentMethodScreenState extends State<PaymentMethodScreen> {  
+  var _savedCards;
+  @override
+  void initState() {
+    super.initState();
+    _fetchSavedCards();
+  }
 
-  void _onPaymentMethodSelected(int? value) {
+  void _fetchSavedCards() {
+
     setState(() {
-      _selectedPaymentMethod = value;
+      _savedCards = 
+        [
+          {
+            'cardNumber': '1234 5678 9012 3456',
+            'expiryDate': '01/23',
+            'cardHolderName': 'John Doe',
+            'isDefault': true
+          },
+          {
+            'cardNumber': '9876 5432 1098 7654',
+            'expiryDate': '02/24',
+            'cardHolderName': 'Jane Smith',
+            'isDefault': false
+          }
+        ];
+    });
+  }
+
+  void _onPaymentMethodSelected(String? value) {
+    setState(() {
+      widget.selectedPaymentMethod = value;
     });
   }
 
@@ -47,41 +74,39 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
         child: Column(
           children: [
             _buildPaymentMethodTile(
               icon: Icons.money,
               label: 'Cash',
-              value: 0,
+              value: 'Cash on Delievery',
             ),
             _buildPaymentMethodTile(
               imageAsset: 'assets/icons/paypal.png',
               label: 'PayPal',
-              value: 1,
-            ),
-            _buildPaymentMethodTile(
-              icon: Icons.payment,
-              label: 'Google Pay',
-              value: 2,
+              value: 'PayPal',
             ),
             _buildPaymentMethodTile(
               icon: Icons.apple,
               label: 'Apple Pay',
-              value: 3,
+              value: 'Apple Pay',
             ),
             _buildPaymentMethodTile(
               icon: Icons.credit_card,
-              label: '**** **** **** 0895',
-              value: 4,
+              label: 'Credit Card',
+              value: 'Credit Card',
             ),
-            _buildPaymentMethodTile(
-              icon: Icons.credit_card,
-              label: '**** **** **** 2259',
-              value: 5,
+            _savedCards != null ? 
+            Column(
+              children: [
+                for (var card in _savedCards!)
+                  _buildPaymentMethodTile(
+                    icon: Icons.credit_card,
+                    label: card['cardHolderName'],
+                    value: card['cardNumber'],
             ),
-            GestureDetector(
+            widget.selectedPaymentMethod == 'Credit Card' ? GestureDetector(
               onTap: () {
                 _showAddCardBottomSheet(context);
               },
@@ -104,18 +129,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   ],
                 ),
               ),
-            ),
-            Spacer(),
+            ) :
+            SizedBox.shrink(),
+            SizedBox(height: 16), // Use a fixed height instead of Spacer
             Container(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _selectedPaymentMethod != null
+                onPressed: widget.selectedPaymentMethod != null
                     ? () {
-                  // Add your logic for applying the selected payment method
+                      print(widget.selectedPaymentMethod);
+                      Navigator.of(context).pop(widget.selectedPaymentMethod);
                 }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _selectedPaymentMethod != null
+                  backgroundColor: widget.selectedPaymentMethod != null
                       ? Colors.red
                       : Colors.red[100],
                   padding: EdgeInsets.symmetric(vertical: 16.0),
@@ -126,7 +153,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 child: Text(
                   'Apply',
                   style: TextStyle(
-                    color: _selectedPaymentMethod != null
+                    color: widget.selectedPaymentMethod != null
                         ? Colors.white
                         : Colors.red,
                     fontSize: 16,
@@ -135,6 +162,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               ),
             ),
           ],
+        )
+            :
+            SizedBox.shrink(),
+          ]
         ),
       ),
     );
@@ -144,7 +175,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     IconData? icon,
     String? imageAsset,
     required String label,
-    required int value,
+    required String value,
   }) {
     return GestureDetector(
       onTap: () {
@@ -157,7 +188,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: _selectedPaymentMethod == value
+            color: widget.selectedPaymentMethod == value
                 ? Colors.red
                 : Colors.grey[300]!,
             width: 2,
@@ -171,9 +202,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             SizedBox(width: 16),
             Text(label),
             Spacer(),
-            Radio<int>(
+            Radio<String>(
               value: value,
-              groupValue: _selectedPaymentMethod,
+              groupValue: widget.selectedPaymentMethod,
               onChanged: _onPaymentMethodSelected,
             ),
           ],
@@ -196,9 +227,9 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
 
   bool get _isFormValid =>
       _cardNumberController.text.isNotEmpty &&
-      _cardHolderNameController.text.isNotEmpty &&
-      _expiryDateController.text.isNotEmpty &&
-      _cvvController.text.isNotEmpty;
+          _cardHolderNameController.text.isNotEmpty &&
+          _expiryDateController.text.isNotEmpty &&
+          _cvvController.text.isNotEmpty;
 
   @override
   void dispose() {
@@ -330,42 +361,33 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               },
             ),
             SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _expiryDateController,
-                    decoration: InputDecoration(
-                      labelText: 'Expiry Date / Valid Thru',
-                      hintText: 'MM/YY',
-                      errorText: _validateExpiryDate(_expiryDateController.text),
-                    ),
-                    keyboardType: TextInputType.datetime,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(5),
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}/?\d{0,2}$')),
-                      _ExpiryDateTextInputFormatter(),
-                    ],
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _cvvController,
-                    decoration: InputDecoration(
-                      labelText: 'CVV / CVC',
-                      hintText: 'Enter CVV',
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(3),
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                  ),
-                ),
+            TextField(
+              controller: _expiryDateController,
+              decoration: InputDecoration(
+                labelText: 'Expiry Date',
+                hintText: 'MM/YY',
+                errorText: _validateExpiryDate(_expiryDateController.text),
+              ),
+              keyboardType: TextInputType.datetime,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(5),
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
+              ],
+              onChanged: (value) {
+                setState(() {});
+              },
+            ),
+            SizedBox(height: 8),
+            TextField(
+              controller: _cvvController,
+              decoration: InputDecoration(
+                labelText: 'CVV',
+                hintText: '***',
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(3),
+                FilteringTextInputFormatter.digitsOnly,
               ],
             ),
             SizedBox(height: 16),
@@ -374,8 +396,8 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               child: ElevatedButton(
                 onPressed: _isFormValid
                     ? () {
-                        // Add your logic to save the card details
-                      }
+                  Navigator.of(context).pop();
+                }
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _isFormValid ? Colors.red : Colors.red[100],
@@ -385,7 +407,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                   ),
                 ),
                 child: Text(
-                  'Save',
+                  'Add Card',
                   style: TextStyle(
                     color: _isFormValid ? Colors.white : Colors.red,
                     fontSize: 16,

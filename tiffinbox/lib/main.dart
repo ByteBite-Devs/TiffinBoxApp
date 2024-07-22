@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         '/BusinessHome': (BuildContext context) => BusinessHomeScreen(),
         '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen(),
         '/Cart': (BuildContext context) => const CartScreen(),
-        '/Payment': (BuildContext context) => const PaymentMethodScreen(),
+        '/Payment': (BuildContext context) => PaymentMethodScreen(''),
         '/OrderStatus': (BuildContext context) => const OrderStatusScreen(),
         '/Maps':(BuildContext context) => const MapScreen(),
         'BusinessOrderStatus':(BuildContext context) => const BusinessOrderStatusScreen(),

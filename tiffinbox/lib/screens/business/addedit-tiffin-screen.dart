@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/services/tiffin-service.dart';
 
 import '../../models/TiffinIntem.dart';class AddEditTiffinScreen extends StatefulWidget {
@@ -60,8 +61,6 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
   }
 
   uploadImages() async {
-      _images.clear();
-      // upload images to firebase
       FirebaseStorage storage = FirebaseStorage.instance;
 
       for (XFile image in selectedImages) {
@@ -77,7 +76,7 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
   Future<void> _saveForm() async {
     if (_formKey.currentState!.validate()) {
 
-      uploadImages();
+      await uploadImages();
 
       TiffinItem tiffinItem = TiffinItem(
           name: _name,
@@ -94,7 +93,8 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
       if (widget.tiffinItem == null) {
         var response = await TiffinService().addTiffibn(tiffinItem);
       if (response['status'] == 'success') {
-        Navigator.of(context).pop();
+        Navigator.push(context, 
+          MaterialPageRoute(builder: (context) => BusinessHomeScreen()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to add tiffin')),
@@ -105,7 +105,8 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
         tiffinItem.id = widget.tiffinItem!.id;
         var response = await TiffinService().updateTiffin(tiffinItem);
         if (response['status'] == 'success') {
-          Navigator.of(context).pop();
+          Navigator.push(context, 
+            MaterialPageRoute(builder: (context) => BusinessHomeScreen()));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Failed to update tiffin')),
