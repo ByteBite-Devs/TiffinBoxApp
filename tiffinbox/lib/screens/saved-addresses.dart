@@ -53,13 +53,13 @@ class _AddressScreenState extends State<AddressScreen> {
     });
   }
 
-   void _onAddressClick(dynamic address) {
-Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => HomeScreen(location: address),
-  ),
-);  }
+  void _onAddressClick(dynamic address) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(location: address),
+      ),
+    );  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +100,7 @@ Navigator.push(
                         _onAddressClick(address);
                       },
                       behavior: HitTestBehavior.opaque,
-                      onLongPress:() => {
-                        _setSelectedAddress(index)
-                      },
+                      onLongPress: () => {_setSelectedAddress(index)},
                       child: Column(
                         children: [
                           ListTile(
@@ -363,7 +361,18 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  // Handle save action
+                  // Save address using the addressprovider
+                  final addressProvider =
+                      Provider.of<AddressProvider>(context, listen: false);
+                  addressProvider.addAddress(
+                    _nameController.text,
+                    _phoneController.text,
+                    _addressLine1Controller.text,
+                    _addressLine2Controller.text,
+                    _cityController.text,
+                    _stateController.text,
+                    _pincodeController.text,
+                  );
                   Navigator.pop(context);
                 },
                 child: Text('Save Address'),

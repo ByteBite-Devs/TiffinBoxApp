@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/common/location_manager.dart';
+import 'package:tiffinbox/screens/browse_screen.dart';
 import 'package:tiffinbox/screens/business-details-screen.dart';
 import 'package:tiffinbox/screens/saved-addresses.dart';
 import 'package:tiffinbox/services/home-service.dart';
@@ -95,8 +96,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ];
 
     _categories = [
-      {'icon': Icons.eco, 'label': 'Vegetarian'},
-      {'icon': Icons.set_meal, 'label': 'Non Vegetarian'},
+      {'icon': Icons.eco, 'label': 'Veg'},
+      {'icon': Icons.set_meal, 'label': 'Non-Veg'},
       {'icon': Icons.spa, 'label': 'Vegan'},
       {'icon': Icons.set_meal, 'label': 'Fish'},
       {'icon': Icons.egg, 'label': 'Egg'},
@@ -116,21 +117,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _filterResults(String query) {
     if (query.isEmpty) {
-      setState(() {
-        _filteredOffers = _offers;
-        _filteredCategories = _categories;
-      });
+      return;
     } else {
-      setState(() {
-        _filteredOffers = _offers
-            .where((offer) =>
-            offer['offerText'].toLowerCase().contains(query.toLowerCase()))
-            .toList();
-        _filteredCategories = _categories
-            .where((category) =>
-            category['label'].toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      });
+      Navigator.push(
+        context,
+        MaterialPageRoute
+          (builder: (context) => BrowseScreen(
+            mealType: '',
+            searchQuery: query,
+          )),
+      );
     }
   }
 
@@ -215,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         fillColor: Colors.grey[200],
                         filled: true,
                       ),
-                      onChanged: (value) {
+                      onSubmitted: (value) {
                         _filterResults(value);
                       },
                     ),
@@ -226,7 +222,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     const SizedBox(height: 16),
 
-              // Horizontal Category List
                     Container(
                 height:
                 100, // Adjust the height to fit the category icons and labels
@@ -384,7 +379,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildCategoryIcon(IconData iconData, String label) {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        print(label);
+        if (label == 'Veg' || label == 'Non-Veg' || label == 'Vegan') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BrowseScreen(
+              mealType: label,
+              searchQuery: '',
+            ),
+          ),
+        );
+      }
+      else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BrowseScreen(
+              mealType: '',
+              searchQuery: label,
+            ),
+          ),
+        );
+      }
+      },
+      child:Container(
       width: 80, // Adjust width to fit content and spacing
       margin:
       const EdgeInsets.symmetric(horizontal: 8), // Space between categories
@@ -403,6 +424,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
+    )
     );
   }
 

@@ -72,4 +72,15 @@ class TiffinService {
       throw Exception('Failed to update tiffin');
     }
   }
+
+  getAllTiffins() async {
+    final response = await http.get(
+      Uri.parse('${baseUrl}tiffins'),
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load tiffins');
+    }
+  }  
 }

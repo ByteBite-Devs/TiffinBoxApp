@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart';
 
 class CartItem {
   final String name;
@@ -15,11 +16,13 @@ class CartItem {
 }
 
 class CartProvider extends ChangeNotifier {
+    double taxRate = 0.05; // 5% tax
+    double deliveryFee = 5.0; // $5 delivery fee
   List<CartItem> _cartItems = []; // Use List<CartItem>
 
   List<CartItem> get cartItems => _cartItems;
 
-  double get totalAmount {
+  double get itemTotal {
     double total = 0.0;
     _cartItems.forEach((item) {
       total += item.price * item.quantity;
@@ -27,6 +30,22 @@ class CartProvider extends ChangeNotifier {
     return total;
   }
 
+  double get taxTotal {
+    return itemTotal * taxRate;
+  }
+
+  double get deliveryTotal {
+    return deliveryFee;
+  }
+
+  double get totalAmount {
+    double total = itemTotal;
+    // Add tax and delivery fee
+    double taxFee = total * taxRate;
+    total += taxFee;
+    total += deliveryFee;
+    return total;
+  }
   void addItem(String name, double price, List<dynamic>? photoUrls, {int quantity = 1}) {
     // Check if the item already exists in cart
     bool found = false;
@@ -72,5 +91,10 @@ class CartProvider extends ChangeNotifier {
       _cartItems[index].quantity--;
       notifyListeners();
     }
+  }
+
+  void updateItemQuantity(int index, int i) {
+    _cartItems[index].quantity = i;
+    notifyListeners();
   }
 }
