@@ -2,12 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
 class CartItem {
+  final String id;
   final String name;
   final double price;
   int quantity;
   final String? imagePath;
 
   CartItem({
+    required this.id,
     required this.name,
     required this.price,
     required this.quantity,
@@ -44,9 +46,9 @@ class CartProvider extends ChangeNotifier {
     double taxFee = total * taxRate;
     total += taxFee;
     total += deliveryFee;
-    return total;
+    return double.parse(total.toStringAsFixed(2));
   }
-  void addItem(String name, double price, List<dynamic>? photoUrls, {int quantity = 1}) {
+  void addItem(String id, String name, double price, List<dynamic>? photoUrls, {int quantity = 1}) {
     // Check if the item already exists in cart
     bool found = false;
     for (int i = 0; i < _cartItems.length; i++) {
@@ -61,6 +63,7 @@ class CartProvider extends ChangeNotifier {
     if (!found) {
       // Item not found, add new item
       _cartItems.add(CartItem(
+        id: id,
         name: name,
         price: price, // If price is null, set it to 0.0
         quantity: quantity,

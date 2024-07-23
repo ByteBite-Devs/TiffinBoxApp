@@ -43,7 +43,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
   void _addToCart() {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
   if (tiffin['name'] != null && tiffin['price'] != null) {
-    cartProvider.addItem(tiffin['name'], tiffin['price'], tiffin['images'], quantity: quantity);
+    cartProvider.addItem(tiffin['id'], tiffin['name'], tiffin['price'], tiffin['images'], quantity: quantity);
     setState(() {
       isAddedToCart = true; // Update state to indicate item is added
     });

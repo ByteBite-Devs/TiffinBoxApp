@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tiffinbox/screens/business/addedit-tiffin-screen.dart';
+import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/services/profile-service.dart';
 import 'package:tiffinbox/services/tiffin-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
@@ -76,6 +78,22 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('TiffinBox'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              FirebaseAuth _auth = FirebaseAuth.instance;
+              GoogleSignIn _googleSignIn = GoogleSignIn();
+                  await _googleSignIn.signOut();
+                  await _auth.signOut();
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+            },
+          ),
+        ],
       ),
       body: tiffinItems.isEmpty
           ? Center(
