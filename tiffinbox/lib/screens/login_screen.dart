@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
+import 'package:tiffinbox/screens/delivery_home.dart';
 import 'package:tiffinbox/screens/otp-screen.dart';
 import 'package:tiffinbox/services/login-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
@@ -228,11 +229,20 @@ _togglePhoneSignIn() {
                                       (route) => false,
                                 );
                               }
-                              else {
+                              else if(response['user']['role'] == 'business') {
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => BusinessHomeScreen(),
+                                    builder: (_) => const BusinessHomeScreen(),
+                                  ),
+                                      (route) => false,
+                                );
+                              }
+                              else if(response['user']['role'] == 'driver') {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const DeliveryHomePage(),
                                   ),
                                       (route) => false,
                                 );

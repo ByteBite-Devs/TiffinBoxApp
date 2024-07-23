@@ -41,7 +41,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
             case 1:
               if (currentIndex != 1) {
                 Navigator.of(context).pushReplacement(createSlideRoute(
-                    const BrowseScreen(),
+                    BrowseScreen(
+                      mealType: '',
+                        searchQuery: ''
+                    ),
                     isReverse: currentIndex < 1));
               }
               break;

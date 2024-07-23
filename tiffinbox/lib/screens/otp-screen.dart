@@ -6,6 +6,7 @@ import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
 import '../utils/constants/color.dart';
+import 'delivery_home.dart';
 import 'home_screen.dart'; // Import Home screen for navigation after successful login
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/login-service.dart';
@@ -41,6 +42,9 @@ class _OtpScreenState extends State<OtpScreen> {
             else if(response['user']['role'] == 'business') {
               navigateToBusinessHome()
             }
+            else if(response['user']['role'] == 'driver') {
+              naigateToDriverHome()
+            }
           } else {
             print('Login failed')
           }
@@ -56,6 +60,14 @@ class _OtpScreenState extends State<OtpScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const HomeScreen()),
+      (route) => false,
+    );
+  }
+
+  void naigateToDriverHome() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const DeliveryHomePage()),
       (route) => false,
     );
   }

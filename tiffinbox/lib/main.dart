@@ -9,6 +9,7 @@ import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
 import 'package:tiffinbox/screens/cart_screen.dart';
 import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/map_screen.dart';
+import 'package:tiffinbox/screens/my-orders_screen.dart';
 import 'package:tiffinbox/screens/onboarding_screen.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/order_status.dart';
@@ -80,7 +81,7 @@ class MyApp extends StatelessWidget {
         '/Register': (BuildContext context) => const RegistrationScreen(),
         '/OnBoarding': (BuildContext context) => const OnboardingScreen(),
         '/Profile': (BuildContext context) => const ProfileScreen(),
-        '/Browse': (BuildContext context) => const BrowseScreen(),
+        '/Browse': (BuildContext context) => BrowseScreen(mealType:'', searchQuery: ''),
         '/BusinessRegister': (BuildContext context) => const RegisterBusinessScreen(),
         '/BusinessHome': (BuildContext context) => BusinessHomeScreen(),
         '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen(),
@@ -89,6 +90,15 @@ class MyApp extends StatelessWidget {
         '/OrderStatus': (BuildContext context) => const OrderStatusScreen(),
         '/Maps':(BuildContext context) => const MapScreen(),
         'BusinessOrderStatus':(BuildContext context) => const BusinessOrderStatusScreen(),
+        '/Purchase':(BuildContext context) => const PurchasePage(),
+        // '/OrderTracking':(BuildContext context) => const OrderTrackingPage(),
+        '/OrderTracking': (BuildContext context) =>  OrderTrackingPage(
+          orderId: 1,
+          destinationLatitude: 42.3072373,
+          destinationLongitude: -83.0649383,
+        ),
+        '/DeliveryBoyHome':(BuildContext context) => const DeliveryHomePage(),
+        'MyOrders':(BuildContext context) => MyOrdersScreen()
       },
     );
   }

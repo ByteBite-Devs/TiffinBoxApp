@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
+import 'package:tiffinbox/screens/my-orders_screen.dart';
 import 'package:tiffinbox/screens/profile_screen.dart';
 import 'package:tiffinbox/screens/saved-addresses.dart';
 import 'package:tiffinbox/services/profile-service.dart';
@@ -94,16 +95,16 @@ class _MyDrawerState extends State<MyDrawer> {
           ListTile(
             title: Text('My Orders'),
             onTap: () {
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => OrdersScreen()),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyOrdersScreen()),
+              );
             },
           ),
           ListTile(
             title: Text('My Profile'),
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ProfileScreen()),
               );
@@ -112,7 +113,7 @@ class _MyDrawerState extends State<MyDrawer> {
           ListTile(
             title: Text('Addresses'),
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const AddressScreen()),
               );            },
