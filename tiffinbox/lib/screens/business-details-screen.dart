@@ -178,13 +178,6 @@ class _BusinessDetailsScreenState extends State<BusinessDetailsScreen> {
                             ))
                         .toList(),
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Implement order functionality
-                    },
-                    child: Text('Order Now'),
-                  ),
                 ],
               ),
             )

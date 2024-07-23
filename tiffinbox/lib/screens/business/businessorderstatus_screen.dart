@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tiffinbox/services/order-service.dart';
-import 'package:tiffinbox/services/tiffin-service.dart';
 import 'package:tiffinbox/utils/custom_bottom_nav.dart';
 
 class BusinessOrderStatusScreen extends StatefulWidget {
@@ -11,17 +10,21 @@ class BusinessOrderStatusScreen extends StatefulWidget {
 }
 
 class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
-  String status = 'Order Placed';
   String selectedFilter = 'All';
 
   final List<String> statusOptions = [
     'Placed',
     'Shipped',
+    'Ready for Delivery',
+    'Out for Delivery'
     'Delivered',
     'Cancel'
   ];
 
   List<dynamic> orders = [];
+  Map<String, String> updatedStatuses = {}; // To track updated statuses
+  bool showSaveButton = false;
+
   @override
   void initState() {
     super.initState();
@@ -29,15 +32,34 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
   }
 
   fetchOrders() async {
-    // Fetch orders from the server
     var response = await OrderService().getBusinessOrders();
-    if(response['status'] == 'success') {
+    if (response['status'] == 'success') {
       setState(() {
         orders = response['orders'];
         print(orders);
       });
     }
   }
+  void _updateStatus(String orderId, String newStatus) {
+    setState(() {
+      updatedStatuses[orderId] = newStatus;
+      showSaveButton = true;
+    });
+  }
+
+  _saveChanges() async {
+    // Save the updated statuses
+    for (var entry in updatedStatuses.entries) {
+      await OrderService().updateOrderStatus(int.parse(entry.key), entry.value);
+    }
+    setState(() {
+      updatedStatuses.clear();
+      showSaveButton = false;
+    });
+    // Optionally, refetch orders to get updated status
+    await fetchOrders();
+  }
+
   @override
   Widget build(BuildContext context) {
     List<dynamic> filteredOrders = selectedFilter == 'All'
@@ -57,75 +79,24 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        selectedFilter = 'All';
-                      });
-                    },
-                    icon: const Icon(Icons.home),
-                    label: const Text('All'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pink,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        selectedFilter = 'Order Placed';
-                      });
-                    },
-                    icon: const Icon(Icons.receipt),
-                    label: const Text('Order Placed'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        selectedFilter = 'Shipped';
-                      });
-                    },
-                    icon: const Icon(Icons.local_shipping),
-                    label: const Text('Shipped'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        selectedFilter = 'Delivered';
-                      });
-                    },
-                    icon: const Icon(Icons.check_circle),
-                    label: const Text('Delivered'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        selectedFilter = 'Cancel';
-                      });
-                    },
-                    icon: const Icon(Icons.cancel),
-                    label: const Text('Cancelled'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
+                  ...['All', 'Placed', 'Shipped', 'Delivered', 'Cancel'].map((filter) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            selectedFilter = filter;
+                          });
+                        },
+                        icon: Icon(_getIconForFilter(filter)),
+                        label: Text(_getLabelForFilter(filter)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _getColorForFilter(filter),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ],
               ),
             ),
@@ -155,11 +126,16 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
                       DataCell(Text(order['quantity'].toString() ?? '')),
                       DataCell(Text(order['total'].toString())),
                       DataCell(
-                        DropdownButton<String>(
-                          value: order['order_status'],
+                        order['order_status'] == 'Delivered' || order['order_status'] == 'Cancel'
+                            ? const Text('No Action Available')
+                            : DropdownButton<String>(
+                          value: updatedStatuses[order['order_number']] ?? order['order_status'],
                           onChanged: (String? newValue) {
-                            // 
-                            print("newValue $newValue");
+                            if (newValue!.isNotEmpty) {
+                              setState(() {
+                                _updateStatus(order['order_number'].toString()!, newValue);
+                              });
+                            }
                           },
                           items: statusOptions
                               .map<DropdownMenuItem<String>>((String value) {
@@ -172,19 +148,71 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
                       ),
                     ]);
                   }).toList(),
+                  
                 ),
               ),
             ),
           ),
+          if (showSaveButton)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: _saveChanges,
+                child: const Text('Save Changes'),
+              ),
+            ),
         ],
       ),
-          bottomNavigationBar: CustomBusinessBottomNavigationBar(currentIndex: 1),
+      bottomNavigationBar: CustomBusinessBottomNavigationBar(currentIndex: 1),
     );
   }
-  
-  String addressFromJson(address) {
-    print(address);
-    return address['addressLine1'] + ' ' + address['addressLine2']
-    + ' ' + address['city'] + ' ' + address['state'];
+
+  IconData _getIconForFilter(String filter) {
+    switch (filter) {
+      case 'Placed':
+        return Icons.receipt;
+      case 'Shipped':
+        return Icons.local_shipping;
+      case 'Delivered':
+        return Icons.check_circle;
+      case 'Cancel':
+        return Icons.cancel;
+      default:
+        return Icons.home;
+    }
+  }
+
+  String _getLabelForFilter(String filter) {
+    switch (filter) {
+      case 'Placed':
+        return 'Order Placed';
+      case 'Shipped':
+        return 'Shipped';
+      case 'Delivered':
+        return 'Delivered';
+      case 'Cancel':
+        return 'Cancel';
+      default:
+        return 'All';
+    }
+  }
+
+  Color _getColorForFilter(String filter) {
+    switch (filter) {
+      case 'Placed':
+        return Colors.amber;
+      case 'Shipped':
+        return Colors.grey;
+      case 'Delivered':
+        return Colors.green;
+      case 'Cancel':
+        return Colors.red;
+      default:
+        return Colors.pink;
+    }
+  }
+
+  String addressFromJson(Map<String, dynamic> address) {
+    return '${address['addressLine1']} ${address['addressLine2']} ${address['city']} ${address['state']}';
   }
 }

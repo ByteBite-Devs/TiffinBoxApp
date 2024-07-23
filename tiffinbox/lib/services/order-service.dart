@@ -24,7 +24,7 @@ class OrderService {
 
   Future<Map<String, dynamic>> getOrders() async {
     var response = await http.get(Uri.parse(
-      "$baseUrl/all/${FirebaseAuth.instance.currentUser!.uid}"));
+        "$baseUrl/all/${FirebaseAuth.instance.currentUser!.uid}"));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -32,7 +32,7 @@ class OrderService {
     }
   }
 
-  Future<Map<String, dynamic>> getBusinessOrders() async  {
+  Future<Map<String, dynamic>> getBusinessOrders() async {
     var response = await http.get(Uri.parse(
         "$baseUrl/business/${FirebaseAuth.instance.currentUser!.uid}"));
     if (response.statusCode == 200) {
@@ -44,10 +44,10 @@ class OrderService {
 
   Future<Map<String, dynamic>> getOrderAndAddress(int orderId) async {
     var response = await http.get(
-      Uri.parse("$baseUrl/$orderId"),
-      headers: <String, String>{  
-        'Content-Type': 'application/json; charset=UTF-8',
-      }
+        Uri.parse("$baseUrl/$orderId"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        }
     );
     print("response: $response");
     if (response.statusCode == 200) {
@@ -57,4 +57,38 @@ class OrderService {
     }
   }
 
+  updateOrderStatus(int order_number, String order_status) async {
+  var response = await http.patch(
+  Uri.parse("$baseUrl/update/${order_number}/$order_status"),
+  headers: <String, String>{
+  'Content-Type': 'application/json; charset=UTF-8',
+  },
+  );
+  if (response.statusCode == 200) {
+  return json.decode(response.body);
+  } else {
+  throw Exception('Failed to update order status');
+  }
+  }
+
+  updateDeliveryPersonDetails(orderid, deliveryBoyLocation) async {
+    var body = {
+      "deliveryPersonId": FirebaseAuth.instance.currentUser!.uid,
+      "deliveryPersonName": FirebaseAuth.instance.currentUser!.displayName,
+      "locationLatitude": deliveryBoyLocation.latitude,
+      "locationLongitude": deliveryBoyLocation.longitude
+    };
+    var response = await http.patch(
+        Uri.parse("$baseUrl/update/${int.parse(orderid)}"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(body)
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to get order');
+    }
+  }
 }

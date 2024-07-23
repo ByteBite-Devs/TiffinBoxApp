@@ -215,8 +215,10 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
   }
 
 
-  void _startDelivery() {
-    setState(() {
+  _startDelivery() async {
+    var res = await OrderService().updateOrderStatus(order['order_number'], 'Out for Delivery');
+    if (res['status'] == 'success') {
+      setState(() {
       isDeliveryStarted = true;
       Navigator.push(
         context,
@@ -226,7 +228,8 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
           destinationLongitude: customerLongitude,
         )),
       );
-    });
+    }); 
+    }
   }
 
   Future<void> _getLocation() async {

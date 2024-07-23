@@ -42,10 +42,19 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       deliveryBoyLocation =
           LatLng(currentLocation.latitude, currentLocation.longitude);
     }
-    print("Delivery location: $destination");
-    print("Delivery boy location: $deliveryBoyLocation");
+    _updateDeliveryPersonInformation(deliveryBoyLocation);
     startTracking(widget.orderId);
   }
+
+  _updateDeliveryPersonInformation(deliveryBoyLocation) async {
+    var res = await OrderService().updateDeliveryPersonDetails(order['order_number'], deliveryBoyLocation);
+    if (res['status'] == 'success') {
+      setState(() {
+        order = res['order'];
+      });
+    }
+  }
+
 
   @override
   void dispose() {
