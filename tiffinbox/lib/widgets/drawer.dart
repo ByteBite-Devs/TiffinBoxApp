@@ -27,7 +27,6 @@ class _MyDrawerState extends State<MyDrawer> {
 
 
     Future<void> _logout() async {
-      print("in logout method");
     await _auth.signOut();
     await _googleSignIn.signOut();
     Navigator.pushAndRemoveUntil(

@@ -25,7 +25,16 @@ class OrderService {
   Future<Map<String, dynamic>> getOrders() async {
     var response = await http.get(Uri.parse(
       "$baseUrl/all/${FirebaseAuth.instance.currentUser!.uid}"));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to get orders');
+    }
+  }
 
+  Future<Map<String, dynamic>> getBusinessOrders() async  {
+    var response = await http.get(Uri.parse(
+        "$baseUrl/business/${FirebaseAuth.instance.currentUser!.uid}"));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {

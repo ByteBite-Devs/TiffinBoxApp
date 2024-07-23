@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/services/order-service.dart';
+import 'package:tiffinbox/services/tiffin-service.dart';
 import 'package:tiffinbox/utils/custom_bottom_nav.dart';
 
 class BusinessOrderStatusScreen extends StatefulWidget {
@@ -9,34 +11,36 @@ class BusinessOrderStatusScreen extends StatefulWidget {
 }
 
 class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
-  String status = 'Order Placed'; // Default status
-  String selectedFilter = 'All'; // Default filter
+  String status = 'Order Placed';
+  String selectedFilter = 'All';
 
   final List<String> statusOptions = [
-    'Order Placed',
+    'Placed',
     'Shipped',
     'Delivered',
     'Cancel'
   ];
 
-  final List<Map<String, String>> orders = [
-    {
-      'orderId': '46',
-      'customer': 'Admin Admin',
-      'address': 'asd',
-      'phone': '8989898989',
-      'tiffin': 'Lunch',
-      'quantity': '1',
-      'price': '\$20.00',
-      'date': 'July 19, 2024, 4:28 p.m.',
-      'status': 'Order Placed'
-    },
-    // Add more orders here with different statuses
-  ];
+  List<dynamic> orders = [];
+  @override
+  void initState() {
+    super.initState();
+    fetchOrders();
+  }
 
+  fetchOrders() async {
+    // Fetch orders from the server
+    var response = await OrderService().getBusinessOrders();
+    if(response['status'] == 'success') {
+      setState(() {
+        orders = response['orders'];
+        print(orders);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    List<Map<String, String>> filteredOrders = selectedFilter == 'All'
+    List<dynamic> filteredOrders = selectedFilter == 'All'
         ? orders
         : orders.where((order) => order['status'] == selectedFilter).toList();
 
@@ -133,32 +137,29 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
                 child: DataTable(
                   columns: const [
                     DataColumn(label: Text('Order ID')),
-                    DataColumn(label: Text('Customer')),
+                    DataColumn(label: Text('Customer Name')),
                     DataColumn(label: Text('Shipping Address')),
                     DataColumn(label: Text('Phone Number')),
                     DataColumn(label: Text('Tiffin')),
                     DataColumn(label: Text('Quantity')),
                     DataColumn(label: Text('Total Price')),
-                    DataColumn(label: Text('Order Date')),
                     DataColumn(label: Text('Status')),
                   ],
                   rows: filteredOrders.map((order) {
                     return DataRow(cells: [
-                      DataCell(Text(order['orderId']!)),
-                      DataCell(Text(order['customer']!)),
-                      DataCell(Text(order['address']!)),
-                      DataCell(Text(order['phone']!)),
-                      DataCell(Text(order['tiffin']!)),
-                      DataCell(Text(order['quantity']!)),
-                      DataCell(Text(order['price']!)),
-                      DataCell(Text(order['date']!)),
+                      DataCell(Text(order['order_number']!.toString())),
+                      DataCell(Text(order['user']['name']!)),
+                      DataCell(Text(addressFromJson(order['address']!))),
+                      DataCell(Text(order['user']['phone'] ?? '')),
+                      DataCell(Text(order['tiffin']['name'] ?? '')),
+                      DataCell(Text(order['quantity'].toString() ?? '')),
+                      DataCell(Text(order['total'].toString())),
                       DataCell(
                         DropdownButton<String>(
-                          value: order['status'],
+                          value: order['order_status'],
                           onChanged: (String? newValue) {
-                            setState(() {
-                              order['status'] = newValue!;
-                            });
+                            // 
+                            print("newValue $newValue");
                           },
                           items: statusOptions
                               .map<DropdownMenuItem<String>>((String value) {
@@ -179,5 +180,11 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
       ),
           bottomNavigationBar: CustomBusinessBottomNavigationBar(currentIndex: 1),
     );
+  }
+  
+  String addressFromJson(address) {
+    print(address);
+    return address['addressLine1'] + ' ' + address['addressLine2']
+    + ' ' + address['city'] + ' ' + address['state'];
   }
 }

@@ -283,6 +283,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       'payment': _selectedPaymentMethod,
       'items': cartProvider.cartItems
           .map((item) => {
+                'id': item.id,
                 'name': item.name,
                 'quantity': item.quantity,
                 'price': item.price,

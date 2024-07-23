@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:location/location.dart' as locations;
+import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/order_tracking_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/order-service.dart';
@@ -43,6 +46,27 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Delivery Boy App'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              setState(() {});
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              GoogleSignIn signIn = GoogleSignIn();
+              await signIn.signOut();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
