@@ -1,6 +1,8 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:tiffinbox/common/location_manager.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
@@ -52,6 +54,10 @@ void main() async {
   // Initialize SharedPreferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
+  await dotenv.load(fileName: ".env");
+  Stripe.publishableKey = dotenv.env["STRIPE_PUBLISH_KEY"]!;
+  await Stripe.instance.applySettings();
+
   runApp(
     MultiProvider(
       providers: [
@@ -88,7 +94,8 @@ class MyApp extends StatelessWidget {
         '/BusinessHome': (BuildContext context) => BusinessHomeScreen(),
         '/BusinessProfile': (BuildContext context) => const BusinessProfileScreen(),
         '/Cart': (BuildContext context) => const CartScreen(),
-        '/Payment': (BuildContext context) => PaymentMethodScreen(''),
+        // '/Payment': (BuildContext context) => PaymentMethodScreen(''),
+        '/Payment': (BuildContext context) => PaymentMethodScreen(),
         '/OrderStatus': (BuildContext context) => const OrderStatusScreen(),
         '/Maps':(BuildContext context) => const MapScreen(),
         'BusinessOrderStatus':(BuildContext context) => const BusinessOrderStatusScreen(),
