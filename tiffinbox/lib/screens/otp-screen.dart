@@ -6,8 +6,7 @@ import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
 import '../utils/constants/color.dart';
-import 'delivery_home.dart';
-import 'home_screen.dart'; // Import Home screen for navigation after successful login
+import 'home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/login-service.dart';
 
@@ -30,45 +29,52 @@ class _OtpScreenState extends State<OtpScreen> {
         smsCode: _otpController.text,
       );
       UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      await _auth.signInWithCredential(credential);
 
-      await apiService.loginWithPhone(LoginScreen.phoneNumber, 
-      userCredential.user).then(
-        (response) => {
+      await apiService.loginWithPhone(LoginScreen.phoneNumber, userCredential.user).then(
+            (response) => {
           if (response['status'] == 'success') {
-            if(response['user']['role'] == 'client') {
+            if (response['user']['role'] == 'client') {
               navigateToHome()
-            }
-            else if(response['user']['role'] == 'business') {
+            } else if (response['user']['role'] == 'business') {
               navigateToBusinessHome()
             }
-            else if(response['user']['role'] == 'driver') {
-              naigateToDriverHome()
-            }
           } else {
-            print('Login failed')
+            showErrorDialog('Login failed')
           }
         },
-        onError: (error) => print('Login failed: $error'),
+        onError: (error) => showErrorDialog('Login failed: $error'),
       );
     } catch (e) {
-      print('Failed to sign in with OTP: $e');
+      showErrorDialog('Invalid OTP entered. Please enter the correct OTP and try again.');
     }
+  }
+
+  void showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void navigateToHome() {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const HomeScreen()),
-      (route) => false,
-    );
-  }
-
-  void naigateToDriverHome() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const DeliveryHomePage()),
-      (route) => false,
+          (route) => false,
     );
   }
 
@@ -76,7 +82,7 @@ class _OtpScreenState extends State<OtpScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => BusinessHomeScreen()),
-      (route) => false,
+          (route) => false,
     );
   }
 
@@ -95,12 +101,11 @@ class _OtpScreenState extends State<OtpScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientText(
-                    'Enter OTP',
+                  'Enter OTP',
                   style: defaultHeaderFontStyle,
                   colors: const [primarycolor, orangeGradientShade],
                 ),
                 // OTP input
-                // 
                 Pinput(
                   controller: _otpController,
                   length: 6,

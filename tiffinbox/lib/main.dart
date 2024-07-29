@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:tiffinbox/common/location_manager.dart';
+import 'package:tiffinbox/screens/about_us.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/screens/business/businessorderstatus_screen.dart';
 import 'package:tiffinbox/screens/business/businessprofile_screen.dart';
@@ -101,13 +102,15 @@ class MyApp extends StatelessWidget {
         'BusinessOrderStatus':(BuildContext context) => const BusinessOrderStatusScreen(),
         '/Purchase':(BuildContext context) => const PurchasePage(),
         // '/OrderTracking':(BuildContext context) => const OrderTrackingPage(),
-        '/OrderTracking': (BuildContext context) =>  OrderTrackingPage(
+        '/OrderTracking': (BuildContext context) =>  const OrderTrackingPage(
           orderId: 1,
           destinationLatitude: 42.3072373,
           destinationLongitude: -83.0649383,
         ),
         '/DeliveryBoyHome':(BuildContext context) => const DeliveryHomePage(),
-        'MyOrders':(BuildContext context) => MyOrdersScreen()
+        'MyOrders':(BuildContext context) => const MyOrdersScreen(),
+        'AboutUs':(BuildContext context) => const AboutUsScreen(),
+
       },
     );
   }
