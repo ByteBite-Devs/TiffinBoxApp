@@ -215,11 +215,6 @@ _togglePhoneSignIn() {
                           var response =
                               await apiService.loginUser(email, password);
                           if (response['status'] == 'success') {
-                            var token = response['customToken'];
-                            User? user =
-                                await apiService.signInWithCustomToken(token);
-                            print("response: $response");
-                            if (user != null) {
                               if(response['user']['role'] == 'client') {
                                 Navigator.pushAndRemoveUntil(
                                   context,
@@ -248,10 +243,7 @@ _togglePhoneSignIn() {
                                 );
                               }
                             } else {
-                              print("Failed to sign in with custom token");
-                          } 
-                          }else {
-                            print('Failed to login user: $response');
+                              print("Failed to sign in ");
                           }
                         } catch (e) {
                           print('Failed to login user: $e');
@@ -297,7 +289,7 @@ _togglePhoneSignIn() {
                 const SizedBox(height: 25),
                 RichText(
                   text: TextSpan(
-                    text: "Own a Business",
+                    text: "Own a Business? ",
                     style: const TextStyle(color: Colors.black),
                     children: [
                       TextSpan(

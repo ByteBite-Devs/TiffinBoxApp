@@ -51,7 +51,7 @@ class ProfileProvider with ChangeNotifier {
 
     notifyListeners();
   }
-  
+
   Future<void> updateProfileDetails(String email, String name, String profileImage, String phone) async {
     final response = await http.patch(
       Uri.parse('${baseUrl}profile/${FirebaseAuth.instance.currentUser!.uid}'),
@@ -81,7 +81,7 @@ class ProfileService {
 
   Future<Map<String, dynamic>> getProfileDetails() async {
     final response = await http.get(
-      Uri.parse('${baseUrl}profile/${FirebaseAuth.instance.currentUser!.uid}'),
+      Uri.parse('${baseUrl}profile/${FirebaseAuth.instance.currentUser?.uid}'),
     );
 
     if (response.statusCode == 200) {

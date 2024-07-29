@@ -41,25 +41,23 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
 
     // Load tiffins from API
     response = await TiffinService().getAllBusinessTiffins(
-        businessId: FirebaseAuth.instance.currentUser!.uid
-    );
+        businessId: FirebaseAuth.instance.currentUser?.uid ?? '');
 
     if (response['status'] == 'success') {
       setState(() {
         tiffins = response['tiffins'];
         tiffins.forEach((key, value) {
           tiffinItems.add(TiffinItem(
-            id: key,
-            name: value['name'],
-            description: value['description'],
-            price: value['price'],
-            mealTypes: value['mealTypes'] ?? [],
-            contents: value['contents'] ?? [],
-            dietType: value['dietType']?? '',
-            images: value['images'] ?? [],
-            frequency: value['frequency'] ?? [],
-            business_id: value['business_id']
-          ));
+              id: key,
+              name: value['name'],
+              description: value['description'],
+              price: value['price'],
+              mealTypes: value['mealTypes'] ?? [],
+              contents: value['contents'] ?? [],
+              dietType: value['dietType'] ?? '',
+              images: value['images'] ?? [],
+              frequency: value['frequency'] ?? [],
+              business_id: value['business_id']));
         });
       });
     }
@@ -67,10 +65,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
 
   void _navigateToAddEditScreen([TiffinItem? item]) {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddEditTiffinScreen(tiffinItem: item),
-      ));
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddEditTiffinScreen(tiffinItem: item),
+        ));
   }
 
   @override
@@ -84,13 +82,13 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
             onPressed: () async {
               FirebaseAuth _auth = FirebaseAuth.instance;
               GoogleSignIn _googleSignIn = GoogleSignIn();
-                  await _googleSignIn.signOut();
-                  await _auth.signOut();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  (route) => false,
-                );
+              await _googleSignIn.signOut();
+              await _auth.signOut();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (route) => false,
+              );
             },
           ),
         ],
@@ -167,7 +165,7 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
                 ),
               ],
             ),
-    bottomNavigationBar: CustomBusinessBottomNavigationBar(currentIndex: 0),
+      bottomNavigationBar: CustomBusinessBottomNavigationBar(currentIndex: 0),
     );
   }
 }
