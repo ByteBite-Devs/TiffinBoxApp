@@ -16,14 +16,16 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
     'Placed',
     'Shipped',
     'Ready for Delivery',
-    'Out for Delivery'
-        'Delivered',
+    'Out for Delivery',
+    'Delivered',
     'Cancel'
   ];
 
   List<dynamic> orders = [];
+  List<dynamic> filteredOrders = [];
   Map<String, String> updatedStatuses = {}; // To track updated statuses
   bool showSaveButton = false;
+  bool dataLLoaded = false;
 
   @override
   void initState() {
@@ -36,10 +38,36 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
     if (response['status'] == 'success') {
       setState(() {
         orders = response['orders'];
-        print(orders);
+        filteredOrders = orders;
+        filterOrders();
+        showSaveButton = false;
+        dataLLoaded = true;
+      });
+    } else {
+      setState(() {
+        showSaveButton = false;
+        dataLLoaded = true;
       });
     }
   }
+
+  filterOrders() async {
+    if (selectedFilter == 'All') {
+      setState(() {
+        filteredOrders = orders;
+      });
+    } else {
+      setState(() {
+        filteredOrders = orders
+            .where((order) => order['order_status'] == selectedFilter)
+            .toList();
+      });
+    }
+    setState(() {
+      dataLLoaded = true;
+    });
+  }
+
   void _updateStatus(String orderId, String newStatus) {
     setState(() {
       updatedStatuses[orderId] = newStatus;
@@ -62,10 +90,6 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<dynamic> filteredOrders = selectedFilter == 'All'
-        ? orders
-        : orders.where((order) => order['status'] == selectedFilter).toList();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('TiffinBox Orders'),
@@ -79,13 +103,14 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ...['All', 'Placed', 'Shipped', 'Delivered', 'Cancel'].map((filter) {
+                  ...['All', ...statusOptions].map((filter) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: ElevatedButton.icon(
-                        onPressed: () {
+                        onPressed: () async {
                           setState(() {
                             selectedFilter = filter;
+                            filterOrders();
                           });
                         },
                         icon: Icon(_getIconForFilter(filter)),
@@ -105,51 +130,66 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SingleChildScrollView(
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Order ID')),
-                    DataColumn(label: Text('Customer Name')),
-                    DataColumn(label: Text('Shipping Address')),
-                    DataColumn(label: Text('Phone Number')),
-                    DataColumn(label: Text('Tiffin')),
-                    DataColumn(label: Text('Quantity')),
-                    DataColumn(label: Text('Total Price')),
-                    DataColumn(label: Text('Status')),
-                  ],
-                  rows: filteredOrders.map((order) {
-                    return DataRow(cells: [
-                      DataCell(Text(order['order_number'].toString())),
-                      DataCell(Text(order['user']['name']!)),
-                      DataCell(Text(addressFromJson(order['address'] ?? {}))),
-                      DataCell(Text(order['user']['phone'] ?? '')),
-                      DataCell(Text(order['tiffin']['name'] ?? '')),
-                      DataCell(Text(order['quantity'].toString() ?? '')),
-                      DataCell(Text(order['total'].toString())),
-                      DataCell(
-                        order['order_status'] == 'Delivered' || order['order_status'] == 'Cancel'
-                            ? const Text('No Action Available')
-                            : DropdownButton<String>(
-                                value: updatedStatuses[order['order_number']] ?? order['order_status'],
-                                onChanged: (String? newValue) {
-                                  if (newValue!.isNotEmpty) {
-                                    setState(() {
-                                      _updateStatus(order['order_number'].toString()!, newValue);
-                                    });
-                                  }
-                                },
-                                items: statusOptions
-                                    .map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              ),
-                      ),
-                    ]);
-                  }).toList(),
-                  
-                ),
+                child: dataLLoaded
+                    ? filteredOrders.isEmpty
+                        ? const Center(child: Text('No Orders Found'))
+                        : DataTable(
+                            columns: const [
+                              DataColumn(label: Text('Order ID')),
+                              DataColumn(label: Text('Customer Name')),
+                              DataColumn(label: Text('Shipping Address')),
+                              DataColumn(label: Text('Phone Number')),
+                              DataColumn(label: Text('Tiffin')),
+                              DataColumn(label: Text('Quantity')),
+                              DataColumn(label: Text('Total Price')),
+                              DataColumn(label: Text('Status')),
+                            ],
+                            rows: filteredOrders.map((order) {
+                              return DataRow(cells: [
+                                DataCell(
+                                    Text(order['order_number'].toString())),
+                                DataCell(Text(order['user']['name']!)),
+                                DataCell(Text(
+                                    addressFromJson(order['address'] ?? {}))),
+                                DataCell(Text(order['user']['phone'] ?? '')),
+                                DataCell(Text(order['tiffin']['name'] ?? '')),
+                                DataCell(
+                                    Text(order['quantity'].toString() ?? '')),
+                                DataCell(Text(order['total'].toString())),
+                                DataCell(
+                                  order['order_status'] == 'Delivered' ||
+                                          order['order_status'] == 'Cancel'
+                                      ? const Text('No Action Available')
+                                      : DropdownButton<String>(
+                                          value: updatedStatuses[
+                                                  order['order_number']] ??
+                                              order['order_status'],
+                                          onChanged: (String? newValue) {
+                                            if (newValue!.isNotEmpty) {
+                                              setState(() {
+                                                order['order_status'] =
+                                                    newValue;
+                                                _updateStatus(
+                                                    order['order_number']
+                                                        .toString()!,
+                                                    newValue);
+                                              });
+                                            }
+                                          },
+                                          items: statusOptions
+                                              .map<DropdownMenuItem<String>>(
+                                                  (String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
+                                        ),
+                                ),
+                              ]);
+                            }).toList(),
+                          )
+                    : const Center(child: CircularProgressIndicator()),
               ),
             ),
           ),
@@ -170,15 +210,15 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
   IconData _getIconForFilter(String filter) {
     switch (filter) {
       case 'Placed':
-        return Icons.receipt;
+        return Icons.check_circle_outline;
       case 'Shipped':
         return Icons.local_shipping;
       case 'Delivered':
-        return Icons.check_circle;
+        return Icons.local_shipping_outlined;
       case 'Cancel':
-        return Icons.cancel;
+        return Icons.cancel_outlined;
       default:
-        return Icons.home;
+        return Icons.check_circle_outline;
     }
   }
 
@@ -188,6 +228,10 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
         return 'Order Placed';
       case 'Shipped':
         return 'Shipped';
+      case "Ready for Delivery":
+        return "Ready for Delivery";
+      case "Out for Delivery":
+        return "Out for Delivery";
       case 'Delivered':
         return 'Delivered';
       case 'Cancel':
@@ -203,6 +247,10 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
         return Colors.amber;
       case 'Shipped':
         return Colors.grey;
+      case 'Ready for Delivery':
+        return Colors.blue;
+      case 'Out for Delivery':
+        return Colors.orange;
       case 'Delivered':
         return Colors.green;
       case 'Cancel':

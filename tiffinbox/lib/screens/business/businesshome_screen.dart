@@ -99,82 +99,86 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
       ),
       body: !isDataLoaded
           ? const Center(child: CircularProgressIndicator())
-          : tiffinItems.isEmpty
-              ? Center(
-                  child: ElevatedButton(
+          : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(children: [
+                  Text(_userName,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      )),
+                  const Spacer(),
+                  FloatingActionButton(
                     onPressed: () => _navigateToAddEditScreen(),
-                    child: const Text('Start Adding Tiffins'),
+                    child: const Icon(Icons.add),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
                   ),
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ]),
+              ),
+              tiffinItems.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [Text("No tiffins Added")],
+                      ),
+                    )
+                  : Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            _userName,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(8.0),
+                              itemCount: tiffinItems.length,
+                              itemBuilder: (context, index) {
+                                final item = tiffinItems[index];
+                                return Card(
+                                  color: buttonnavbg,
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: ListTile(
+                                    // load a network image if present or load an asset image
+                                    leading: Image.network(
+                                      item.images.isNotEmpty
+                                          ? item.images[0]
+                                          : 'https://via.placeholder.com/150',
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    title: Text(item.name),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            '\$${item.price.toStringAsFixed(2)}'),
+                                        Text(item.mealTypes != null
+                                            ? item.mealTypes!.join(', ')
+                                            : ''),
+                                        Text(item.dietType),
+                                        Text(
+                                            "Availability: ${item.mealTypes?.join(", ") ?? 'Not Available'}"),
+                                        Text(
+                                            'Frequency: ${item.frequency!.join(", ")}'),
+                                      ],
+                                    ),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () =>
+                                          _navigateToAddEditScreen(item),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                          ),
-                          FloatingActionButton(
-                            onPressed: () => _navigateToAddEditScreen(),
-                            child: const Icon(Icons.add),
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
                           ),
                         ],
                       ),
                     ),
-                    Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(8.0),
-                        itemCount: tiffinItems.length,
-                        itemBuilder: (context, index) {
-                          final item = tiffinItems[index];
-                          return Card(
-                            color: buttonnavbg,
-                            margin: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: ListTile(
-                              // load a network image if present or load an asset image
-                              leading: Image.network(
-                                item.images.isNotEmpty
-                                    ? item.images[0]
-                                    : 'https://via.placeholder.com/150',
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                              ),
-                              title: Text(item.name),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('\$${item.price.toStringAsFixed(2)}'),
-                                  Text(item.mealTypes != null
-                                      ? item.mealTypes!.join(', ')
-                                      : ''),
-                                  Text(item.dietType),
-                                  Text(
-                                      "Availability: ${item.mealTypes?.join(", ") ?? 'Not Available'}"),
-                                  Text(
-                                      'Frequency: ${item.frequency!.join(", ")}'),
-                                ],
-                              ),
-                              trailing: IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () => _navigateToAddEditScreen(item),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+            ]),
       bottomNavigationBar: CustomBusinessBottomNavigationBar(currentIndex: 0),
     );
   }
