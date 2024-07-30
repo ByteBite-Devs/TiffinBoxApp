@@ -17,7 +17,7 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
     'Shipped',
     'Ready for Delivery',
     'Out for Delivery'
-    'Delivered',
+        'Delivered',
     'Cancel'
   ];
 
@@ -118,9 +118,9 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
                   ],
                   rows: filteredOrders.map((order) {
                     return DataRow(cells: [
-                      DataCell(Text(order['order_number']!.toString())),
+                      DataCell(Text(order['order_number'].toString())),
                       DataCell(Text(order['user']['name']!)),
-                      DataCell(Text(addressFromJson(order['address']!))),
+                      DataCell(Text(addressFromJson(order['address'] ?? {}))),
                       DataCell(Text(order['user']['phone'] ?? '')),
                       DataCell(Text(order['tiffin']['name'] ?? '')),
                       DataCell(Text(order['quantity'].toString() ?? '')),
@@ -129,22 +129,22 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
                         order['order_status'] == 'Delivered' || order['order_status'] == 'Cancel'
                             ? const Text('No Action Available')
                             : DropdownButton<String>(
-                          value: updatedStatuses[order['order_number']] ?? order['order_status'],
-                          onChanged: (String? newValue) {
-                            if (newValue!.isNotEmpty) {
-                              setState(() {
-                                _updateStatus(order['order_number'].toString()!, newValue);
-                              });
-                            }
-                          },
-                          items: statusOptions
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
+                                value: updatedStatuses[order['order_number']] ?? order['order_status'],
+                                onChanged: (String? newValue) {
+                                  if (newValue!.isNotEmpty) {
+                                    setState(() {
+                                      _updateStatus(order['order_number'].toString()!, newValue);
+                                    });
+                                  }
+                                },
+                                items: statusOptions
+                                    .map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
                       ),
                     ]);
                   }).toList(),

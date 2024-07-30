@@ -13,11 +13,27 @@
             }
         },
         "oauth_client": [{
+                "client_id": "72750034964-ihfbe8dv4lbrv5m155os5tailgvhj0ag.apps.googleusercontent.com",
+                "client_type": 1,
+                "android_info": {
+                    "package_name": "com.example.tiffinbox",
+                    "certificate_hash": "d996c72452808d71489bfe26005124226e4e8e82"
+                }
+            },
+            {
                 "client_id": "72750034964-lbntuq6n33pob1mf9s28nj6oipn4i942.apps.googleusercontent.com",
                 "client_type": 1,
                 "android_info": {
                     "package_name": "com.example.tiffinbox",
                     "certificate_hash": "093d7c5e5f62ae5b00d480c7fbc68be9ccd7c6af"
+                }
+            },
+            {
+                "client_id": "72750034964-s7g0ag1ael22j1firhr8v42lbg0bdnqn.apps.googleusercontent.com",
+                "client_type": 1,
+                "android_info": {
+                    "package_name": "com.example.tiffinbox",
+                    "certificate_hash": "2f612e591c45dea2fec807a3fc946e0beb69b238"
                 }
             },
             {

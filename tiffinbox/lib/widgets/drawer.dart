@@ -30,10 +30,9 @@ class _MyDrawerState extends State<MyDrawer> {
     Future<void> _logout() async {
     await _auth.signOut();
     await _googleSignIn.signOut();
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
-      (route) => false,
     );
   }
 

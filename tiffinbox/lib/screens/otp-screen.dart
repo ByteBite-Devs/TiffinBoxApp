@@ -71,18 +71,16 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void navigateToHome() {
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const HomeScreen()),
-          (route) => false,
     );
   }
 
   void navigateToBusinessHome() {
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => BusinessHomeScreen()),
-          (route) => false,
     );
   }
 

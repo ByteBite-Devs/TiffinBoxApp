@@ -18,6 +18,7 @@ class BusinessHomeScreen extends StatefulWidget {
 }
 
 class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
+  bool isDataLoaded = false;
   @override
   void initState() {
     super.initState();
@@ -61,6 +62,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
         });
       });
     }
+
+    setState(() {
+      isDataLoaded = true;
+    });
   }
 
   void _navigateToAddEditScreen([TiffinItem? item]) {
@@ -75,7 +80,7 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TiffinBox'),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.logout),
@@ -84,87 +89,92 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
               GoogleSignIn _googleSignIn = GoogleSignIn();
               await _googleSignIn.signOut();
               await _auth.signOut();
-              Navigator.pushAndRemoveUntil(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
-                (route) => false,
               );
             },
           ),
         ],
       ),
-      body: tiffinItems.isEmpty
-          ? Center(
-              child: ElevatedButton(
-                onPressed: () => _navigateToAddEditScreen(),
-                child: const Text('Start Adding Tiffins'),
-              ),
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _userName,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      FloatingActionButton(
-                        onPressed: () => _navigateToAddEditScreen(),
-                        child: const Icon(Icons.add),
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.white,
-                      ),
-                    ],
+      body: !isDataLoaded
+          ? const Center(child: CircularProgressIndicator())
+          : tiffinItems.isEmpty
+              ? Center(
+                  child: ElevatedButton(
+                    onPressed: () => _navigateToAddEditScreen(),
+                    child: const Text('Start Adding Tiffins'),
                   ),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _userName,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          FloatingActionButton(
+                            onPressed: () => _navigateToAddEditScreen(),
+                            child: const Icon(Icons.add),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(8.0),
+                        itemCount: tiffinItems.length,
+                        itemBuilder: (context, index) {
+                          final item = tiffinItems[index];
+                          return Card(
+                            color: buttonnavbg,
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: ListTile(
+                              // load a network image if present or load an asset image
+                              leading: Image.network(
+                                item.images.isNotEmpty
+                                    ? item.images[0]
+                                    : 'https://via.placeholder.com/150',
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
+                              title: Text(item.name),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('\$${item.price.toStringAsFixed(2)}'),
+                                  Text(item.mealTypes != null
+                                      ? item.mealTypes!.join(', ')
+                                      : ''),
+                                  Text(item.dietType),
+                                  Text(
+                                      "Availability: ${item.mealTypes?.join(", ") ?? 'Not Available'}"),
+                                  Text(
+                                      'Frequency: ${item.frequency!.join(", ")}'),
+                                ],
+                              ),
+                              trailing: IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () => _navigateToAddEditScreen(item),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(8.0),
-                    itemCount: tiffinItems.length,
-                    itemBuilder: (context, index) {
-                      final item = tiffinItems[index];
-                      return Card(
-                        color: buttonnavbg,
-                        margin: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: ListTile(
-                          // load a network image if present or load an asset image
-                          leading: Image.network(
-                            item.images.isNotEmpty
-                                ? item.images[0]
-                                : 'https://via.placeholder.com/150',
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          ),
-                          title: Text(item.name),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('\$${item.price.toStringAsFixed(2)}'),
-                              Text(item.mealTypes!= null ? item.mealTypes!.join(', ') : ''),
-                              Text(item.dietType),
-                              Text("Availability: ${item.mealTypes?.join(", ") ?? 'Not Available'}"),
-                              Text('Frequency: ${item.frequency!.join(", ")}'),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () => _navigateToAddEditScreen(item),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
       bottomNavigationBar: CustomBusinessBottomNavigationBar(currentIndex: 0),
     );
   }

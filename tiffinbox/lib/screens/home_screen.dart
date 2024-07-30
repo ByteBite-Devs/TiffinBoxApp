@@ -33,10 +33,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
     _loadInitialData().then(
       (value) {
-        setState(() {
-          isDataLoaded = value;
-        });
+      setState(() {
+        isDataLoaded = value;
       });
+    });
   }
   _loadCurrentLocation() async {
     LocationManager.shared.initLocation();
@@ -121,11 +121,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute
-          (builder: (context) => BrowseScreen(
-            mealType: '',
-            searchQuery: query,
-          )),
+        MaterialPageRoute(
+            builder: (context) => BrowseScreen(
+                  mealType: '',
+                  searchQuery: query,
+                )),
       );
     }
   }
@@ -134,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text("Hi, ${_userName ?? 'Guest'}"),
         actions: [
           Builder(
@@ -235,7 +236,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     const SizedBox(height: 5),
 
-              // Popular Tiffins Heading
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -246,55 +246,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         IconButton(
                           icon: Icon(Icons.arrow_forward),
                           onPressed: () {
-                      // Navigate to the view all page or perform desired action
-                            Navigator.pushNamed(
-                          context, '/Browse'); // Example navigation
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => BrowseScreen())); // Example navigation
                           },
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-
-              // Popular Tiffins List
                     Container(
-                height: 220, // Adjust the height as needed
+                      height: 220, // Adjust the height as needed
                       margin: const EdgeInsets.only(bottom: 16.0),
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: [
-                          _buildTiffinCard(
-                            'assets/images/dal_rice_combo.jpg',
-                            'Dal Rice Combo',
-                            4.5,
-                            150,
-                          ),
-                          _buildTiffinCard(
-                            'assets/images/vegthali.jpg',
-                            'Veg Thali',
-                            4.0,
-                            200,
-                          ),
-                          _buildTiffinCard(
-                            'assets/images/vegandelightbox.jpg',
-                            'Vegan Delight Box',
-                            4.8,
-                            250,
-                          ),
+                          _buildTiffinCard('assets/images/dal_rice_combo.jpg', 'Dal Rice Combo', 4.5, 150),
+                          _buildTiffinCard('assets/images/vegthali.jpg', 'Veg Thali', 4.0, 200),
+                          _buildTiffinCard('assets/images/vegandelightbox.jpg', 'Vegan Delight Box', 4.8, 250),
                         ],
                       ),
                     ),
 
-              // Tiffin Services Heading
                     const Text(
                       'Tiffin Services',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
 
-              // Tiffin Services List
                     Column(
                       children: [
-                  //   iterate through _tiffinService and create each child
                         for (var service in _tiffinServices)
                           _buildTiffinServiceCard(
                             service['image'],
@@ -310,51 +288,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       )
       : const Center(child: CircularProgressIndicator()),
       bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
-    );
-  }
-
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Filter Options'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CheckboxListTile(
-                title: const Text('Option 1'),
-                value: false, // Add your filter option values here
-                onChanged: (bool? value) {
-                  // Handle filter option change
-                },
-              ),
-              CheckboxListTile(
-                title: const Text('Option 2'),
-                value: false, // Add your filter option values here
-                onChanged: (bool? value) {
-                  // Handle filter option change
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Apply filter changes
-                Navigator.of(context).pop();
-              },
-              child: const Text('Apply'),
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -380,56 +313,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildCategoryIcon(IconData iconData, String label) {
     return GestureDetector(
-      onTap: () {
-        print(label);
-        if (label == 'Veg' || label == 'Non-Veg' || label == 'Vegan') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BrowseScreen(
-              mealType: label,
-              searchQuery: '',
-            ),
+        onTap: () {
+          if (label == 'Veg' || label == 'Non-Veg' || label == 'Vegan') {
+            Navigator.push(
+              context, 
+              MaterialPageRoute( builder: (context) => BrowseScreen(mealType: label, searchQuery: '')),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BrowseScreen(mealType: '', searchQuery: label)),
+            );
+          }
+        },
+        child: Container(
+          width: 80, // Adjust width to fit content and spacing
+          margin: const EdgeInsets.symmetric(horizontal: 8), // Space between categories
+          decoration: BoxDecoration(
+            color: Colors.orange[50],
+            borderRadius: BorderRadius.circular(8),
           ),
-        );
-      }
-      else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BrowseScreen(
-              mealType: '',
-              searchQuery: label,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.grey[200],
+                child: Icon(iconData, color: Colors.black),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
           ),
-        );
-      }
-      },
-      child:Container(
-      width: 80, // Adjust width to fit content and spacing
-      margin:
-      const EdgeInsets.symmetric(horizontal: 8), // Space between categories
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            backgroundColor: Colors.grey[200],
-            child: Icon(iconData, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            textAlign: TextAlign.center, // Center align the text
-            style: const TextStyle(fontSize: 12),
-          ),
-        ],
-      ),
-    )
-    );
+        ));
   }
 
-  Widget _buildTiffinCard(String imagePath, String name, double rating,
-      double price) {
+  Widget _buildTiffinCard(String imagePath, String name, double rating, double price) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
       child: Column(
@@ -439,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             imagePath,
             width: 150,
             height: 120,
-                fit: BoxFit.cover,
+            fit: BoxFit.cover,
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -448,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               children: [
                 Text(
                   name,
-                    style: const TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
@@ -468,14 +390,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     Row(
                       children: [
                         SizedBox(width: 55),
-                    Icon(Icons.star, color: Colors.amber, size: 16),
-                    const SizedBox(width: 4),
+                        Icon(Icons.star, color: Colors.amber, size: 16),
+                        const SizedBox(width: 4),
                         Text(
                           rating.toString(),
-                          style: const TextStyle(fontSize: 12,),
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
                         ),
-                  ],
-                ),
+                      ],
+                    ),
                   ],
                 ),
               ],
@@ -486,74 +410,72 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-
-  Widget _buildTiffinServiceCard(String imagePath, String name, double? rating,
-      String id) {
+  Widget _buildTiffinServiceCard(
+      String imagePath, String name, double? rating, String id) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BusinessDetailsScreen(
-              businessId: id,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BusinessDetailsScreen(
+                businessId: id,
+              ),
             ),
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
           ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                image: DecorationImage(
-                  image: NetworkImage(imagePath),
-                  fit: BoxFit.cover,
+          child: Row(
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  image: DecorationImage(
+                    image: NetworkImage(imagePath),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(name,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.amber, size: 16),
-                        const SizedBox(width: 4),
-                        Text(rating.toString(),
-                            style: const TextStyle(fontSize: 14)),
-                      ],
-                    ),
-                    const SizedBox.shrink(),
-                  ],
+              const SizedBox(width: 8),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.star, color: Colors.amber, size: 16),
+                          const SizedBox(width: 4),
+                          Text(rating.toString(),
+                              style: const TextStyle(fontSize: 14)),
+                        ],
+                      ),
+                      const SizedBox.shrink(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      )
-    );
+            ],
+          ),
+        ));
   }
 }

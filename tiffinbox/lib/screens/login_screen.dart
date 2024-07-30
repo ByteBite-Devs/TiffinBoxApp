@@ -66,12 +66,11 @@ class _LoginScreenState extends State<LoginScreen> {
       (response) {
         print("RESPONSE: $response");
         if (response['status'] == 'success') {
-          Navigator.pushAndRemoveUntil(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => const HomeScreen(),
             ),
-                (route) => false,
           );
         }
         else {
@@ -87,7 +86,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    checkUserIsLoginOrNot();
   }
 
   void toggleSignInMethod() {
@@ -216,30 +214,27 @@ _togglePhoneSignIn() {
                               await apiService.loginUser(email, password);
                           if (response['status'] == 'success') {
                               if(response['user']['role'] == 'client') {
-                                Navigator.pushAndRemoveUntil(
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => const HomeScreen(),
                                   ),
-                                      (route) => false,
                                 );
                               }
                               else if(response['user']['role'] == 'business') {
-                                Navigator.pushAndRemoveUntil(
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => const BusinessHomeScreen(),
                                   ),
-                                      (route) => false,
                                 );
                               }
                               else if(response['user']['role'] == 'driver') {
-                                Navigator.pushAndRemoveUntil(
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => const DeliveryHomePage(),
                                   ),
-                                      (route) => false,
                                 );
                               }
                             } else {
