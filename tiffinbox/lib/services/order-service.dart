@@ -58,11 +58,12 @@ class OrderService {
   }
 
   updateOrderStatus(int order_number, String order_status) async {
-  var response = await http.patch(
-  Uri.parse("$baseUrl/update/${order_number}/$order_status"),
+  var response = await http.post(
+  Uri.parse("$baseUrl/update/${order_number}"),
   headers: <String, String>{
   'Content-Type': 'application/json; charset=UTF-8',
   },
+  body: jsonEncode({'order_status': order_status}),
   );
   if (response.statusCode == 200) {
   return json.decode(response.body);

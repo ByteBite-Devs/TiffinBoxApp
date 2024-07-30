@@ -1,12 +1,13 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:tiffinbox/utils/constants/color.dart';
+import '../utils/constants/color.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
@@ -54,8 +55,26 @@ class _SplashScreenState extends State<SplashScreen>
     return Timer(duration, navigationPage);
   }
 
-  void navigationPage() {
-    Navigator.of(context).pushReplacementNamed('/OnBoarding');
+  navigationPage() async {
+    // if the user is loggedIn take him to home page
+    // if the app is freshly installed, take to onboarding screens
+    // if the user is not logged in but comming again to the app, take him to login screen
+
+    // final prefs = await SharedPreferences.getInstance();
+    // final bool? isFirstInstall = prefs.getBool('isFirstInstall');
+    // final bool? isLoggedIn = prefs.getBool('isLoggedIn');
+
+    Navigator.of(context).pushReplacementNamed("/OnBoarding");
+
+    // if (isFirstInstall == null || isFirstInstall == true) {
+    //   // Set isFirstInstall to false after first use
+    //   await prefs.setBool('isFirstInstall', false);
+    //   Navigator.of(context).pushReplacementNamed(ONBOARDING);
+    // } else if (isLoggedIn == true) {
+    //   Navigator.of(context).pushReplacementNamed(HOME);
+    // } else {
+    //   Navigator.of(context).pushReplacementNamed(LOGIN);
+    // }
   }
 
   @override
@@ -84,13 +103,16 @@ class _SplashScreenState extends State<SplashScreen>
                       );
                     },
                   ),
-                  const SizedBox(width: 10), // Add some spacing between the logo and the text
+                  const SizedBox(
+                      width:
+                          10), // Add some spacing between the logo and the text
                   // Animated text
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: List<Widget>.generate(_text.length, (int index) {
                       return AnimatedBuilder(
-                        animation: _animations[index + 1], // Adjust index for the text
+                        animation:
+                            _animations[index + 1], // Adjust index for the text
                         builder: (BuildContext context, Widget? child) {
                           return Opacity(
                             opacity: _animations[index + 1].value,
@@ -120,6 +142,31 @@ class _SplashScreenState extends State<SplashScreen>
                 ],
               ),
             ],
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(bottom: 20.0), // Add padding if needed
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Powered by',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Image.asset(
+                    'assets/university_of_windsor.png', // Add the correct path to your logo asset
+                    height: 100, // Adjust the height and width as needed
+                    width: 100.0,
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

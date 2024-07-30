@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tiffinbox/screens/about_us.dart';
 import 'package:tiffinbox/screens/login_screen.dart';
 import 'package:tiffinbox/screens/my-orders_screen.dart';
 import 'package:tiffinbox/screens/profile_screen.dart';
@@ -29,10 +30,9 @@ class _MyDrawerState extends State<MyDrawer> {
     Future<void> _logout() async {
     await _auth.signOut();
     await _googleSignIn.signOut();
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
-      (route) => false,
     );
   }
 
@@ -117,35 +117,44 @@ class _MyDrawerState extends State<MyDrawer> {
                 MaterialPageRoute(builder: (context) => const AddressScreen()),
               );            },
           ),
+          // ListTile(
+          //   title: const Text('Payment Methods'),
+          //   onTap: () {
+          //     // Handle tap for Payment Methods
+          //   },
+          // ),
           ListTile(
-            title: Text('Payment Methods'),
+            title: const Text('About Us'),
             onTap: () {
-              // Handle tap for Payment Methods
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AboutUsScreen()),
+              );
             },
           ),
+          // ListTile(
+          //   title: const Text('Contact Us'),
+          //   onTap: () {
+          //     // Handle tap for Contact Us
+          //   },
+          // ),
+          // ListTile(
+          //   title: const Text('Settings'),
+          //   onTap: () {
+          //     // Handle tap for Settings
+          //   },
+          // ),
+          // ListTile(
+          //   title: const Text('Help & FAQs'),
+          //   onTap: () {
+          //     // Handle tap for Help & FAQs
+          //   },
+          // ),
+          const Divider(),
           ListTile(
-            title: Text('Contact Us'),
+            title: const Text('Log Out'),
             onTap: () {
-              // Handle tap for Contact Us
-            },
-          ),
-          ListTile(
-            title: Text('Settings'),
-            onTap: () {
-              // Handle tap for Settings
-            },
-          ),
-          ListTile(
-            title: Text('Help & FAQs'),
-            onTap: () {
-              // Handle tap for Help & FAQs
-            },
-          ),
-          Divider(),
-          ListTile(
-            title: Text('Log Out'),
-            onTap: () {
-              print("hwefhuwhf");
+              print("User Logged out");
               _logout();
             },
           ),

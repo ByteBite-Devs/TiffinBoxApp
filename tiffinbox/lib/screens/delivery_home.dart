@@ -59,10 +59,9 @@ class _DeliveryHomePageState extends State<DeliveryHomePage> {
               await FirebaseAuth.instance.signOut();
               GoogleSignIn signIn = GoogleSignIn();
               await signIn.signOut();
-              Navigator.pushAndRemoveUntil(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
-                (route) => false,
               );
             },
           ),

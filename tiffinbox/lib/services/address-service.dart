@@ -88,4 +88,31 @@ class AddressProvider with ChangeNotifier {
       throw Exception('Failed to update address');
     }
   }
+
+  updateAddress(String address, String city, String state) async {    
+    if(_addresses.isEmpty) {
+      addAddress('', '', address, '', city, state, '');
+    }
+    final response = await http.patch(
+      Uri.parse('$url/update/${_addresses[0]['id']}'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        "addressLine1": address,
+        "addressLine2": "",
+        "city": city,
+        "state": state,
+        "is_default":true
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      fetchAddresses();
+      notifyListeners();
+    }
+    else {
+      throw Exception('Failed to update address');
+    }
+  }
 }

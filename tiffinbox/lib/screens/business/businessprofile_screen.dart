@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:tiffinbox/services/address-service.dart';
 import 'package:tiffinbox/services/profile-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/custom_bottom_nav.dart';
@@ -20,8 +22,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _dobController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
   var phoneNumber = "";
   String? _selectedGender;
   String? _profileImageUrl;
@@ -38,32 +41,35 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
   Future<void> _loadUserProfile() async {
     try {
       var response = await profileService.getProfileDetails();
-      if(response['status'] == 'success') {
+      if (response['status'] == 'success') {
         var userData = response['user'];
         setState(() {
-          if(userData['phone'] != '') {
+          if (userData['phone'] != '') {
             var phoneNumber = '';
-            if(userData['phome'].toString().contains('+'))
+            if (userData['phone'].toString().contains('+'))
               phoneNumber = userData['phone'].substring(2);
             else
               phoneNumber = userData['phone'];
             _phoneController.text = phoneNumber;
           }
           _emailController.text = userData['email'] ?? '';
-          _nameController.text = userData['name'] ?? '';
-          _dobController.text = userData['dob'] ?? '';
-          _locationController.text = userData['location'] ?? '';
-          _selectedGender = userData['gender'];
+          _nameController.text = userData['business_name'] ?? '';
           _profileImageUrl = userData['image'];
         });
-      }
-    }
-    catch(
-    e) {
-      print(e);
-      }
-  }
+        var provider = Provider.of<AddressProvider>(context, listen: false);
+        await provider.fetchAddresses();
+        print(provider.addresses);
+        setState(() {
+          _addressController.text = provider.addresses[0]['addressLine1'] ?? '';
+          _cityController.text = provider.addresses[0]['city'] ?? '';
+          _stateController.text = provider.addresses[0]['state'] ?? '';
+        });
 
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   Future<String> _uploadProfileImage(String userId) async {
     try {
@@ -87,12 +93,26 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
           _profileImageUrl = profileImageUrl;
         });
       }
+
+      // update the address, coity and state if they were changed
+      if (_addressController.text != '' ||
+          _cityController.text != '' ||
+          _stateController.text != '') {
+        await Provider.of<AddressProvider>(context, listen: false).updateAddress(
+          _addressController.text,
+          _cityController.text,
+          _stateController.text,
+        );
+
+        print('Address updated successfully');
+      }
       var response = await profileService.updateProfileDetails(
         _emailController.text,
         _nameController.text,
         _profileImageUrl ?? '',
-        _phoneController.text
+        _phoneController.text,
       );
+
       if (response['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Profile updated successfully')),
@@ -109,8 +129,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
   Future<void> _pickProfileImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    // final PickedFile? pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -129,7 +149,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-             Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
         ),
       ),
@@ -137,7 +157,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
         child: SingleChildScrollView(
           child: Container(
             height: screenHeight,
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
             child: Column(
               children: [
                 const SizedBox(height: 30),
@@ -149,8 +170,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                       foregroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
                           : (_profileImageUrl != null
-                          ? NetworkImage(_profileImageUrl!) as ImageProvider
-                          : null),
+                              ? NetworkImage(_profileImageUrl!) as ImageProvider
+                              : null),
                     ),
                     Positioned(
                       bottom: 0,
@@ -178,9 +199,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     counterText: "",
-                      prefixIcon: Container(
-                        padding: const EdgeInsets.all(12),
-                      ),
+                    prefixIcon: Container(
+                      padding: const EdgeInsets.all(12),
+                    ),
                     labelText: 'Phone Number',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -213,44 +234,9 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                 ),
                 const SizedBox(height: 15),
                 TextField(
-                  controller: _dobController,
+                  controller: _addressController,
                   decoration: InputDecoration(
-                    labelText: 'Date of Birth',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
-                    );
-                    if (pickedDate != null) {
-                      setState(() {
-                        _dobController.text = "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 15),
-                DropdownButtonFormField<String>(
-                  value: _selectedGender,
-                  hint: const Text('Gender'),
-                  items: ['Male', 'Female', 'Other']
-                      .map((gender) => DropdownMenuItem(
-                    value: gender,
-                    child: Text(gender),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedGender = value;
-                    });
-                  },
-                  decoration: InputDecoration(
+                    labelText: 'Address',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -258,9 +244,19 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                 ),
                 const SizedBox(height: 15),
                 TextField(
-                  controller: _locationController,
+                  controller: _cityController,
                   decoration: InputDecoration(
-                    labelText: 'Location',
+                    labelText: 'City',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                TextField(
+                  controller: _stateController,
+                  decoration: InputDecoration(
+                    labelText: 'State',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -271,22 +267,26 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                   width: double.infinity,
                   child: TextButton(
                     onPressed: _updateUserProfile,
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white
-                        ),
+                    style: TextButton.styleFrom(
+                      backgroundColor: primarycolor,
+                      padding: const EdgeInsets.symmetric(vertical: 15.0),
+                    ),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           ),
-          
         ),
       ),
-      bottomNavigationBar: const CustomBusinessBottomNavigationBar(currentIndex: 2),
+      bottomNavigationBar:
+          const CustomBusinessBottomNavigationBar(currentIndex: 2),
     );
   }
 }
