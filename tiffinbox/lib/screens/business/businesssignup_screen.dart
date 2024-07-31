@@ -6,8 +6,8 @@ import 'package:tiffinbox/services/signup-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
-import 'package:tiffinbox/widgets/password_filed.dart';
-
+import 'package:tiffinbox/widgets/password_field.dart';
+ 
 class RegisterBusinessScreen extends StatefulWidget {
   const RegisterBusinessScreen({Key? key}) : super(key: key);
 
