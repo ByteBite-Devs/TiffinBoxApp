@@ -11,11 +11,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/login-service.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key, required String phone}) : super(key: key);
-  final String phone = '';
+  final String phone;
+  final String verificationId;
+
+  const OtpScreen({Key? key, required this.phone, required this.verificationId}) : super(key: key);
+
   @override
   _OtpScreenState createState() => _OtpScreenState();
 }
+
 
 class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
@@ -25,7 +29,7 @@ class _OtpScreenState extends State<OtpScreen> {
   Future<void> _signInWithOTP() async {
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: LoginScreen.verificationId,
+        verificationId: widget.verificationId,
         smsCode: _otpController.text,
       );
       UserCredential userCredential =
