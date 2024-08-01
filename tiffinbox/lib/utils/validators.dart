@@ -11,18 +11,16 @@ class Validators {
   }
 
   static String? validatePassword(String? value) {
-    print(value);
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
     }
     if (value.length < 6) {
       return 'Password must be at least 6 characters';
     }
-    // check for presesnce of 1 capital letrer atleast
-    final passwordRegex =  RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+  final passwordRegex =RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
     if (!passwordRegex.hasMatch(value)) {
-      return 'Password must contain at least 1 capital letter, 1 small letter, 1 number and 1 special character';
+      return 'Your password must include:\n-At least 8 characters long, no more than 12 characters\n-At least 1 capital letter\n-At least 1 small letter\n-At least 1 number\n-At least 1 special character';
     }
   
     return null;

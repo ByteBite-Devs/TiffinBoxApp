@@ -30,10 +30,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
     super.initState();
     _loadTiffins();
     _searchController = TextEditingController(text: widget.searchQuery);
-    if(widget.mealType != null) {
+    if (widget.mealType != null) {
       _applyMealTypeFilter();
     }
-    if(_searchController.text.isNotEmpty) {
+    if (_searchController.text.isNotEmpty) {
       _filterTiffins();
     }
   }
@@ -80,7 +80,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           _glutenFreeFilter = true;
         }
       });
-        await _filterTiffins();
+      await _filterTiffins();
     }
   }
 
@@ -89,22 +89,29 @@ class _BrowseScreenState extends State<BrowseScreen> {
       _filteredTiffins = _tiffins;
       // do filtering one after the other
       if (_VegFilter || _veganFilter || _glutenFreeFilter) {
-      _filteredTiffins = _tiffins
-          .where((tiffin) =>
-          (_VegFilter && tiffin['dietType'] == 'Veg') ||
-          (_veganFilter && tiffin['dietType'] == 'Vegan') ||  
-          (_glutenFreeFilter && tiffin['dietType'] == 'Non-Veg'))
-          .toList();
+        _filteredTiffins = _tiffins
+            .where((tiffin) =>
+                (_VegFilter && tiffin['dietType'] == 'Veg') ||
+                (_veganFilter && tiffin['dietType'] == 'Vegan') ||
+                (_glutenFreeFilter && tiffin['dietType'] == 'Non-Veg'))
+            .toList();
       }
 
       if (_searchController.text.isNotEmpty) {
         _filteredTiffins = _filteredTiffins
             .where((tiffin) =>
-        tiffin['name'].toLowerCase().contains(_searchController.text.toLowerCase()) ||
-        tiffin['description'].toLowerCase().contains(_searchController.text.toLowerCase())
-        || (tiffin['contents'] != null && (tiffin['contents'] as List)
-            .any((content) => content['name'].toLowerCase().contains(_searchController.text.toLowerCase())))
-        ).toList();
+                tiffin['name']
+                    .toLowerCase()
+                    .contains(_searchController.text.toLowerCase()) ||
+                tiffin['description']
+                    .toLowerCase()
+                    .contains(_searchController.text.toLowerCase()) ||
+                (tiffin['contents'] != null &&
+                    (tiffin['contents'] as List).any((content) =>
+                        content['name']
+                            .toLowerCase()
+                            .contains(_searchController.text.toLowerCase()))))
+            .toList();
       }
 
       if (_ratingFilter != 3.0) {
@@ -113,9 +120,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
             .toList();
       }
       _sortTiffins();
-      });
+    });
   }
- 
+
   void _openRatingFilter() {
     showModalBottomSheet(
       context: context,
@@ -128,7 +135,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 ListTile(
                   title: const Text(
                     'Rating',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primarycolor),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: primarycolor),
                   ),
                   trailing: IconButton(
                     icon: const Icon(Icons.close),
@@ -152,11 +162,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: List.generate(
                     6,
-                        (index) => Text(
+                    (index) => Text(
                       '${index * 1.0}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: index * 1.0 == _ratingFilter ? primarycolor : Colors.black,
+                        color: index * 1.0 == _ratingFilter
+                            ? primarycolor
+                            : Colors.black,
                       ),
                     ),
                   ),
@@ -166,7 +178,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     Navigator.pop(context);
                     _filterTiffins();
                   },
-                  child: const Text('Apply' , style: TextStyle(color: whiteText)),
+                  child:
+                      const Text('Apply', style: TextStyle(color: whiteText)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primarycolor,
                     foregroundColor: Colors.white,
@@ -181,10 +194,11 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     });
                     Navigator.pop(context);
                   },
-                  child: const Text('Reset', style: TextStyle(color: whiteText)),
+                  child:
+                      const Text('Reset', style: TextStyle(color: whiteText)),
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                    foregroundColor: Colors.white,    
+                    foregroundColor: Colors.white,
                   ),
                 ),
                 SizedBox(height: 8),
@@ -208,7 +222,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 ListTile(
                   title: const Text(
                     'Dietary',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primarycolor),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: primarycolor),
                   ),
                   trailing: IconButton(
                     icon: const Icon(Icons.close),
@@ -293,7 +310,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 ListTile(
                   title: const Text(
                     'Sort by',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primarycolor),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: primarycolor),
                   ),
                   trailing: IconButton(
                     icon: const Icon(Icons.close),
@@ -394,95 +414,93 @@ class _BrowseScreenState extends State<BrowseScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                _filterTiffins();
-              },
-              decoration: InputDecoration(
-                labelText: 'Search',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    _filterTiffins();
-                  },
-                ),
-                border: const OutlineInputBorder(),
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
               children: [
-                TextButton(
-                  onPressed: _openRatingFilter,
-                  child: const Text('Rating' , style: TextStyle(color: whiteText)),
-                  style: TextButton.styleFrom(
-                    backgroundColor: primarycolor,
-                    side: const BorderSide(color: primarycolor),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      _filterTiffins();
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Search',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          _filterTiffins();
+                        },
+                      ),
+                      border: const OutlineInputBorder(),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                TextButton(
-                  onPressed: _openDietaryFilter,
-                  child: const Text('Dietary' , style: TextStyle(color: whiteText)),
-                  style: TextButton.styleFrom(
-                    backgroundColor: primarycolor,
-                    side: const BorderSide(color: primarycolor),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      TextButton(
+                        onPressed: _openRatingFilter,
+                        child: const Text('Rating',
+                            style: TextStyle(color: whiteText)),
+                        style: TextButton.styleFrom(
+                          backgroundColor: primarycolor,
+                          side: const BorderSide(color: primarycolor),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: _openDietaryFilter,
+                        child: const Text('Dietary',
+                            style: TextStyle(color: whiteText)),
+                        style: TextButton.styleFrom(
+                          backgroundColor: primarycolor,
+                          side: const BorderSide(color: primarycolor),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: _openSortOptions,
+                        child: const Text('Sort by',
+                            style: TextStyle(color: whiteText)),
+                        style: TextButton.styleFrom(
+                          backgroundColor: primarycolor,
+                          side: const BorderSide(color: primarycolor),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: _clearFilters,
+                        child: const Text('Clear Filters',
+                            style: TextStyle(color: whiteText)),
+                        style: TextButton.styleFrom(
+                          backgroundColor: primarycolor,
+                          side: const BorderSide(color: primarycolor),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                TextButton(
-                  onPressed: _openSortOptions,
-                  child: const Text('Sort by' , style: TextStyle(color: whiteText)),
-                  style: TextButton.styleFrom(
-                    backgroundColor: primarycolor,
-                    side: const BorderSide(color: primarycolor),
+                const SizedBox(height: 8),
+                if (_filteredTiffins.isEmpty) const Text('No tiffins found.'),
+                const SizedBox(height: 8),
+                if (_filteredTiffins.isNotEmpty)
+                  Expanded(
+                    child: GridView.count(
+                        padding: const EdgeInsets.all(16),
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        children: _filteredTiffins.map((tiffin) {
+                          return _buildFoodCategory(context, tiffin);
+                        }).toList()),
                   ),
-                ),
-                const SizedBox(width: 8),
-                TextButton(
-                  onPressed: _clearFilters,
-                  child: const Text('Clear Filters' , style: TextStyle(color: whiteText)),
-                  style: TextButton.styleFrom(
-                    backgroundColor: primarycolor,
-                    side: const BorderSide(color: primarycolor),
-                  ),
-                ),
               ],
             ),
-          ),
-          const SizedBox(height: 8),
-          if (_filteredTiffins.isEmpty)
-            const Text('No tiffins found.'),
-          const SizedBox(height: 8),
-          if (_filteredTiffins.isNotEmpty)
-
-            Expanded(
-            child: GridView.count(
-                padding: const EdgeInsets.all(16),
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: _filteredTiffins.map(
-                  (tiffin) {
-                    return _buildFoodCategory(context, tiffin);
-                  }
-                ).toList()
-            ),
-          ),
-        ],
-      ),
       bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 1),
     );
   }
 
-  
   Widget _buildFoodCategory(BuildContext context, dynamic tiffin) {
     return GestureDetector(
       onTap: () {
@@ -504,9 +522,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
                   image: NetworkImage(
-                    tiffin['images'] != null && tiffin['images'].isNotEmpty 
-                      ? tiffin['images'][0]
-                      : 'https://via.placeholder.com/150',
+                    tiffin['images'] != null && tiffin['images'].isNotEmpty
+                        ? tiffin['images'][0]
+                        : 'https://via.placeholder.com/150',
                   ),
                   fit: BoxFit.cover,
                 ),

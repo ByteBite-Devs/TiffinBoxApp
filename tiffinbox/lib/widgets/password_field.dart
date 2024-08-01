@@ -4,8 +4,9 @@ import 'package:tiffinbox/utils/validators.dart';
 class PasswordField extends StatefulWidget {
   final String label;
   final TextEditingController passwordController;
+  var validator;
 
-  PasswordField({required this.label, required this.passwordController });
+  PasswordField({required this.label, required this.passwordController, required this.validator});
 
   @override
   _PasswordFieldState createState() => _PasswordFieldState();
@@ -37,7 +38,7 @@ class _PasswordFieldState extends State<PasswordField> {
         ),
       ),
       obscureText: _isObscured,
-      validator: Validators.validatePassword, // Set validator
+      validator: widget.validator, // Set validator
     );
   }
 }

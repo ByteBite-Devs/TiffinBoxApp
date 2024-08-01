@@ -34,13 +34,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _loadInitialData().then(
-      (value) {
+    _loadInitialData().then((value) {
       setState(() {
         isDataLoaded = value;
       });
     });
   }
+
   _loadCurrentLocation() async {
     LocationManager.shared.initLocation();
 
@@ -49,22 +49,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // conver currentPos to accurate string addreess
     if (currentPosition != null) {
       await LocationManager.shared
-          .convertLatLongToAddress(currentPosition.latitude, currentPosition.longitude)
+          .convertLatLongToAddress(
+              currentPosition.latitude, currentPosition.longitude)
           .then((address) {
         setState(() {
           _location = address;
           if (widget.location != null) {
-            _location =  widget.location['addressLine1'] + ' ' + widget.location['addressLine2'];
+            _location = widget.location['addressLine1'] +
+                ' ' +
+                widget.location['addressLine2'];
           }
         });
       });
-    }
-    else {
+    } else {
       // get last location
       var lastPosition = await LocationManager.shared.getLastKnownPosition();
       if (lastPosition != null) {
         await LocationManager.shared
-            .convertLatLongToAddress(lastPosition.latitude, lastPosition.longitude)
+            .convertLatLongToAddress(
+                lastPosition.latitude, lastPosition.longitude)
             .then((address) {
           setState(() {
             _location = address;
@@ -152,7 +155,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Hi, ${_userName ?? 'Guest'}"),
+        title:
+            _userName!.isNotEmpty ? Text("Hello, $_userName!") : Text("Hello!"),
         actions: [
           Builder(
             builder: (context) {
@@ -168,7 +172,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ],
       ),
       endDrawer: const MyDrawer(),
-      body: isDataLoaded ?  SafeArea(
+      body: isDataLoaded
+          ? SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -182,7 +187,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           children: [
                             Text(
                               'Deliver to',
-                              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 12),
                             ),
                             Text(
                               _location ?? 'Select Your Location',
@@ -198,7 +204,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const AddressScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => const AddressScreen()),
                             );
                           },
                         ),
@@ -210,9 +217,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       margin: const EdgeInsets.symmetric(vertical: 8.0),
                       child: PageView(
                         children: [
-                          _buildOfferCard('assets/images/landingimage1.jpg', ''),
-                          _buildOfferCard('assets/images/landingimage2.jpg', ''),
-                          _buildOfferCard('assets/images/landingimage3.jpg', ''),
+                          _buildOfferCard(
+                              'assets/images/landingimage1.jpg', ''),
+                          _buildOfferCard(
+                              'assets/images/landingimage2.jpg', ''),
+                          _buildOfferCard(
+                              'assets/images/landingimage3.jpg', ''),
                         ],
                       ),
                     ),
@@ -236,10 +246,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(height: 16),
                     const Text(
                       'Categories',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
-
                     Container(
                       height:
                           100, // Adjust the height to fit the category icons and labels
@@ -257,12 +267,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       children: [
                         const Text(
                           'Popular Tiffins',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: Icon(Icons.arrow_forward),
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => BrowseScreen())); // Example navigation
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        BrowseScreen())); // Example navigation
                           },
                         ),
                       ],
@@ -280,15 +295,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     const Text(
                       'Tiffin Services',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-    
                     Column(
                       children: [
                         for (var service in _tiffinServices)
                           _buildTiffinServiceCard(
-                            service['profileImage'] ?? 'https://via.placeholder.com/150',
+                            service['profileImage'] ??
+                                'https://via.placeholder.com/150',
                             service['business_name'],
                             service['rating'].toString(),
                             service['id'],
@@ -330,18 +346,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           if (label == 'Veg' || label == 'Non-Veg' || label == 'Vegan') {
             Navigator.push(
               context,
-              MaterialPageRoute( builder: (context) => BrowseScreen(mealType: label, searchQuery: '')),
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BrowseScreen(mealType: label, searchQuery: '')),
             );
           } else {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => BrowseScreen(mealType: '', searchQuery: label)),
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BrowseScreen(mealType: '', searchQuery: label)),
             );
           }
         },
         child: Container(
           width: 80, // Adjust width to fit content and spacing
-          margin: const EdgeInsets.symmetric(horizontal: 8), // Space between categories
+          margin: const EdgeInsets.symmetric(
+              horizontal: 8), // Space between categories
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
