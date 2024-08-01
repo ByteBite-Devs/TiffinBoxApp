@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -8,12 +9,14 @@ import 'package:tiffinbox/screens/otp-screen.dart';
 import 'package:tiffinbox/services/login-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
+import 'package:tiffinbox/utils/validators.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
-import 'package:tiffinbox/widgets/password_filed.dart';
 import 'package:tiffinbox/widgets/social_box.dart';
-import 'home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import '../widgets/password_filed.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>(); // Add form key for validation
   var phone = "";
   bool _signInWithPhone = false; // Default sign-in method
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -147,6 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
             height: screenHeight,
             padding:
                 const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            child: Form(
+              key: _formKey, // Assign key
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -157,9 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   colors: const [primarycolor, orangeGradientShade],
                 ),
                 const SizedBox(height: 30),
-                // Conditional rendering based on sign-in method
                 if (_signInWithPhone) ...[
-                  // Phone number input and Get OTP button
                   IntlPhoneField(
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
@@ -177,17 +181,39 @@ class _LoginScreenState extends State<LoginScreen> {
                       onChanged: (value) => {
                             phone = value.completeNumber,
                             LoginScreen.phoneNumber = phone
-                          }),
-                  const SizedBox(height: 15),
-                  DefaultButton(
-                    title: 'Get OTP',
-                    onpress: () async {
-                      await initiatePhoneNumberVerification(phone);
-                    },
-                  ),
-                ] else ...[
-                  // Email input
-                  TextField(
+                      },
+                      validator: (value) {
+                        if (value == null || value.completeNumber.isEmpty) {
+                          return 'Please enter your phone number';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    DefaultButton(
+                      title: "Get OTP",
+                      onpress: () async {
+                        // validate phone number ands show eerror message on the form field
+                        if (_formKey.currentState!.validate()) {
+                          var res = Validators.validatePhoneNumber(phone);
+                          if (res != null) {
+                            // show toast
+                            Fluttertoast.showToast(
+                                msg: res,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.white,
+                                textColor: Colors.red,
+                                fontSize: 16.0);
+                            return;
+                          }
+                          await initiatePhoneNumberVerification(phone);
+                        }
+                      },
+                    ),
+                  ] else ...[
+                    TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
@@ -196,6 +222,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                    validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Email is required';
+                        }
+                        if (!EmailValidator.validate(value) &&
+                            value.length < 10) {
+                          return 'Enter a valid email address';
+                        }
+                        return null;
+                      },
                   ),
                   const SizedBox(height: 15),
                   // Password input
@@ -207,8 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   DefaultButton(
                     title: 'Sign in',
                     onpress: () async {
-                      if (_signInWithPhone) {
-                      } else {
+                      if (_formKey.currentState!.validate()) {
                         String email = _emailController.text;
                         String password = _passwordController.text;
                         try {
@@ -246,10 +281,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   );
                                 }
-                              
-                            });
-                          } else {
-                            print("Failed to sign in ");
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(response['message']),
+                                ),
+                              );
                           }
                         } catch (e) {
                           print('Failed to login user: $e');
@@ -260,7 +298,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
 
                 const SizedBox(height: 15),
-                // Other login options (Google, Facebook, etc.)
+                  const Text('Or sign in with'),
+                  const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -325,6 +364,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    )
     );
   }
 }

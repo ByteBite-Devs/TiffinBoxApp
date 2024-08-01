@@ -5,6 +5,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:tiffinbox/services/signup-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
+import 'package:tiffinbox/utils/validators.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
 import 'package:tiffinbox/widgets/password_filed.dart';
 
@@ -22,13 +23,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final signupService = SignupService();
-  bool _rememberMe = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
     _phoneController.dispose();
     _emailController.dispose();
     _nameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -41,6 +44,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Container(
           height: screenHeight,
           padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+          child: Form(
+            key: _formKey,
           child: Column(
             children: [
               const SizedBox(height: 30),
@@ -64,15 +69,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                 ),
                 initialCountryCode: 'CA',
-                onChanged: (phone) {
-                  print(phone.completeNumber);
-                },
+                  validator: (value) async {
+                    Validators.validatePhoneNumber;
+                }
               ),
               const SizedBox(height: 15),
-              TextField(
+              TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: textDecorationInput("Email")
+                  decoration: textDecorationInput("Email"),
+                    validator: Validators.validateEmail,
                   ),
               const SizedBox(height: 15),
               PasswordField(label: "Password", passwordController: passwordController),
@@ -87,6 +93,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               DefaultButton(
                   title: 'Sign Up',
                   onpress: () async {
+                     if (_formKey.currentState!.validate()) {
                     String phoneNumber = _phoneController.text;
                     String email = _emailController.text;
                     String name = _nameController.text;
@@ -102,6 +109,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       Navigator.of(context).pushReplacementNamed('/Login');
                     } else {
                       print(response['message']);
+                      }
+                     }
+                     else {
+                       print('Form is not valid');
                     }
                   }),
               const SizedBox(height: 25),
@@ -159,6 +170,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
               ),
             ],
+            ),
           ),
         )),
       ),

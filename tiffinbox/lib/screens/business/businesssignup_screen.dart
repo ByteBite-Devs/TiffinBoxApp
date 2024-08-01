@@ -78,10 +78,11 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
                 const SizedBox(height: 15),
                 PasswordField(label: "Confirm Password", passwordController: confirmPasswordController),
                 const SizedBox(height: 15),
-                TextField(
+                TextFormField(
                   controller: _businessNameController,
                   keyboardType: TextInputType.name,
                   decoration: textDecorationInput("Business Name"),
+                  validator: (value) => value!.isEmpty ? "Name cannot be empty" : null,
                 ),
                 const SizedBox(height: 15),
                 DefaultButton(
