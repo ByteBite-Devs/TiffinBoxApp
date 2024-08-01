@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:tiffinbox/services/profile-service.dart';
 import '../utils/constants/color.dart';
 import '../utils/custom_bottom_nav.dart';
+import '../widgets/drawer.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -126,12 +127,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Profile'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

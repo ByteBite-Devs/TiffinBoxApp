@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/utils/validators.dart';
  
 class PasswordField extends StatefulWidget {
   final String label;
   final TextEditingController passwordController;
+  var validator;
 
-  PasswordField({required this.label, required this.passwordController });
+  PasswordField({required this.label, required this.passwordController, required this.validator});
 
   @override
   _PasswordFieldState createState() => _PasswordFieldState();
@@ -21,7 +23,7 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: widget.passwordController,
       decoration: InputDecoration(
         border: OutlineInputBorder(
@@ -36,6 +38,7 @@ class _PasswordFieldState extends State<PasswordField> {
         ),
       ),
       obscureText: _isObscured,
+      validator: widget.validator, // Set validator
     );
   }
 }

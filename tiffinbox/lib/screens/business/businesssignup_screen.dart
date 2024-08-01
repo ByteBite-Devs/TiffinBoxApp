@@ -5,14 +5,16 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:tiffinbox/services/signup-service.dart';
 import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
+import 'package:tiffinbox/utils/validators.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
-import 'package:tiffinbox/widgets/password_filed.dart';
+import 'package:tiffinbox/widgets/password_field.dart';
 
 class RegisterBusinessScreen extends StatefulWidget {
   const RegisterBusinessScreen({Key? key}) : super(key: key);
 
   @override
-  _BusinessRegistrationScreenState createState() => _BusinessRegistrationScreenState();
+  _BusinessRegistrationScreenState createState() =>
+      _BusinessRegistrationScreenState();
 }
 
 class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
@@ -39,7 +41,8 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
             child: Column(
               children: [
                 const SizedBox(height: 30),
@@ -74,14 +77,24 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
                   decoration: textDecorationInput("Email"),
                 ),
                 const SizedBox(height: 15),
-                PasswordField(label: "Password", passwordController: passwordController),
+                PasswordField(
+                  label: "Password",
+                  passwordController: passwordController,
+                  validator: Validators.validatePassword,
+                ),
                 const SizedBox(height: 15),
-                PasswordField(label: "Confirm Password", passwordController: confirmPasswordController),
+                PasswordField(
+                  label: "Confirm Password",
+                  passwordController: confirmPasswordController,
+                  validator: Validators.validatePassword,
+                ),
                 const SizedBox(height: 15),
-                TextField(
+                TextFormField(
                   controller: _businessNameController,
                   keyboardType: TextInputType.name,
                   decoration: textDecorationInput("Business Name"),
+                  validator: (value) =>
+                      value!.isEmpty ? "Name cannot be empty" : null,
                 ),
                 const SizedBox(height: 15),
                 DefaultButton(
@@ -101,8 +114,7 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
                           phoneNumber, email, businessName, password);
                       if (response['status'] == 'success') {
                         Navigator.of(context).pushReplacementNamed('/Login');
-                      } else {
-                      }
+                      } else {}
                     } catch (e) {
                       print(e);
                     }
@@ -155,7 +167,8 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.of(context).pushReplacementNamed('/Login');
+                            Navigator.of(context)
+                                .pushReplacementNamed('/Login');
                           },
                       ),
                     ],
