@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:tiffinbox/screens/my-orders_screen.dart';
 import 'package:tiffinbox/services/address-service.dart';
 import 'package:tiffinbox/services/cart-service.dart';
 import 'package:tiffinbox/services/order-service.dart';
 import '../services/payment.dart';
-import '../utils/constants/constants.dart';
-import 'my-orders_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -128,175 +127,179 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ],
               ),
             ),
-            // Divider(color: Colors.grey),
-            // PaymentMethodScreen content
-            hasDonated
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          // "Thanks for your ${amountController.text} $selectedCurrency payment.",
-                          "Thank you for your payment.",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: formkey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: amountController,
+                      decoration: InputDecoration(
+                        labelText: 'Amount',
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter amount';
+                        }
+                        return null;
+                      },
                     ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Form(
-                      key: formkey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TextFormField(
-                            controller: amountController,
-                            decoration: InputDecoration(
-                              labelText: 'Amount',
-                            ),
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Please enter amount';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 8.0),
-                          Text('Currency:'),
-                          DropdownButton<String>(
-                            value: selectedCurrency,
-                            items: currencyList.map((String currency) {
-                              return DropdownMenuItem<String>(
-                                value: currency,
-                                child: Text(currency),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedCurrency = newValue!;
-                              });
-                            },
-                          ),
-                          SizedBox(height: 8.0),
-                          Form(
-                            key: formkey1,
-                            child: TextFormField(
-                              controller: nameController,
-                              decoration: InputDecoration(
-                                labelText: 'Name',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter name';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Form(
-                            key: formkey2,
-                            child: TextFormField(
-                              controller: addressController,
-                              decoration: InputDecoration(
-                                labelText: 'Address',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter address';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Form(
-                            key: formkey3,
-                            child: TextFormField(
-                              controller: cityController,
-                              decoration: InputDecoration(
-                                labelText: 'City',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter city';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Form(
-                            key: formkey4,
-                            child: TextFormField(
-                              controller: stateController,
-                              decoration: InputDecoration(
-                                labelText: 'State',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter state';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Form(
-                            key: formkey5,
-                            child: TextFormField(
-                              controller: countryController,
-                              decoration: InputDecoration(
-                                labelText: 'Country',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter country';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 8.0),
-                          Form(
-                            key: formkey6,
-                            child: TextFormField(
-                              controller: pincodeController,
-                              decoration: InputDecoration(
-                                labelText: 'Pincode',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter pincode';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 16.0),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (formkey.currentState!.validate()) {
-                                await initPaymentSheet();
-                                await Stripe.instance.presentPaymentSheet();
-                                var response = await _createOrder();
-                                if (response['status'] == 'success') {
-                                  setState(() {
-                                    hasDonated = true;
-                                    cartProvider.clearCart();
-                                  });
-                                }
-                              }
-                            },
-                            child: Text('Pay ${amountController.text} $selectedCurrency'),
-                          ),
-                        ],
+                    SizedBox(height: 8.0),
+                    Text('Currency:'),
+                    DropdownButton<String>(
+                      value: selectedCurrency,
+                      items: currencyList.map((String currency) {
+                        return DropdownMenuItem<String>(
+                          value: currency,
+                          child: Text(currency),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedCurrency = newValue!;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 8.0),
+                    Form(
+                      key: formkey1,
+                      child: TextFormField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Name',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter name';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                  ),
+                    SizedBox(height: 8.0),
+                    Form(
+                      key: formkey2,
+                      child: TextFormField(
+                        controller: addressController,
+                        decoration: InputDecoration(
+                          labelText: 'Address',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter address';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Form(
+                      key: formkey3,
+                      child: TextFormField(
+                        controller: cityController,
+                        decoration: InputDecoration(
+                          labelText: 'City',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter city';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Form(
+                      key: formkey4,
+                      child: TextFormField(
+                        controller: stateController,
+                        decoration: InputDecoration(
+                          labelText: 'State',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter state';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Form(
+                      key: formkey5,
+                      child: TextFormField(
+                        controller: countryController,
+                        decoration: InputDecoration(
+                          labelText: 'Country',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter country';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Form(
+                      key: formkey6,
+                      child: TextFormField(
+                        controller: pincodeController,
+                        decoration: InputDecoration(
+                          labelText: 'Pincode',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter pincode';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (formkey.currentState!.validate()) {
+                          await initPaymentSheet();
+                          await Stripe.instance.presentPaymentSheet();
+                          var response = await _createOrder();
+                          if (response['status'] == 'success') {
+                            setState(() {
+                              cartProvider.clearCart();
+                            });
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return const AlertDialog(
+                                  title: Icon(Icons.check_circle,
+                                      color: Colors.green, size: 80),
+                                  content: Text('Payment successful!', textAlign: TextAlign.center,),    
+                                );
+                              },
+                            );
+
+                            Future.delayed(const Duration(seconds: 3), () {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MyOrdersScreen(),
+                                ),
+                                (Route<dynamic> route) => false,
+                              );
+                            });
+                          }
+                        }
+                      },
+                      child: Text('Pay ${amountController.text} $selectedCurrency'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -370,7 +373,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final cartProvider = Provider.of<CartProvider>(context);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Order Summary',
@@ -410,22 +413,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ],
                 ),
-              );
-            }).toList(),
-          ),
-        if (cartProvider.cartItems.isEmpty)
-          const Text(
-            'Your cart is empty.',
-            style: TextStyle(fontSize: 16),
-          ),
-        const SizedBox(height: 6),
+            );
+          }).toList(),
+        ),
         const Divider(),
         const SizedBox(height: 6),
         Text(
           'Total: \$${cartProvider.totalAmount.toStringAsFixed(2)}',
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
       ],
     );
   }

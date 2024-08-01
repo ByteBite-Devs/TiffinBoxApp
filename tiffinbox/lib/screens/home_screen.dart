@@ -3,8 +3,10 @@ import 'package:tiffinbox/common/location_manager.dart';
 import 'package:tiffinbox/screens/browse_screen.dart';
 import 'package:tiffinbox/screens/business-details-screen.dart';
 import 'package:tiffinbox/screens/saved-addresses.dart';
+import 'package:tiffinbox/screens/tiffindetails_screen.dart';
 import 'package:tiffinbox/services/home-service.dart';
 import 'package:tiffinbox/services/profile-service.dart';
+import 'package:tiffinbox/services/tiffin-service.dart';
 import 'package:tiffinbox/widgets/drawer.dart';
 import '../utils/custom_bottom_nav.dart';
 
@@ -27,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<dynamic> _tiffinServices = [];
   HomeServie homeServie = HomeServie();
   bool isDataLoaded = false;
+  List<dynamic> _tiffins = [];
 
   @override
   void initState() {
@@ -86,9 +89,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  _fetchTiffins() async {
+    try {
+      var response = await TiffinService().getAllTiffins();
+      if (response['status'] == 'success') {
+        setState(() {
+          _tiffins = response['tiffins'];
+        });
+      }
+    } catch (e) {
+      print('Error loading tiffins: $e');
+    }
+  }
+
   Future<bool> _loadInitialData() async {
     await _loadUserDetails();
     await _loadCurrentLocation();
+    await _fetchTiffins();
     _offers = [
       {'imagePath': 'assets/images/dal_rice_combo.jpg', 'offerText': ''},
       {'imagePath': 'assets/images/vegthali.jpg', 'offerText': ''},
@@ -224,8 +241,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(height: 16),
 
                     Container(
-                height:
-                100, // Adjust the height to fit the category icons and labels
+                      height:
+                          100, // Adjust the height to fit the category icons and labels
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: _filteredCategories.map((category) {
@@ -235,7 +252,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     const SizedBox(height: 5),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -257,27 +273,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       margin: const EdgeInsets.only(bottom: 16.0),
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: [
-                          _buildTiffinCard('assets/images/dal_rice_combo.jpg', 'Dal Rice Combo', 4.5, 150),
-                          _buildTiffinCard('assets/images/vegthali.jpg', 'Veg Thali', 4.0, 200),
-                          _buildTiffinCard('assets/images/vegandelightbox.jpg', 'Vegan Delight Box', 4.8, 250),
-                        ],
+                        children: _tiffins.map((tiffin) {
+                          return _buildTiffinCard(tiffin);
+                        }).toList(),
                       ),
                     ),
-
                     const Text(
                       'Tiffin Services',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-
+    
                     Column(
                       children: [
                         for (var service in _tiffinServices)
                           _buildTiffinServiceCard(
-                            service['image'],
+                            service['profileImage'] ?? 'https://via.placeholder.com/150',
                             service['business_name'],
-                      service['rating'],
+                            service['rating'].toString(),
                             service['id'],
                           ),
                       ],
@@ -285,8 +298,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-      )
-      : const Center(child: CircularProgressIndicator()),
+            )
+          : const Center(child: CircularProgressIndicator()),
       bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
     );
   }
@@ -316,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         onTap: () {
           if (label == 'Veg' || label == 'Non-Veg' || label == 'Vegan') {
             Navigator.push(
-              context, 
+              context,
               MaterialPageRoute( builder: (context) => BrowseScreen(mealType: label, searchQuery: '')),
             );
           } else {
@@ -329,10 +342,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Container(
           width: 80, // Adjust width to fit content and spacing
           margin: const EdgeInsets.symmetric(horizontal: 8), // Space between categories
-          decoration: BoxDecoration(
-            color: Colors.orange[50],
-            borderRadius: BorderRadius.circular(8),
-          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -351,67 +360,80 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ));
   }
 
-  Widget _buildTiffinCard(String imagePath, String name, double rating, double price) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.asset(
-            imagePath,
-            width: 150,
-            height: 120,
-            fit: BoxFit.cover,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  // Align items to the ends
-                  children: [
-                    Text(
-                      '₹$price',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(width: 55),
-                        Icon(Icons.star, color: Colors.amber, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          rating.toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+  Widget _buildTiffinCard(tiffin) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TiffinDetailScreen(
+                      tiffinId: tiffin['id'],
+                    )));
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              tiffin['images'] != null && tiffin['images'].isNotEmpty
+                  ? tiffin['images'][0]
+                  : 'https://via.placeholder.com/150',
+              width: 150,
+              height: 120,
+              fit: BoxFit.cover,
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    tiffin['name'],
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${tiffin['price']}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(width: 55),
+                          Icon(Icons.star, color: Colors.amber, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            tiffin['rating'] != null
+                                ? tiffin['rating'].toString()
+                                : 'N/A',
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildTiffinServiceCard(
-      String imagePath, String name, double? rating, String id) {
+      String imagePath, String name, String rating, String id) {
     return GestureDetector(
         onTap: () {
           Navigator.push(
@@ -461,14 +483,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.star, color: Colors.amber, size: 16),
-                          const SizedBox(width: 4),
-                          Text(rating.toString(),
-                              style: const TextStyle(fontSize: 14)),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     Icon(Icons.star, color: Colors.amber, size: 16),
+                      //     const SizedBox(width: 4),
+                      //     Text(rating,
+                      //         style: const TextStyle(fontSize: 14)),
+                      //   ],
+                      // ),
                       const SizedBox.shrink(),
                     ],
                   ),

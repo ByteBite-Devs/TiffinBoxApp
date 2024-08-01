@@ -3,40 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Profile {
-  String id;
-  String name;
-  String email;
-  String profileImage;
-  String phone;
-
-  Profile({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.profileImage,
-    required this.phone,
-  });
-
-  static Profile? fromJson(decode) {
-    if (decode != null) {
-      return Profile(
-        id: decode['id'],
-        name: decode['name'],
-        email: decode['email'],
-        profileImage: decode['profileImage'],
-        phone: decode['phone'],
-      );
-    }
-    return null;
-  }
-}
-
 class ProfileProvider with ChangeNotifier {
   final String baseUrl = 'http://192.168.56.1:8000/api/';
 
-  Profile? _profile;
-  Profile? get profile => _profile;
+  dynamic _profile;
+  dynamic get profile => _profile;
 
   Future<void> getProfile() async {
     final response = await http.get(
@@ -44,7 +15,7 @@ class ProfileProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      _profile = Profile.fromJson(json.decode(response.body)['user']);
+      _profile = jsonDecode(response.body)['user'];
     } else {
       throw Exception('Failed to get profile');
     }
@@ -52,7 +23,8 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateProfileDetails(String email, String name, String profileImage, String phone) async {
+  updateProfileDetails(String email, String name, String profileImage,
+      String phone, String dob, String gender) async {
     final response = await http.patch(
       Uri.parse('${baseUrl}profile/${FirebaseAuth.instance.currentUser!.uid}'),
       headers: <String, String>{
@@ -62,17 +34,19 @@ class ProfileProvider with ChangeNotifier {
         'email': email,
         'name': name,
         'profileImage': profileImage,
-        'phone': phone
+        'phone': phone,
+        'dob': dob,
+        'gender': gender,
       }),
     );
 
     if (response.statusCode == 200) {
-      _profile = Profile.fromJson(json.decode(response.body)['user']);
+      _profile = jsonDecode(response.body)['user'];
     } else {
       throw Exception('Failed to update profile details');
     }
 
-    notifyListeners();
+      notifyListeners();
   }
 }
 
@@ -88,26 +62,6 @@ class ProfileService {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to get profile details');
-    }
-  }
-  Future<Map<String, dynamic>> updateProfileDetails(String email, String name, String profileImage, String phone) async {
-    final response = await http.patch(
-      Uri.parse('${baseUrl}profile/${FirebaseAuth.instance.currentUser!.uid}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'email': email,
-        'name': name,
-        'profileImage': profileImage,
-        'phone': phone
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to update profile details');
     }
   }
 }

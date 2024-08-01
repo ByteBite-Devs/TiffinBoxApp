@@ -150,7 +150,7 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
                                     Text(order['order_number'].toString())),
                                 DataCell(Text(order['user']['name']!)),
                                 DataCell(Text(
-                                    addressFromJson(order['address'] ?? {}))),
+                                    addressFromJson(order['address']))),
                                 DataCell(Text(order['user']['phone'] ?? '')),
                                 DataCell(Text(order['tiffin']['name'] ?? '')),
                                 DataCell(
@@ -260,7 +260,10 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
     }
   }
 
-  String addressFromJson(Map<String, dynamic> address) {
-    return '${address['addressLine1']} ${address['addressLine2']} ${address['city']} ${address['state']}';
+  String addressFromJson(dynamic address) {
+    if (address == null) {
+      return '';
+    }
+    return '${address['address']}} ${address['city']} ${address['state']}';
   }
 }

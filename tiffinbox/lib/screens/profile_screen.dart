@@ -4,17 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:tiffinbox/services/profile-service.dart';
 import '../utils/constants/color.dart';
 import '../utils/custom_bottom_nav.dart';
- 
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
- 
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
- 
+
 class _ProfileScreenState extends State<ProfileScreen> {
   final ProfileService profileService = ProfileService();
   final TextEditingController _phoneController = TextEditingController();
@@ -26,15 +27,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _selectedGender;
   String? _profileImageUrl;
   File? _profileImage;
- 
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
- 
+
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
   }
- 
+
   Future<void> _loadUserProfile() async {
     try {
       var response = await profileService.getProfileDetails();
@@ -62,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(e);
     }
   }
- 
+
   Future<String> _uploadProfileImage(String userId) async {
     try {
       FirebaseStorage storage = FirebaseStorage.instance;
@@ -76,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       throw e;
     }
   }
- 
+
   Future<void> _updateUserProfile() async {
     try {
       if (_profileImage != null) {
@@ -85,12 +86,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _profileImageUrl = profileImageUrl;
         });
       }
-      var response = await profileService.updateProfileDetails(
+      var provider = Provider.of<ProfileProvider>(context, listen: false);
+      await provider.updateProfileDetails(
           _emailController.text,
           _nameController.text,
           _profileImageUrl ?? '',
-          _phoneController.text);
-      if (response['status'] == 'success') {
+          _phoneController.text,
+          _dobController.text ?? '',
+          _selectedGender ?? '');
+      if (provider.profile != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Profile updated successfully')),
         );
@@ -103,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(e);
     }
   }
- 
+
   Future<void> _pickProfileImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
@@ -114,11 +118,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     }
   }
- 
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
- 
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Profile'),
@@ -255,16 +259,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                TextField(
-                  controller: _locationController,
-                  decoration: InputDecoration(
-                    labelText: 'Location',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(

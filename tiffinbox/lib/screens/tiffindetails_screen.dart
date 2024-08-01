@@ -102,11 +102,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.favorite_border),
-                      onPressed: () {},
-                    ),
+                    )
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -129,15 +125,14 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                       ),
                     ),
                     Spacer(),
-                    const Text(
-                      '5.0',
+                    Text(
+                      tiffin['rating'] != null ? tiffin['rating'].toString() : 'Not Available',
                       style: TextStyle(fontSize: 18),
                     ),
                     const Icon(
                       Icons.star,
                       color: Colors.yellow,
                     ),
-                    const Text('(1205)'),
                   ],
                 ),
                 const SizedBox(height: 16),
