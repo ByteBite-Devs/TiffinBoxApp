@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiffinbox/screens/home_screen.dart';
 import 'package:tiffinbox/screens/order_tracking_page.dart';
 import 'package:tiffinbox/services/order-service.dart';
 
@@ -50,16 +51,16 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 return ListTile(
                   title: Text(item['name']),
                   subtitle: Text('Quantity: ${item['quantity']}'),
-                  trailing: Text('\$${item['price']}', 
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                  trailing: Text('\$${item['price']}',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                 );
               }).toList(),
               SizedBox(height: 10),
               ListTile(
                 title: Text('Total Amount',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                trailing: Text('\$${order['total'].toStringAsFixed(2)}', 
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                trailing: Text('\$${order['total'].toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
               )
             ],
           ),
@@ -72,7 +73,10 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
         return true;
       },
       child: Scaffold(
@@ -88,10 +92,9 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 leading:
                 SizedBox(
                   child: Image.network(
-                    orders[index]['business']['images'] != null  &&
-                    orders[index]['business']['images'].isNotEmpty ?
-                    orders[index]['business']['images'][0]
-                    : 'https://via.placeholder.com/150',
+                    orders[index]['business']['profileImage'] != ''
+                        ? orders[index]['business']['profileImage']
+                        : 'https://via.placeholder.com/150',
                     width: 100,
                     height: 100,
                     fit: BoxFit.cover,

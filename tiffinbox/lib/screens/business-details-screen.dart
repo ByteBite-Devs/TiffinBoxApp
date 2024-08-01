@@ -51,8 +51,7 @@ class _BusinessDetailsScreenState extends State<BusinessDetailsScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      business['image'] != '' ? business['image'] : 'assets/images/business_login.jpg',
+                    child: Image.network(business['profileImage'] != '' ? business['profileImage'] : 'https://via.placeholder.com/150',
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.cover,

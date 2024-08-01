@@ -54,7 +54,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
           }
           _emailController.text = userData['email'] ?? '';
           _nameController.text = userData['business_name'] ?? '';
-          _profileImageUrl = userData['image'];
+          _profileImageUrl = userData['profileImage'];
         });
         var provider = Provider.of<AddressProvider>(context, listen: false);
         await provider.fetchAddresses();
@@ -106,14 +106,16 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
 
         print('Address updated successfully');
       }
-      var response = await profileService.updateProfileDetails(
-        _emailController.text,
-        _nameController.text,
-        _profileImageUrl ?? '',
-        _phoneController.text,
-      );
+      var provider = Provider.of<ProfileProvider>(context, listen: false);
+      await provider.updateProfileDetails(
+          _emailController.text,
+          _nameController.text,
+          _profileImageUrl ?? '',
+          _phoneController.text,
+          '',
+          '');
 
-      if (response['status'] == 'success') {
+      if (provider.profile != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Profile updated successfully')),
         );
@@ -226,7 +228,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                 TextField(
                   controller: _nameController,
                   decoration: InputDecoration(
-                    labelText: 'Full Name',
+                    labelText: 'Busienss Name',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

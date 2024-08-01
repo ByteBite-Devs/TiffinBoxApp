@@ -70,34 +70,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 15),
               TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: textDecorationInput("Email")
-              ),
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: textDecorationInput("Email")
+                  ),
               const SizedBox(height: 15),
               PasswordField(label: "Password", passwordController: passwordController),
               const SizedBox(height: 15),
               PasswordField(label: "Confirm Password", passwordController: confirmPasswordController,),
               const SizedBox(height: 15),
               TextField(
-                controller: _nameController,
-                keyboardType: TextInputType.name,
-                decoration: textDecorationInput("Full Name")
-              ),
-              const SizedBox(height: 15),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _rememberMe,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _rememberMe = value!;
-                      });
-                    },
-                  ),
-                  const Text('Remember me'),
-                ],
-              ),
+                  controller: _nameController,
+                  keyboardType: TextInputType.name,
+                  decoration: textDecorationInput("Full Name")),
               const SizedBox(height: 15),
               DefaultButton(
                   title: 'Sign Up',

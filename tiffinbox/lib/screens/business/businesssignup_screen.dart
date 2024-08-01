@@ -7,14 +7,14 @@ import 'package:tiffinbox/utils/constants/color.dart';
 import 'package:tiffinbox/utils/text_style.dart';
 import 'package:tiffinbox/widgets/default_button.dart';
 import 'package:tiffinbox/widgets/password_filed.dart';
- 
+
 class RegisterBusinessScreen extends StatefulWidget {
   const RegisterBusinessScreen({Key? key}) : super(key: key);
- 
+
   @override
   _BusinessRegistrationScreenState createState() => _BusinessRegistrationScreenState();
 }
- 
+
 class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final _emailController = TextEditingController();
@@ -23,7 +23,7 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
   final confirmPasswordController = TextEditingController();
   final signupService = SignupService();
   bool _rememberMe = false;
- 
+
   @override
   void dispose() {
     _phoneController.dispose();
@@ -31,7 +31,7 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
     _businessNameController.dispose();
     super.dispose();
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,20 +84,6 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
                   decoration: textDecorationInput("Business Name"),
                 ),
                 const SizedBox(height: 15),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _rememberMe,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          _rememberMe = value!;
-                        });
-                      },
-                    ),
-                    const Text('Remember me'),
-                  ],
-                ),
-                const SizedBox(height: 15),
                 DefaultButton(
                   title: 'Sign Up',
                   onpress: () async {
@@ -105,16 +91,16 @@ class _BusinessRegistrationScreenState extends State<RegisterBusinessScreen> {
                     String email = _emailController.text;
                     String businessName = _businessNameController.text;
                     String password = passwordController.text;
- 
+
                     if (password != confirmPasswordController.text) {
                       return;
                     }
- 
+
                     try {
                       var response = await signupService.signupBusiness(
                           phoneNumber, email, businessName, password);
                       if (response['status'] == 'success') {
-                        Navigator.of(context).pushReplacementNamed('/Profile');
+                        Navigator.of(context).pushReplacementNamed('/Login');
                       } else {
                       }
                     } catch (e) {

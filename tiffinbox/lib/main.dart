@@ -27,6 +27,7 @@ import 'package:tiffinbox/screens/business/businesssignup_screen.dart';
 import 'package:tiffinbox/screens/browse_screen.dart';
 import 'package:tiffinbox/services/address-service.dart';
 import 'package:tiffinbox/services/cart-service.dart';
+import 'package:tiffinbox/services/profile-service.dart';
 import 'package:tiffinbox/utils/themes/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -62,6 +63,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (context) => AddressProvider()),
       ChangeNotifierProvider(create: (context) => CartProvider()),
+      ChangeNotifierProvider(create: (context) => ProfileProvider()),
     ],
     child: MyApp(),
   ));
@@ -78,6 +80,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
+      navigatorObservers: [CustomNavigatorObserver()],
       routes: <String, WidgetBuilder>{
         '/Home': (BuildContext context) => const HomeScreen(),
         '/Login': (BuildContext context) => const LoginScreen(),
@@ -126,6 +129,21 @@ class MyApp extends StatelessWidget {
       800: color.withOpacity(0.9),
       900: color.withOpacity(1),
     });
+  }
+}
+
+class CustomNavigatorObserver extends NavigatorObserver {
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    super.didPop(route, previousRoute);
+    if (previousRoute == null) {
+      // If there's no previous route, navigate to HomeScreen
+      Navigator.pushAndRemoveUntil(
+        navigator!.context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (Route<dynamic> route) => false,
+      );
+    }
   }
 }
 
