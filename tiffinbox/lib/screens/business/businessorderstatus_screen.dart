@@ -118,7 +118,7 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _getColorForFilter(filter),
                           foregroundColor: Colors.white,
-                        ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0)),
                       ),
                     );
                   }).toList(),
@@ -195,10 +195,16 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
           ),
           if (showSaveButton)
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextButton(
                 onPressed: _saveChanges,
-                child: const Text('Save Changes'),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Save Changes',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
             ),
         ],
@@ -264,6 +270,6 @@ class _BusinessOrderStatusScreen extends State<BusinessOrderStatusScreen> {
     if (address == null) {
       return '';
     }
-    return '${address['address']}} ${address['city']} ${address['state']}';
+    return '${address['address']}, ${address['city']}, ${address['state']}';
   }
 }
