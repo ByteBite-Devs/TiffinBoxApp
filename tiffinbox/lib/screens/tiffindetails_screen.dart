@@ -22,6 +22,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
   bool isAddedToCart = false; // Track if item is added to cart
   TiffinService tiffinService = TiffinService();
   dynamic tiffin;
+  bool dataLoaded = false;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
     if (response['status'] == 'success') {
       setState(() {
         tiffin = response['tiffin'];
+        dataLoaded = true;
       });
     } else {
       throw Exception('Failed to load tiffin details');
@@ -71,7 +73,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
           title: const Text('Detail'),
         ),
         body: SingleChildScrollView(
-          child: Padding(
+          child: dataLoaded ? Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,21 +232,28 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                 const SizedBox(height: 16),
               ],
             ),
-          ),
+          )
+          : const Center(
+            child: CircularProgressIndicator()
+          )
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: SizedBox(
+          child:  dataLoaded ? SizedBox(
             width: double.infinity, // Forces the button to take full available width
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                foregroundColor: isAddedToCart ? Colors.grey : primarycolor,
+                backgroundColor: isAddedToCart ? Colors.grey.shade100 : primarycolor,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              icon: const Icon(Icons.add_shopping_cart),
+              icon:  Icon(Icons.add_shopping_cart,
+                color: isAddedToCart ? primarycolor : Colors.white
+              ),
               label: Text(
                 isAddedToCart ? 'View Cart' : 'Add to Basket',
-                style: const TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18,
+                color: isAddedToCart ? primarycolor : Colors.white
+                ),
               ),
               onPressed: isAddedToCart
                   ? () {
@@ -255,7 +264,7 @@ class _TiffinDetailScreenState extends State<TiffinDetailScreen> {
                     }
                   : _addToCart,
             ),
-          ),
+          ) : null
         ),
       ),
     );

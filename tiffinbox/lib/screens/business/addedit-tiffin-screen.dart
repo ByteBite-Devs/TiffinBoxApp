@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiffinbox/screens/business/businesshome_screen.dart';
 import 'package:tiffinbox/services/tiffin-service.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 
 import '../../models/TiffinIntem.dart';class AddEditTiffinScreen extends StatefulWidget {
   final TiffinItem? tiffinItem;
@@ -289,7 +290,15 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
                       onChanged: (value) => _contents[index]['quantity'] = value!,
                     ),
                     const SizedBox(height: 8),
-                    ElevatedButton(
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                      ),
                       onPressed: () => _removeContent(index),
                       child: const Text('Remove Content'),
                     ),
@@ -298,12 +307,28 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
                 );
               }).toList(),
               const SizedBox(height: 16),
-              ElevatedButton(
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                      ),
                 onPressed: _addContent,
                 child: const Text('Add Content'),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
+              TextButton(
+                style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                      ),
                 onPressed: () async {
                   // Pick multiple images
                   final List<XFile>? pickedImages = await ImagePicker().pickMultiImage();
@@ -329,7 +354,11 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _saveForm,
-                child: const Text('Save'),
+                child: const Text('Save',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    )),
               ),
             ],
           ),
@@ -392,9 +421,19 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: ChoiceChip(
+        showCheckmark: false,
+        selectedColor: primarycolor,
+        backgroundColor: whiteText,
+        labelStyle: TextStyle(
+            color: _selectedMealTypes.contains(mealType) ? whiteText : primarycolor
+        ),
         label: Text(mealType),
         selected: _selectedMealTypes.contains(mealType),
         onSelected: (_) => _toggleMealType(mealType),
+        // set the color of the icon
+        avatar: _selectedMealTypes.contains(mealType)
+            ? const Icon(Icons.check, color: whiteText)
+            : null
       ),
     );
   }
@@ -403,9 +442,19 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: ChoiceChip(
+        showCheckmark: false,
+        selectedColor: primarycolor,
+        backgroundColor: whiteText,
+        labelStyle: TextStyle(
+            color: _dietType == dietType ? whiteText : primarycolor
+        ),
         label: Text(dietType),
         selected: _dietType == dietType,
         onSelected: (_) => _toggleDietType(dietType),
+        // set the color of the icon
+        avatar: _dietType == dietType
+            ? const Icon(Icons.check, color: whiteText)
+            : null
       ),
     );
   }
@@ -414,9 +463,19 @@ class _AddEditTiffinScreenState extends State<AddEditTiffinScreen> {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: ChoiceChip(
+        showCheckmark: false,
+        selectedColor: primarycolor,
+        backgroundColor: whiteText,
+        labelStyle: TextStyle(
+            color: _selectedFrequencies.contains(frequency) ? whiteText : primarycolor
+        ),
         label: Text(frequency),
         selected: _selectedFrequencies.contains(frequency),
         onSelected: (_) => _toggleFrequency(frequency),
+        // set the color of the icon
+        avatar: _selectedFrequencies.contains(frequency)
+            ? const Icon(Icons.check, color: whiteText)
+            : null
       ),
     );
   }

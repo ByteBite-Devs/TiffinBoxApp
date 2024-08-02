@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,7 @@ import 'package:tiffinbox/screens/my-orders_screen.dart';
 import 'package:tiffinbox/services/address-service.dart';
 import 'package:tiffinbox/services/cart-service.dart';
 import 'package:tiffinbox/services/order-service.dart';
+import 'package:tiffinbox/utils/constants/color.dart';
 import '../services/payment.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -294,7 +296,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           }
                         }
                       },
-                      child: Text('Pay ${amountController.text} $selectedCurrency'),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 15),
+                      child: Text('Pay ${amountController.text} $selectedCurrency',
+                      style: TextStyle(color: whiteText),
+                        ),
+                      ),
                     ),
                   ],
                 ),

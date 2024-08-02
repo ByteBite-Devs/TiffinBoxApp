@@ -52,12 +52,18 @@ class AboutUsScreen extends StatelessWidget {
               'Parth is an experienced developer with a solid foundation in both front-end and back-end technologies. His proficiency in Flutter and Firebase has been crucial in developing the core functionalities of the TiffinBox app. Parth\'s problem-solving abilities and dedication to excellence have greatly enhanced the overall quality of the application.',
               assetPath: 'assets/images/parth.jpg',
             ),
-            _buildSectionTitle('Our Mentor'),
+            _buildSectionTitle('Our Mentors'),
             _buildTeamMemberWithImage(
               name: 'Dr. Usama Mir',
               description:
               'Dr. Usama Mir is a distinguished professor at the University of Windsor, specializing in computer science and software engineering. With extensive experience in academia and industry, Dr. Mir has guided numerous students in their research and project development. His mentorship and expertise have been invaluable in the successful completion of the TiffinBox project. We are immensely grateful for his support and encouragement.',
               assetPath: 'assets/images/usama.jpeg',
+            ),
+            _buildTeamMemberWithImage(
+              name: 'Dr. Shafaq Khan',
+              description:
+              'Dr. Shafaq Khan is an esteemed professor at the University of Windsor, overseeing the internship project course. Dr. Khan has received the ‘Excellence in Teaching’ award and an ‘Award from Alumni’. She has been teaching undergraduate and graduate level courses and is well experienced in the international accreditation processes. Her leadership and vision have been instrumental in guiding students through their internship projects, ensuring they gain valuable real-world experience and insights.',
+              assetPath: 'assets/images/shafaq.png',
             ),
             _buildSectionTitle('Our Vision'),
             _buildSectionContent(
@@ -205,3 +211,4 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 }
+ 

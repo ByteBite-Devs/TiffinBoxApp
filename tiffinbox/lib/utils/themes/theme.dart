@@ -12,8 +12,9 @@ class AppTheme {
     scaffoldBackgroundColor: bgcolor,
     textTheme: AppTextTheme.light,
     iconTheme: const IconThemeData(color: Colors.black),
-    textButtonTheme: AppTextButtonTheme.buttonTheme
-  );
+    textButtonTheme: AppTextButtonTheme.buttonTheme,
+    elevatedButtonTheme: ElevatedButtonTheme.buttonTheme,
+      appBarTheme: AppbarTheme.light);
 
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
@@ -23,9 +24,9 @@ class AppTheme {
     scaffoldBackgroundColor: Colors.black,
     textTheme: AppTextTheme.dark,
     iconTheme: const IconThemeData(color: Colors.white),
-    textButtonTheme: AppTextButtonTheme.buttonTheme
-
-  );
+    textButtonTheme: AppTextButtonTheme.buttonTheme,
+    elevatedButtonTheme: ElevatedButtonTheme.buttonTheme,
+      appBarTheme: AppbarTheme.dark);
 }
 
 class AppTextTheme {
@@ -160,22 +161,38 @@ class AppbarTheme {
   AppbarTheme._();
 
   static AppBarTheme light = const AppBarTheme(
-    elevation: 0,
-    centerTitle: true,
+    elevation: 2,
     backgroundColor: Colors.transparent,
     foregroundColor: Colors.black,
+    shadowColor: Colors.transparent,
     titleTextStyle: TextStyle(
       color: Colors.black
     ),
   );
 
   static AppBarTheme dark = const AppBarTheme(
-    elevation: 0,
-    centerTitle: true,
+    elevation: 2,
     backgroundColor: Colors.transparent,
     foregroundColor: Colors.white,
+    shadowColor: Colors.transparent,
     titleTextStyle: TextStyle(
       color: Colors.white
+    ),
+  );
+}
+
+class ElevatedButtonTheme {
+  ElevatedButtonTheme._();
+
+  static ElevatedButtonThemeData buttonTheme = ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: primarycolor,
+      disabledBackgroundColor: disabledColor,
+      textStyle: const TextStyle(color: Colors.white),
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25.0),
+      ),
     ),
   );
 }

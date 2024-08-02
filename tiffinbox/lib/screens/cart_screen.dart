@@ -203,17 +203,8 @@ class CartScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const CheckoutScreen()),
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: primarycolor,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 15.0),
-              child: Text('Checkout', style: TextStyle(fontSize: 18)),
-            ),
+            child: Text('Checkout',
+                style: TextStyle(fontSize: 18, color: whiteText)),
           ),
         ],
       ),
